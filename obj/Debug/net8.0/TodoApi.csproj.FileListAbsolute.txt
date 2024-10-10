@@ -505,3 +505,5 @@
 /Users/alexandrermb/ISEP/3a/LAPR5/obj/Debug/net8.0/TodoApi.pdb
 /Users/alexandrermb/ISEP/3a/LAPR5/obj/Debug/net8.0/TodoApi.genruntimeconfig.cache
 /Users/alexandrermb/ISEP/3a/LAPR5/obj/Debug/net8.0/ref/TodoApi.dll
+/Users/alexandrermb/ISEP/3a/LAPR5/bin/Debug/net8.0/Npgsql.dll
+/Users/alexandrermb/ISEP/3a/LAPR5/bin/Debug/net8.0/Npgsql.EntityFrameworkCore.PostgreSQL.dll
