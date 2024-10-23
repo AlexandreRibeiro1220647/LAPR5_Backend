@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TodoApi.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
+using TodoApi.Services;
+
+
 
 namespace TodoApi.Controllers
 {
@@ -13,10 +12,14 @@ namespace TodoApi.Controllers
     public class PatientsController : ControllerBase
     {
         private readonly UserContext _context;
+        private readonly AuthPatientService _authPatientService;
+        private readonly RandomPasswordService _passwordService;
 
-        public PatientsController(UserContext context)
+        public PatientsController(UserContext context, AuthPatientService authPatientService, RandomPasswordService passwordService)
         {
             _context = context;
+            _authPatientService = authPatientService;
+            _passwordService = passwordService;
         }
 
         // GET: api/Patients
@@ -115,6 +118,65 @@ namespace TodoApi.Controllers
         private bool PatientExists(long id)
         {
             return _context.Patients.Any(e => e.Id == id);
+        }
+
+
+
+        // POST: api/Patients/authenticate
+        [HttpPost("authenticate")]
+        public async Task<ActionResult<string>> AuthenticateUser()
+        {
+            // Call the method from AuthServicePatient
+            var token = await _authPatientService.AuthenticateUser();
+
+            if (string.IsNullOrEmpty(token))
+            {
+                return Unauthorized(); // Return Unauthorized if authentication fails
+            }
+
+            // Set the access token in a cookie
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true, // Prevent client-side access to the cookie
+                Secure = false, // Use Secure cookies in production
+                SameSite = SameSiteMode.Strict, // Prevent CSRF attacks
+                Expires = DateTimeOffset.UtcNow.AddMinutes(10) // Set expiration
+            };
+
+            Response.Cookies.Append("access_token", token, cookieOptions);
+
+
+            return Ok(new { AccessToken = token }); // Return a success response
+        }
+        
+
+
+       [HttpPost("registerPatientViaAuth0")]
+        public async Task<IActionResult> RegisterPatient([FromBody] PatientRegistrationDto model)
+        {
+            if (model == null)
+            {  
+                return BadRequest("User information is required.");
+            }
+
+            try
+            {
+
+                await _authPatientService.RegisterNewPatient(model, _passwordService.GeneratePassword());
+                return Ok();
+            }
+            catch (InvalidDataException)
+            {
+                return BadRequest("Role does not exist in the system");
+            }
+            catch (ExistingUserException)
+            {
+                return BadRequest("User already exists in the system");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
