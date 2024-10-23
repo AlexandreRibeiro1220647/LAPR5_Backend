@@ -2,8 +2,8 @@ namespace TodoApi.Models;
 
 public enum Roles
 {
-    Admin,
     Patient,
+    Admin,
     Doctor,
     Nurse,
     Technician
