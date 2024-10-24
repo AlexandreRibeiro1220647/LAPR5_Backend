@@ -1,3 +1,4 @@
+using TodoApi.Models.OperationType;
 using TodoApi.Models.Patient;
 using TodoApi.Models.Shared;
 using TodoApi.Models.Staff;

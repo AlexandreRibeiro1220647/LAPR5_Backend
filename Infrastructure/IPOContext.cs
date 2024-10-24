@@ -12,6 +12,9 @@ public class IPOContext : DbContext
     }
 
     public DbSet<User> Users { get; set; } 
+    
+    public DbSet<Models.OperationRequest.OperationRequest> OperationRequests { get; set; }
+
     public DbSet<Patient> Patients { get; set; } 
 
      protected override void OnModelCreating(ModelBuilder modelBuilder)
