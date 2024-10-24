@@ -4,7 +4,7 @@ namespace TodoApi.Models.Staff
 {
     public class FullName
     {
-        public string FullName { get; private set; }
+        public string fullName { get; private set; }
 
         public FullName(string fullName)
         {

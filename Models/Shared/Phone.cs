@@ -1,8 +1,8 @@
-﻿using DDDSample1.Domain.Shared;
+﻿using TodoApi.Models.Shared;
 
 namespace TodoApi.Models.Patient;
 
-public class Phone : IValueObject
+public class Phone
 {
     public string phoneNumber { get; private set; }
 

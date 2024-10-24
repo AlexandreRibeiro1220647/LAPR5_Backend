@@ -4,6 +4,7 @@ using System.Text.Json;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using TodoApi.Models;
+using TodoApi.Models.Patient;
 
 namespace TodoApi.Services
 {
