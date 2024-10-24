@@ -1,10 +1,12 @@
 using Microsoft.EntityFrameworkCore;
+using TodoApi.Models;
+using TodoApi.Models.User;
 
-namespace TodoApi.Models;
+namespace TodoApi.Infrastructure;
 
-public class UserContext : DbContext
+public class IPOContext : DbContext
 {
-    public UserContext(DbContextOptions<UserContext> options)
+    public IPOContext(DbContextOptions<IPOContext> options)
         : base(options)
     {
     }
