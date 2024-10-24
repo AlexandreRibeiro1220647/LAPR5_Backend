@@ -15,26 +15,26 @@ namespace TodoApi.Infrastructure.Staff
         }
 
 
-        public Task<Domain.Staff.Staff> GetByLicenseNumberAsync(LicenseNumber licenseNumber)
+        public Task<Models.Staff.Staff> GetByLicenseNumberAsync(LicenseNumber licenseNumber)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<List<Domain.Staff.Staff>> SearchByNameAsync(string name)
+        public async Task<List<Models.Staff.Staff>> SearchByNameAsync(string name)
         {
             return await _context.Staffs
                 .Where(s => s.FullName.fullName.Contains(name))
                 .ToListAsync();
         }
 
-        public async Task<List<Domain.Staff.Staff>> SearchBySpecializationAsync(string specialization)
+        public async Task<List<Models.Staff.Staff>> SearchBySpecializationAsync(string specialization)
         {
             return await _context.Staffs
                 .Where(s => s.Specialization.Area.Contains(specialization))
                 .ToListAsync();
         }
 
-        public async Task<List<Domain.Staff.Staff>> SearchByEmailAsync(string email)
+        public async Task<List<Models.Staff.Staff>> SearchByEmailAsync(string email)
         {
             return await _context.Staffs
                 .Where(s => s.Email.Value.Contains(email))
