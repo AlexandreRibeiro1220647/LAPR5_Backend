@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using TodoApi.Models;
 using TodoApi.Models.User;
+using TodoApi.Models.Patient;
+using TodoApi.Infrastructure.Staff;
 
 namespace TodoApi.Infrastructure;
 
@@ -16,11 +17,9 @@ public class IPOContext : DbContext
 
      protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<User>()
-                .ToTable("Users"); 
-            
-            modelBuilder.Entity<Patient>()
-                .ToTable("Patients"); 
+            modelBuilder.ApplyConfiguration(new UserEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new StaffEntityTypeConfiguration());
+
         }
     
 }
