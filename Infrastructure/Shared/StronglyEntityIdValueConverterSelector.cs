@@ -2,7 +2,7 @@ using System.Collections.Concurrent;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TodoApi.Models.Shared;
 
-namespace TodoApi.Infrastucture.Shared
+namespace TodoApi.Infrastructure.Shared
 {
     /// <summary>
     /// Based on https://andrewlock.net/strongly-typed-ids-in-ef-core-using-strongly-typed-entity-ids-to-avoid-primitive-obsession-part-4/

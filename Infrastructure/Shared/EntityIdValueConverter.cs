@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TodoApi.Models.Shared;
 
-namespace TodoApi.Infrastucture.Shared
+namespace TodoApi.Infrastructure.Shared
 {
     public class EntityIdValueConverter<TTypedIdValue> : ValueConverter<TTypedIdValue, String>
         where TTypedIdValue : EntityId

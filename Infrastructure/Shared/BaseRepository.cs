@@ -2,7 +2,7 @@ using TodoApi.Models.Shared;
 using Microsoft.EntityFrameworkCore;
 
 
-namespace TodoApi.Infrastucture.Shared
+namespace TodoApi.Infrastructure.Shared
 {
     public class BaseRepository<TEntity,TEntityId> : IRepository<TEntity,TEntityId>
     where TEntity : Entity<TEntityId>
