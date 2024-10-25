@@ -85,6 +85,19 @@ namespace TodoApi.Controllers
                 return BadRequest(e.Message);
             }
         }
+        [HttpGet("search/status")]
+        public async Task<ActionResult<List<StaffDTO>>> SearchByStatus([FromQuery] StaffStatus status)
+        {
+            try
+            {
+                var staffStatusList = await _staffService.GetStaffByStatus(status);
+                return Ok(staffStatusList);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
 
         [HttpPut("update/{id}")]
         public async Task<IActionResult> UpdateStaff(Guid id, [FromBody] UpdateStaffDTO dto)
