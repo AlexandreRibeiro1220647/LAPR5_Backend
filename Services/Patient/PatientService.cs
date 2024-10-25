@@ -93,4 +93,39 @@ public class PatientService : IPatientService {
             throw;
         }
     }
+    public async Task<PatientDTO> GetPatientByEmailAsync(string email) {
+        Patient patient = await _patientRepository.GetByEmailAsync(email);
+        if (patient == null) {
+            throw new Exception($"Patient with email {email} does not exist");
+        }
+        return _mapper.ToDto(patient);
+    }
+
+    public async Task<PatientDTO> GetPatientByIdAsync(Guid id) {
+        Patient patient = await _patientRepository.GetByIdAsync(new MedicalRecordNumber(id));
+        if (patient == null) {
+            throw new Exception($"Patient with id {id} does not exist");
+        }
+        return _mapper.ToDto(patient);
+    }
+
+    public async Task<List<PatientDTO>> GetPatientsByNameAsync(string name) {
+        List<Patient> patients = await _patientRepository.GetByNameAsync(name);
+        return patients.Select(p => _mapper.ToDto(p)).ToList();
+    }
+
+    public async Task<List<PatientDTO>> GetPatientsByContactInformationAsync(string contact) {
+        List<Patient> patients = await _patientRepository.GetByContactInformationAsync(contact);
+        return patients.Select(p => _mapper.ToDto(p)).ToList();
+    }
+
+    public async Task<List<PatientDTO>> GetPatientsByGenderAsync(Gender gender) {
+        List<Patient> patients = await _patientRepository.GetByGenderAsync(gender);
+        return patients.Select(p => _mapper.ToDto(p)).ToList();
+    }
+
+    public async Task<List<PatientDTO>> GetPatientsByDateOfBirthAsync(DateOnly dateOfBirth) {
+        List<Patient> patients = await _patientRepository.GetByDateOfBirthAsync(dateOfBirth);
+        return patients.Select(p => _mapper.ToDto(p)).ToList();
+    }
 }
