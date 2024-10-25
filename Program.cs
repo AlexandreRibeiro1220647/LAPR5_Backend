@@ -1,12 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-
-using TodoApi.Infrastructure;
-using TodoApi.Services.User;
-using TodoApi.Models.Shared;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+
+using TodoApi.Infrastructure;
+using TodoApi.Services.User;
+using TodoApi.Services.Login;
+using TodoApi.Models.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,6 +59,12 @@ builder.Services.AddAuthentication(options =>
             return Task.CompletedTask;
         }
     };
+
+                // Configure to map the custom role namespace claim to ClaimTypes.Role
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        RoleClaimType = "https://myapp.com/roles"  // use the namespace from the Auth0 rule
+    };
 });
 // Bind Auth0 settings from appsettings.json
 builder.Services.Configure<Auth0Settings>(builder.Configuration.GetSection("Auth0"));
@@ -90,11 +97,16 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, allowIntegerValues: false));
         options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+
     });
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ILoginService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+// Register UserService with HttpClient
+builder.Services.AddHttpClient<UserService>();
 
 var app = builder.Build();
 
