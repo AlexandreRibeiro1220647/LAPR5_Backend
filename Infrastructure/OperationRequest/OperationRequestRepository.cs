@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using TodoApi.Infrastructure;
 using TodoApi.Infrastructure.Shared;
 using TodoApi.Models.OperationRequest;
+using TodoApi.Models.OperationType;
 using TodoApi.Models.Patient;
 
 namespace TodoApi.Infrastructure.OperationRequest;
@@ -35,6 +36,11 @@ public class OperationRequestRepository : BaseRepository<Models.OperationRequest
     public Task<Models.OperationRequest.OperationRequest> GetByPriorityAsync(string priority){
         throw new NotImplementedException();
     }
+
+    public async Task<bool> ExistsAsync(MedicalRecordNumber patientId, OperationTypeID operationTypeID)
+{
+    return await _dbSet.AnyAsync(req => req.PacientId == patientId && req.OperationTypeID == operationTypeID);
+}   
 
 
 }
