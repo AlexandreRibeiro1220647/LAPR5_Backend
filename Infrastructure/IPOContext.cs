@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using TodoApi.Models.User;
-using TodoApi.Models.Patient;
 using TodoApi.Infrastructure.Staff;
 using TodoApi.Infrastructure.OperationRequest;
 using TodoApi.Infrastructure.OperationType;
@@ -20,7 +19,7 @@ public class IPOContext : DbContext
 
     public DbSet<Models.OperationType.OperationType> OperationTypes {get; set; }
 
-    public DbSet<Patient> Patients { get; set; } 
+    public DbSet<Models.Patient.Patient> Patients { get; set; } 
 
      protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

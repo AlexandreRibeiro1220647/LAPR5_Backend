@@ -5,10 +5,10 @@ namespace TodoApi.Models.Patient;
 
 public class Patient : Entity<MedicalRecordNumber> {
     public FullName fullName { get; private set; }
-    public UserEmail email { get; private set; }
     public DateOfBirth dateOfBirth { get; private set; }
     public Gender gender { get; private set; }
     public ContactInformation contactInformation { get; private set; }
+    public UserEmail email { get; private set; }
     public MedicalConditions medicalConditions { get; private set; }
     public EmergencyContact emergencyContact { get; private set; }
     public AppointmentHistory appointmentHistory { get; private set; }
