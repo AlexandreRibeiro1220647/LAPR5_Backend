@@ -12,6 +12,6 @@ namespace TodoApi.Services
         Task<List<StaffDTO>> GetStaffByName(string name);
         Task<List<StaffDTO>> GetStaffByEmail(string email);
         Task<List<StaffDTO>> GetStaffBySpecialization(string specialization);
-
+        Task<List<StaffDTO>> GetStaffByStatus(StaffStatus status);
     }
 }
