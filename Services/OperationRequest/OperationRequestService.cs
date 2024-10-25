@@ -10,7 +10,7 @@ using TodoApi.Models.Shared;
 namespace TodoApi.Services
 {
 
-public class OperationService : IOperationRequestService
+public class OperationRequestService : IOperationRequestService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IOperationRequestRepository _operationRequestRepository;
@@ -20,7 +20,7 @@ public class OperationService : IOperationRequestService
     private readonly IConfiguration _config;
     private OperationRequestMapper mapper = new OperationRequestMapper();
 
-    public OperationService(IUnitOfWork unitOfWork, IOperationRequestRepository operationRepository, ILogger<IOperationRequestService> logger,
+    public OperationRequestService(IUnitOfWork unitOfWork, IOperationRequestRepository operationRepository, ILogger<IOperationRequestService> logger,
         IConfiguration config/*, IUserRepository userRepository*/)
     {
         this._unitOfWork = unitOfWork;

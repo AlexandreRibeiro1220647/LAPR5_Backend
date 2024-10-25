@@ -8,6 +8,11 @@ using TodoApi.Infrastructure;
 using TodoApi.Services.User;
 using TodoApi.Services.Login;
 using TodoApi.Models.Shared;
+using TodoApi.Infrastructure.OperationRequest;
+using TodoApi.Services;
+using TodoApi.Infrastructure.OperationType;
+using TodoApi.Infrastructure.Patient;
+using TodoApi.Infrastructure.Staff;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -104,6 +109,14 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ILoginService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IOperationRequestRepository, OperationRequestRepository>();
+builder.Services.AddScoped<IOperationRequestService, OperationRequestService>();
+builder.Services.AddScoped<IOperationTypeRepository, OperationTypeRepository>();
+builder.Services.AddScoped<IPatientService, PatientService>();
+builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+builder.Services.AddScoped<IStaffRepository, StaffRepository>();
+builder.Services.AddScoped<IStaffService, StaffService>();
+
 
 // Register UserService with HttpClient
 builder.Services.AddHttpClient<UserService>();
