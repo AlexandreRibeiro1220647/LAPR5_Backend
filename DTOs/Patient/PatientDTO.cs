@@ -4,7 +4,7 @@ namespace TodoApi.DTOs;
 
 public class PatientDTO {
     public string FullName { get;  set; }
-    public string BirthDate { get;  set; }
+    public string DateOfBirth { get;  set; }
     public string Gender { get;  set; }
     public string MedicalRecordNumber { get;  set; }
     public string ContactInformation { get;  set; }
@@ -15,9 +15,9 @@ public class PatientDTO {
 
     public PatientDTO() { }
 
-    public PatientDTO(string fullName, string birthDate, string gender, string medicalRecordNumber, string contactInformation, string email, List<string> medicalConditions, string emergencyContact, List<string> appointmentHistory) {
+    public PatientDTO(string fullName, string dateOfBirth, string gender, string medicalRecordNumber, string contactInformation, string email, List<string> medicalConditions, string emergencyContact, List<string> appointmentHistory) {
         FullName = fullName;
-        BirthDate = birthDate;
+        DateOfBirth = dateOfBirth;
         Gender = gender;
         MedicalRecordNumber = medicalRecordNumber;
         ContactInformation = contactInformation;
