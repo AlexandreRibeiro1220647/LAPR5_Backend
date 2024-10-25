@@ -1,6 +1,4 @@
-using System.Threading.Tasks;
-
-namespace Models.Shared
+namespace TodoApi.Models.Shared
 {
     public interface IUnitOfWork
     {
