@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 using TodoApi.Infrastructure;
-using TodoApi.Services.User;
 using TodoApi.Models.Shared;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text.Json.Serialization;

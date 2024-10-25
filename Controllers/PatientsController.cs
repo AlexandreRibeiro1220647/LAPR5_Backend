@@ -2,9 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TodoApi.Models;
 using TodoApi.Services;
-
-
-
+using TodoApi.Models.Patient;
+using TodoApi.DTOs;
+using TodoApi.Contexts;
 namespace TodoApi.Controllers
 {
     [Route("api/[controller]")]
