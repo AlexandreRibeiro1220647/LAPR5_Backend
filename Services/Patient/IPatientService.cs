@@ -1,4 +1,5 @@
 ﻿using TodoApi.DTOs;
+using TodoApi.Models.Patient;
 
 namespace TodoApi.Services;
 
