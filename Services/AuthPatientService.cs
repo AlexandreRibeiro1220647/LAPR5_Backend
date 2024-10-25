@@ -5,7 +5,8 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using TodoApi.Models;
 using TodoApi.Models.Patient;
-
+using TodoApi.DTOs;
+using TodoApi.Contexts;
 namespace TodoApi.Services
 {
     public class AuthPatientService

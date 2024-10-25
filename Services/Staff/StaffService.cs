@@ -1,6 +1,7 @@
 using TodoApi.Models.Shared;
-using Models.Shared;
+using TodoApi.Models.Shared;
 using TodoApi.Models.Staff;
+using TodoApi.Models;
 using TodoApi.DTOs;
 using TodoApi.Mappers;
 using TodoApi.Infrastructure.Staff;

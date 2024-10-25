@@ -36,4 +36,13 @@ public class OperationRequest : Entity<OperationRequestID>       {
         Deadline = deadline;
         Priority = priority;
     }
+
+
+    public void UpdateDeadline(DateOnly deadline){
+        this.Deadline = new Deadline(deadline);
+    }
+
+    public void UpdatePriority(Priority newPriority){
+        this.Priority = newPriority;
+    }
 }
