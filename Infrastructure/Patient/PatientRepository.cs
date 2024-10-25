@@ -34,11 +34,11 @@ public class PatientRepository : BaseRepository<Models.Patient.Patient, MedicalR
         return await _dbSet.Where(p => p.contactInformation.contactInformation.phoneNumber.Contains(contact)).ToListAsync();
     }
 
-+    public async Task<List<Models.Patient.Patient>> GetByGenderAsync(Gender gender) {
+   public async Task<List<Models.Patient.Patient>> GetByGenderAsync(Gender gender) {
         return await _dbSet.Where(p => p.gender == gender).ToListAsync();
-    }
+   }
 
-    public async Task<List<Models.Patient.Patient>> GetByDateOfBirthAsync(DateOnly dateOfBirth) {
-        return await _dbSet.Where(p => p.dateOfBirth.dateOfBirth == dateOfBirth).ToListAsync();
-    }
+   public async Task<List<Models.Patient.Patient>> GetByDateOfBirthAsync(DateOnly dateOfBirth) {
+       return await _dbSet.Where(p => p.dateOfBirth.dateOfBirth == dateOfBirth).ToListAsync();
+   }
 }
