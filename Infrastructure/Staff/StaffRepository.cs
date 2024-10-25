@@ -7,9 +7,9 @@ namespace TodoApi.Infrastructure.Staff
 {
     public class StaffRepository : BaseRepository<Models.Staff.Staff, LicenseNumber>, IStaffRepository
     {
-        private readonly HospitalContext _context;
+        private readonly IPOContext _context;
 
-        public StaffRepository(HospitalContext dbContext) : base(dbContext.Staffs)
+        public StaffRepository(IPOContext dbContext) : base(dbContext.Staffs)
         {
             _context = dbContext;
         }

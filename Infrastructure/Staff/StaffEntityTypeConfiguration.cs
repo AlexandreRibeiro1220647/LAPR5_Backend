@@ -1,5 +1,5 @@
 using TodoApi.Models;
-using TodoApi.Models.Patient;
+using TodoApi.Models.Shared;
 using TodoApi.Models.Staff;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -13,13 +13,7 @@ public class StaffEntityTypeConfiguration : IEntityTypeConfiguration<Models.Staf
     {
         builder.HasKey(s => s.Id);
 
-        var phoneConverter = new ValueConverter<Phone, string>(
-            p => p.phoneNumber,
-            s => new Phone(s)
-        );
-
-        builder.Property(s => s.Phone)
-            .HasConversion(phoneConverter);
+        builder.OwnsOne(s => s.Phone);
 
         var licenseNumberConverter = new ValueConverter<LicenseNumber, string>(
             licenseNumber => licenseNumber.Value,
@@ -45,6 +39,5 @@ public class StaffEntityTypeConfiguration : IEntityTypeConfiguration<Models.Staf
         });
 
         builder.HasIndex(s => s.Email).IsUnique();
-        builder.HasIndex(s => s.Phone).IsUnique();
     }
 }

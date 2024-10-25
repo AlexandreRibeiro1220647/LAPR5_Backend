@@ -1,23 +1,18 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
-using TodoApi.Models;
-using TodoApi.Services;
+using TodoApi.Infrastructure;
+using TodoApi.Services.User;
+using TodoApi.Models.Shared;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddDbContext<UserContext>(opt =>
-    opt.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-    // Add HttpContextAccessor to access the current user's claim
-builder.Services.AddHttpContextAccessor();
-
-builder.Services.AddHttpClient<AuthPatientService>();
-
 
 string domain = builder.Configuration["Auth0:Domain"];
 string audience = builder.Configuration["Auth0:Audience"];
@@ -87,9 +82,19 @@ builder.Services.AddAuthorization(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddTransient<UserRegistrationService>();
-builder.Services.AddTransient<AuthPatientService>();
-builder.Services.AddTransient<RandomPasswordService>();
+
+builder.Services.AddDbContext<IPOContext>(opt =>
+    opt.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, allowIntegerValues: false));
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    });
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 var app = builder.Build();
 
@@ -108,3 +113,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+

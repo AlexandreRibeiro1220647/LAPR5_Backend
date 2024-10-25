@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TodoApi.Models;
 using TodoApi.Models.Patient;
+using TodoApi.Models.Shared;
 
 namespace TodoApi.Infrastructure.Patient {
     public class PatientConfiguration : IEntityTypeConfiguration<Models.Patient.Patient> {
@@ -15,18 +16,24 @@ namespace TodoApi.Infrastructure.Patient {
 
             builder.Property(p => p.email).HasConversion(new ValueConverter<UserEmail, string>(e => e.Value, s => new UserEmail(s)));
 
-            builder.Property(p => p.contactInformation).HasConversion(new ValueConverter<ContactInformation, string>(c => c.contactInformation.ToString(), s => new ContactInformation(new Phone(s))));
-
-            builder.Property(p => p.emergencyContact).HasConversion(new ValueConverter<EmergencyContact, string>(c => c.emergencyContact.ToString(), s => new EmergencyContact(new Phone(s))));
-
-
             builder.OwnsOne(p => p.fullName);
             builder.HasIndex(p => p.dateOfBirth);
             builder.HasIndex(p => p.gender);
-            builder.HasIndex(p => p.contactInformation).IsUnique();
+            builder.OwnsOne(p => p.contactInformation, contactInfoBuilder =>
+            {
+                contactInfoBuilder.Property(c => c.contactInformation)
+                .HasConversion(new ValueConverter<Phone, string>(p => p.phoneNumber, s => new Phone(s)));
+
+            });
             builder.HasIndex(p => p.email).IsUnique();
             builder.OwnsOne(p => p.medicalConditions);
             builder.OwnsOne(p => p.emergencyContact);
+            builder.OwnsOne(p => p.emergencyContact, eContactInfoBuilder =>
+            {
+                eContactInfoBuilder.Property(c => c.emergencyContact)
+                .HasConversion(new ValueConverter<Phone, string>(p => p.phoneNumber, s => new Phone(s)));
+
+            });
             builder.OwnsOne(p => p.appointmentHistory);
         }
     }
