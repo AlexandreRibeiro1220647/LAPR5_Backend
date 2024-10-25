@@ -21,4 +21,24 @@ public class PatientRepository : BaseRepository<Models.Patient.Patient, MedicalR
     public void DeletePatient(Models.Patient.Patient patient) {
         _dbSet.Remove(patient);
     }
+
+    public async Task<Models.Patient.Patient?> GetByIdAsync(MedicalRecordNumber id) {
+        return await _dbSet.FirstOrDefaultAsync(p => p.Id == id);
+    }
+
+    public async Task<List<Models.Patient.Patient>> GetByNameAsync(string name) {
+        return await _dbSet.Where(p => p.fullName.fullName.Contains(name)).ToListAsync();
+    }
+
+    public async Task<List<Models.Patient.Patient>> GetByContactInformationAsync(string contact) {
+        return await _dbSet.Where(p => p.contactInformation.contactInformation.phoneNumber.Contains(contact)).ToListAsync();
+    }
+
++    public async Task<List<Models.Patient.Patient>> GetByGenderAsync(Gender gender) {
+        return await _dbSet.Where(p => p.gender == gender).ToListAsync();
+    }
+
+    public async Task<List<Models.Patient.Patient>> GetByDateOfBirthAsync(DateOnly dateOfBirth) {
+        return await _dbSet.Where(p => p.dateOfBirth.dateOfBirth == dateOfBirth).ToListAsync();
+    }
 }
