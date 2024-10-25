@@ -42,5 +42,49 @@ public class OperationRequestController : ControllerBase {
         }
     }
 
+    [HttpPut("update/{id}")]
+    public async Task<IActionResult> UpdateOperationRequest(Guid id, [FromBody] UpdateOperationRequestDTO dto)
+    {
+        try
+        {
+            var updatedOperationRequestDto = await operationRequestService.UpdateOperationRequestAsync(id, dto);                
+            return Ok(updatedOperationRequestDto);
+        }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+    [HttpGet]
+    public async Task<IActionResult> GetOperations()
+    {
+        try
+        {
+            var operation = await operationRequestService.GetOperations();
+            return Ok(operation);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+     [HttpGet("search")]
+    public async Task<IActionResult> SearchOperationRequests([FromQuery] string? patientName, [FromQuery] string? patientId, [FromQuery] string? operationType, [FromQuery] string? priority, [FromQuery] string? status)
+    {
+        try
+        {
+            List<OperationRequestDTO> results = await operationRequestService.SearchOperations(patientName, patientId, operationType, priority, status);
+            return Ok(results);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, $"Internal server error: {e.Message}");
+        }
+    }
 
 }
+
+
+
