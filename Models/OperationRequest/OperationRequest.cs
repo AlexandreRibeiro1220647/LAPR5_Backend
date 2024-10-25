@@ -15,7 +15,8 @@ public class OperationRequest : Entity<OperationRequestID>       {
     public Priority Priority { get; private set; }
 
  
-
+     OperationRequest(){
+    }
     public OperationRequest(MedicalRecordNumber patientId, LicenseNumber doctorId, OperationTypeID operationTypeId, Deadline deadline, Priority priority)
     {
         Id = new OperationRequestID(Guid.NewGuid().ToString());
