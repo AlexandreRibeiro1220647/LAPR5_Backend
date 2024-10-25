@@ -6,11 +6,12 @@ namespace TodoApi.DTOs
         public string Phone { get; set; }
         public string Specialization { get; set; }
         public List<SlotDTO> AvailabilitySlots { get; set; }
+        public StaffStatus Status { get; set; }
     }
 
     public class SlotDTO
     {
-        public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
+        public DateTime StartTime { get; set; }
     }
 }
