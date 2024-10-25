@@ -1,3 +1,5 @@
+using TodoApi.Models.Staff;
+
 namespace TodoApi.DTOs
 {
     public class UpdateStaffDTO

@@ -1,4 +1,4 @@
-﻿using TodoApi.Models.User;
+﻿using TodoApi.Models;
 
 namespace TodoApi.DTOs.User;
 

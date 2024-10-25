@@ -1,6 +1,6 @@
 ﻿using TodoApi.Models.Shared;
 
-namespace TodoApi.Models.Patient;
+namespace TodoApi.Models.Shared;
 
 public class Phone
 {

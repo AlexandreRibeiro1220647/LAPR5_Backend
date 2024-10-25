@@ -4,6 +4,8 @@ using TodoApi.Models.Shared;
 
 public class MedicalConditions {
     public List<String> medicalConditions { get; private set; }
+
+    public MedicalConditions() {}
     
     public MedicalConditions(List<String> medicalConditions) {
         this.medicalConditions = medicalConditions;

@@ -5,6 +5,8 @@ namespace TodoApi.Models.Patient;
 public class EmergencyContact {
     public Phone emergencyContact { get; private set; }
     
+    public EmergencyContact() {}
+
     public EmergencyContact(Phone emergencyContact) {
         this.emergencyContact = emergencyContact;
     }

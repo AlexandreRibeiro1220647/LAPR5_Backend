@@ -4,6 +4,8 @@ namespace TodoApi.Models.Patient;
 
 public class DateOfBirth {
     public DateOnly dateOfBirth { get; private set; }
+
+    public DateOfBirth() {}
     
     public DateOfBirth(DateOnly dateOfBirth) {
         ValidateDateOfBirth(dateOfBirth);

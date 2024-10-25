@@ -4,6 +4,8 @@ using TodoApi.Models.Shared;
 
 public class FullName {
     public String fullName { get; private set; }
+
+    public FullName() {}
     
     public FullName(String fullName) {
         this.fullName = fullName;

@@ -2,8 +2,7 @@ using TodoApi.Models.Staff;
 using TodoApi.DTOs;
 using System.Collections.Generic;
 using TodoApi.Models;
-using TodoApi.Models.Patient;
-using TodoApi.Models.Staff.FullName;
+using TodoApi.Models.Shared;
 
 namespace TodoApi.Mappers
 {
@@ -15,26 +14,26 @@ namespace TodoApi.Mappers
         {
             List<Slot> availabilitySlots = new List<Slot>();
 
-            foreach (var slot in createDto.availabilitySlots)
+            foreach (var slot in createDto.AvailabilitySlots)
             {
                 var availabilitySlot = new Slot(slot.StartTime, slot.EndTime);
                 availabilitySlots.Add(availabilitySlot);
             }
 
             return new Staff(
-                new FullName(createDto.fullName),
-                new Specialization(createDto.specialization),
-                new UserEmail(createDto.email),
-                new Phone(createDto.phone),
+                new FullName(createDto.FullName),
+                new Specialization(createDto.Specialization),
+                new UserEmail(createDto.Email),
+                new Phone(createDto.Phone),
                 new AvailabilitySlots(availabilitySlots),
-                (StaffStatus)Enum.Parse(typeof(StaffStatus), createDto.status)
+                createDto.Status
             );
         }
         public Staff ToEntity(StaffDTO dto)
         {
             List<Slot> availabilitySlots = new List<Slot>();
 
-            foreach (var slot in dto.availabilitySlots)
+            foreach (var slot in dto.AvailabilitySlots)
             {
                 var availabilitySlot = new Slot(slot.StartTime, slot.EndTime);
                 availabilitySlots.Add(availabilitySlot);
@@ -43,12 +42,12 @@ namespace TodoApi.Mappers
             var availabilitySlotsObj = new AvailabilitySlots(availabilitySlots);
 
             return new Staff(
-                new FullName(dto.fullName),
-                new Specialization(dto.specialization),
-                new UserEmail(dto.email),
-                new Phone(dto.phone),
+                new FullName(dto.FullName),
+                new Specialization(dto.Specialization),
+                new UserEmail(dto.Email),
+                new Phone(dto.Phone),
                 availabilitySlotsObj,
-                (StaffStatus)Enum.Parse(typeof(StaffStatus), dto.status)
+                dto.Status
             );
         }
 
@@ -73,7 +72,7 @@ namespace TodoApi.Mappers
                 entity.Email.Value,
                 entity.Phone.phoneNumber,
                 availabilitySlotDTOs,
-                entity.Status.ToString()
+                entity.Status
             );
         }
 

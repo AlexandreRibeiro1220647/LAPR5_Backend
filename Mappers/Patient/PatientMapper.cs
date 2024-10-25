@@ -1,6 +1,7 @@
 using TodoApi.Models.Patient;
 using TodoApi.DTOs;
 using TodoApi.Models;
+using TodoApi.Models.Shared;
 
 namespace TodoApi.Mappers;
 
