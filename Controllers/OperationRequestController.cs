@@ -27,7 +27,7 @@ public class OperationRequestController : ControllerBase {
             return BadRequest(e.Message);
         }
     }
-/*
+
     [HttpDelete]
     public async Task<IActionResult> DeleteOperation([FromQuery] Guid operationId)
     {
@@ -41,6 +41,6 @@ public class OperationRequestController : ControllerBase {
             return BadRequest(e.Message);
         }
     }
-*/
+
 
 }

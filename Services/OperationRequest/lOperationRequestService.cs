@@ -8,5 +8,5 @@ public interface IOperationRequestService
     
     // Task<OperationDTO> UpdateOperationAsync(Guid id, UpdateOperationDTO dto);
     
-   //  Task<bool> DeleteOperationRequest(Guid operationId);
+     Task<bool> DeleteOperationRequest(Guid operationId);
 }

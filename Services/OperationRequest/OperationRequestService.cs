@@ -73,11 +73,14 @@ public class OperationService : IOperationRequestService
             throw;
         }
 }
-/*
+
     public async Task<bool> DeleteOperationRequest(Guid operationRequestId)
     {
         try
         {
+
+            // operationRequests que o proprio doutor criou
+
            Models.OperationRequest.OperationRequest operationRequest = await _operationRequestRepository.GetByIdAsync(new OperationRequestID(operationRequestId));
 
             if (operationRequest == null)
@@ -122,6 +125,4 @@ public class OperationService : IOperationRequestService
             // In a real application, this would involve a UI prompt.
             return true;
         }
-
-*/
 }
