@@ -163,6 +163,19 @@ namespace TodoApi.Services
                 throw;
             }
         }
+       public async Task<List<StaffDTO>> GetStaffByStatus(StaffStatus status)
+       {
+           try
+           {
+               var staffStatusList = await _staffRepository.SearchByStatus(status);
+               return staffStatusList.Select(staff => _mapper.ToDto(staff)).ToList();
+           }
+           catch (Exception e)
+           {
+               _logger.LogError(e, "Error searching staff by status");
+               throw;
+           }
+       }
 
     }
 }
