@@ -79,8 +79,8 @@ namespace TodoApi.Services
                     existingStaff.Id.AsString(),
                     existingStaff.Email.Value,
                     existingStaff.Phone.phoneNumber,
-                    existingStaff.Status.Value,
-                    existingStaff.AvailabilitySlots.Slots
+                    existingStaff.AvailabilitySlots.Slots,
+                    existingStaff.Status
                 );
 
                 return updatedStaffDto;
@@ -112,8 +112,8 @@ namespace TodoApi.Services
                     existingStaff.Id.AsString(),
                     existingStaff.Email.Value,
                     existingStaff.Phone.phoneNumber,
-                    existingStaff.Status.Value,
-                    existingStaff.AvailabilitySlots.Slots
+                    existingStaff.AvailabilitySlots.Slots,
+                    existingStaff.Status
                 );
 
                 return updatedStaffDto;
