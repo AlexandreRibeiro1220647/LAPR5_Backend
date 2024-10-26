@@ -13,6 +13,7 @@ using TodoApi.Services;
 using TodoApi.Infrastructure.OperationType;
 using TodoApi.Infrastructure.Patient;
 using TodoApi.Infrastructure.Staff;
+using TodoApi.Infrastructure.OperationRequestLog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -123,6 +124,7 @@ builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IStaffRepository, StaffRepository>();
 builder.Services.AddScoped<IStaffService, StaffService>();
 builder.Services.AddScoped<EmailService>();
+builder.Services.AddScoped<IOperationRequestLogRepository, OperationRequestLogRepository>();
 
 
 // Register UserService with HttpClient
