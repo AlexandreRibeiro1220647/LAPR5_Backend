@@ -11,6 +11,7 @@ using TodoApi.Models.User;
 using TodoApi.Services;
 using TodoApi.Services.Login;
 using TodoApi.Services.User;
+using System.Security.Claims;
 
 namespace TodoApi.Controllers
 {
@@ -166,7 +167,23 @@ namespace TodoApi.Controllers
             return Ok(new { AccessToken = token }); // Return a success response
         }
 
-        [Authorize(Policy = "AdminOnly")]
+        [Authorize(Policy = "BackOfficeUserPolicy")]
+        [HttpPost("changePassword")]
+        public async Task<IActionResult> ChangePassword([FromBody] String email)
+        {
+            try
+            {
+                await _userService.changePassword(email);
+
+                return Ok(email);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [Authorize(Policy = "AdminPolicy")]
         [HttpGet("index")]
         public IActionResult Index()
         {
