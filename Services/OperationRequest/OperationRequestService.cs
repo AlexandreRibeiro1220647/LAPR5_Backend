@@ -25,7 +25,7 @@ public class OperationRequestService : IOperationRequestService
 
     //private readonly IBackOfficeUserRepository _userRepository;
 
-    //private readonly IOperationRequestLogRepository _operationRequestLogRepository;
+    private readonly IOperationRequestLogRepository _operationRequestLogRepository;
     private readonly ILogger<IOperationRequestService> _logger;
     private readonly IConfiguration _config;
     private OperationRequestMapper mapper = new OperationRequestMapper();
@@ -39,7 +39,7 @@ public class OperationRequestService : IOperationRequestService
         this._config = config;
         //this._userRepository = userRepository;
         this._patientRepository = patientRepository;
-       // this._operationRequestLogRepository = operationRequestLogRepository;
+        this._operationRequestLogRepository = operationRequestLogRepository;
         this._staffRepository = staffRepository;
     }
 
@@ -114,28 +114,28 @@ public class OperationRequestService : IOperationRequestService
                 throw new Exception("OperationRequest not found");
             }
 
-          //  List<RequestsLog> logs = new List<RequestsLog>();
+            List<RequestsLog> logs = new List<RequestsLog>();
 
         if (dto.Deadline.HasValue)
         {
             existingOperationRequest.UpdateDeadline(dto.Deadline.Value);
-         /*   logs.Add(new RequestsLog{OperationRequestId = new OperationRequestID(id),
+            logs.Add(new RequestsLog{OperationRequestId = new OperationRequestID(id),
                 ChangeDate = DateTime.UtcNow,
                 ChangeDescription = $"Deadline updated to {dto.Deadline.Value:yyyy-MM-dd}"
-            });*/
+            });
         }
 
         if (dto.Priority.HasValue)
         {
             existingOperationRequest.UpdatePriority(dto.Priority.Value);
-       /*     logs.Add(new RequestsLog
+            logs.Add(new RequestsLog
             {
                 OperationRequestId = new OperationRequestID(id),
                 ChangeDate = DateTime.UtcNow,
                 ChangeDescription = $"Priority updated to {dto.Priority.Value}"
-            });*/
+            });
         }
-/*
+
         if (logs.Any())
         {
             // Salva os logs no repositório de logs
@@ -144,7 +144,7 @@ public class OperationRequestService : IOperationRequestService
                 await _operationRequestLogRepository.AddAsync(log);
             }
         }
-*/
+
             // Save the changes
             await _unitOfWork.CommitAsync();
 
