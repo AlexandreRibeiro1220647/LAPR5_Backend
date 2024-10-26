@@ -61,7 +61,7 @@ namespace TodoApi.Services
                 {
                     throw new Exception("Staff member not found");
                 }
-
+                existingStaff.UpdateFullName(dto.FullName);
                 existingStaff.UpdatePhone(dto.Phone);
                 existingStaff.UpdateEmail(dto.Email);
                 existingStaff.UpdateSpecialization(new string(dto.Specialization));
