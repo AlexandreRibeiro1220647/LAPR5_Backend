@@ -127,16 +127,19 @@ namespace TodoApi.Controllers
         {
             try
             {
-                var user = await _userService.RegisterUser(model);
+                var user = await _userService.CreateUser(model);
+
+                await _userService.createUserAuth0(model);
+
                 return Ok(user);
             }
             catch (Exception e)
             {
                 return BadRequest(e.Message);
-            }        
+            }
         }
 
-                // POST: api/Patients/authenticate
+        
         [HttpPost("authenticate")]
         public async Task<ActionResult<string>> AuthenticateUser()
         {

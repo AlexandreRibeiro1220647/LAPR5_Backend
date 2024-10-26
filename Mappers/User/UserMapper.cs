@@ -1,5 +1,6 @@
 
 using TodoApi.DTOs.User;
+using TodoApi.Models;
 using TodoApi.Models.User;
 
 namespace TodoApi.Mappers;
@@ -22,8 +23,11 @@ public class UserMapper : IUserMapper
         throw new NotImplementedException();
     }
 
-    public User toEntity(RegisterUserDTO createDto)
+    public User toEntity(RegisterUserDTO dto)
     {
-        throw new NotImplementedException();
+        return new User(
+            new UserEmail(dto.Email), 
+            dto.Name,
+            dto.Role, "Passwo1_");
     }
 }

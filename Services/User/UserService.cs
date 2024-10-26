@@ -7,6 +7,9 @@ using Newtonsoft.Json;
 using System.Net;
 using System.Text;
 using System.Text.Json;
+using Auth0.ManagementApi;
+using Auth0.ManagementApi.Models;
+using TodoApi.Models;
 
 namespace TodoApi.Services.User
 {
@@ -28,23 +31,23 @@ namespace TodoApi.Services.User
             _httpClient = httpClient;
         }
 
-        public async Task<UserDTO> RegisterUser(RegisterUserDTO model)
+        public async Task<UserDTO> CreateUser(RegisterUserDTO model)
         {
             try
             {
                 Models.User.User mapped = mapper.toEntity(model);
 
-                await this._userRepository.AddAsync(mapped);
+                await _userRepository.AddAsync(mapped);
 
                 UserDTO mappedDto = mapper.ToDto(mapped);
 
-                await this._unitOfWork.CommitAsync();
+                await _unitOfWork.CommitAsync();
 
                 return mappedDto;
             }
             catch (Exception e)
             {
-                this._logger.LogError(e.Message);
+                _logger.LogError(e.Message);
                 throw;
             }
         }
@@ -81,7 +84,7 @@ namespace TodoApi.Services.User
         private const string CLIENT_SECRET = Auth0Data.CLIENT_SECRET;
         private const string REDIRECTURI = Auth0Data.REDIRECTURI;
         private const string REDIRECTURI2 = Auth0Data.REDIRECTURI2;
-        private const string AUDIENCE = $"https://{DOMAIN}/api/v2/";
+        private const string AUDIENCE = $"https://dev-05j84tecmi7hx6en.eu.auth0.com/api/v2/";
 
 
         public async Task<string?> AuthenticateUser()
@@ -235,5 +238,99 @@ namespace TodoApi.Services.User
             }
             return null;
         }
+
+
+        public async Task createUserAuth0(RegisterUserDTO model) {
+
+            // *****************************
+            // User creation
+            // *****************************
+
+
+            var accessToken = await GetManagementApiTokenAsync(); // Obtain Auth0 Management API token
+
+            using var client = new HttpClient();
+
+            // Set authorization header with the Management API access token
+            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+            // User registration payload
+            var user = new
+            {
+                email = model.Email,
+                user_id = model.Email,  // Using email as user_id
+                password = "TemporaryPassword123_",
+                connection = "Username-Password-Authentication"  // Default Auth0 connection
+            };
+
+            // Send POST request to create the user
+            var requestContent = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
+            var response = await client.PostAsync($"https://{DOMAIN}/api/v2/users", requestContent);
+            var responseString = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("User created successfully.");
+            }
+            else
+            {
+                Console.WriteLine($"Error creating user: {responseString}");
+                throw new ExistingUserException("User already registered in the system");
+            }
+
+            // *****************************
+            // Role assignment
+            // *****************************
+
+
+            var assignees = new
+            {
+                users = new string[1] { "auth0|" + model.Email } // User identifier with 'auth0|' prefix
+            };
+            var roleId = Auth0Data.map[model.Role.ToString()];  // Get the role ID for "Patient"
+
+            // Send POST request to assign the "Patient" role
+            requestContent = new StringContent(JsonConvert.SerializeObject(assignees), Encoding.UTF8, "application/json");
+            response = await client.PostAsync($"https://{DOMAIN}/api/v2/roles/{roleId}/users", requestContent);
+            responseString = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine($"{roleId}, Patient role assigned successfully.");
+            }
+            else
+            {
+                Console.WriteLine($"Error assigning role: {responseString}");
+                throw new InvalidDataException("Role does not exist in the system");
+            }
+
+            // ==================================
+            // Password reset email
+            // ==================================
+
+
+            var passwordChangeRequest = new
+            {
+                client_id = CLIENT_ID,
+                email = model.Email,
+                connection = "Username-Password-Authentication",
+                redirect_uri = "https://localhost:5012/callback/post-activation"
+            };
+
+            requestContent = new StringContent(JsonConvert.SerializeObject(passwordChangeRequest), Encoding.UTF8, "application/json");
+            response = await client.PostAsync($"https://{DOMAIN}/dbconnections/change_password", requestContent);
+            responseString = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Password reset email sent successfully.");
+            }
+            else
+            {
+                Console.WriteLine($"Error sending password reset email: {responseString}");
+            }
+
+        }
+
     }
 }
