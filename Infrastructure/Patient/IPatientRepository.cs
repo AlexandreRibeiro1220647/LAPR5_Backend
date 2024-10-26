@@ -9,6 +9,9 @@ public interface IPatientRepository : IRepository<Models.Patient.Patient, Medica
     Task<Models.Patient.Patient?> GetByIdAsync(MedicalRecordNumber id);
     Task<List<Models.Patient.Patient>> GetByNameAsync(string name);
     Task<List<Models.Patient.Patient>> GetByContactInformationAsync(string contact);
+
+    Task<bool> ExistsAsync(MedicalRecordNumber patientId);
+
     Task<List<Models.Patient.Patient>> GetByGenderAsync(Gender gender);
     Task<List<Models.Patient.Patient>> GetByDateOfBirthAsync(DateOnly dateOfBirth);
 }

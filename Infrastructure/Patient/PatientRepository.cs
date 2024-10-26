@@ -41,4 +41,8 @@ public class PatientRepository : BaseRepository<Models.Patient.Patient, MedicalR
    public async Task<List<Models.Patient.Patient>> GetByDateOfBirthAsync(DateOnly dateOfBirth) {
        return await _dbSet.Where(p => p.dateOfBirth.dateOfBirth == dateOfBirth).ToListAsync();
    }
+   public async Task<bool> ExistsAsync(MedicalRecordNumber patientId)
+    {
+        return await _dbSet.AnyAsync(p => p.Id == patientId);
+    }   
 }

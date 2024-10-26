@@ -1,11 +1,15 @@
 using Microsoft.AspNetCore.Mvc;
 using TodoApi.Infrastructure;
 using TodoApi.Infrastructure.OperationRequest;
+using TodoApi.Infrastructure.Patient;
+using TodoApi.Infrastructure.Staff;
 using TodoApi.Mappers.OperationRequest;
+using TodoApi.Models;
 using TodoApi.Models.OperationRequest;
 using TodoApi.Models.OperationType;
 using TodoApi.Models.Patient;
 using TodoApi.Models.Shared;
+using TodoApi.Models.Staff;
 
 namespace TodoApi.Services
 {
@@ -15,20 +19,28 @@ public class OperationRequestService : IOperationRequestService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IOperationRequestRepository _operationRequestRepository;
 
+    private readonly IPatientRepository _patientRepository;
+
+    private readonly IStaffRepository _staffRepository;
+
     //private readonly IBackOfficeUserRepository _userRepository;
+
+    //private readonly IOperationRequestLogRepository _operationRequestLogRepository;
     private readonly ILogger<IOperationRequestService> _logger;
     private readonly IConfiguration _config;
     private OperationRequestMapper mapper = new OperationRequestMapper();
 
     public OperationRequestService(IUnitOfWork unitOfWork, IOperationRequestRepository operationRepository, ILogger<IOperationRequestService> logger,
-        IConfiguration config/*, IUserRepository userRepository*/)
+        IConfiguration config, IPatientRepository patientRepository, IOperationRequestLogRepository operationRequestLogRepository, IStaffRepository staffRepository/*, IUserRepository userRepository*/)
     {
         this._unitOfWork = unitOfWork;
         this._operationRequestRepository = operationRepository;
         this._logger = logger;
         this._config = config;
         //this._userRepository = userRepository;
-
+        this._patientRepository = patientRepository;
+       // this._operationRequestLogRepository = operationRequestLogRepository;
+        this._staffRepository = staffRepository;
     }
 
     public async Task<OperationRequestDTO> CreateOperationRequest(CreateOperationRequestDTO dto)
@@ -37,16 +49,33 @@ public class OperationRequestService : IOperationRequestService
     {
         // Ir buscar o doctorID da sessão
 
-        // validates that the operation type matches the doctor’s specialization!!!!
+        var doctorId = new LicenseNumber(dto.doctorid);
+        bool doctorExists = await _staffRepository.ExistsAsync(doctorId);
+        if (!doctorExists)
+        {
+            throw new Exception("The specified doctor does not exist.");
+        }
 
+        if (!int.TryParse(dto.operationTypeId, out int operationTypeId))
+        {
+            throw new Exception("Invalid operation type ID.");
+        }
+
+        // Verifica a especialização do médico se o OperationTypeID for entre 1 e 10
+        if (operationTypeId >= 1 && operationTypeId <= 10)
+        {
+            var doctor = await _staffRepository.GetByIdAsync(doctorId);
+            if (!doctor.Specialization.Equals("Orthopedics"))
+            {
+                throw new Exception("The doctor must have a specialization in Orthopedics for this operation type.");
+            }
+        }
         // Verifica se o paciente existe
-        /*bool patientExists = await _patientRepository.ExistsAsync(dto.pacientid);
+        bool patientExists = await _patientRepository.ExistsAsync(new MedicalRecordNumber(dto.pacientid));
         if (!patientExists)
         {
             throw new Exception("The specified patient does not exist.");
-        }
-
-        */        
+        }      
         // Verifica duplicação
         var patientIdd = new MedicalRecordNumber(dto.pacientid);
         var operationTypeIdd = new OperationTypeID(dto.operationTypeId);
@@ -85,16 +114,37 @@ public class OperationRequestService : IOperationRequestService
                 throw new Exception("OperationRequest not found");
             }
 
-           if (dto.Deadline.HasValue)
+          //  List<RequestsLog> logs = new List<RequestsLog>();
+
+        if (dto.Deadline.HasValue)
         {
             existingOperationRequest.UpdateDeadline(dto.Deadline.Value);
+         /*   logs.Add(new RequestsLog{OperationRequestId = new OperationRequestID(id),
+                ChangeDate = DateTime.UtcNow,
+                ChangeDescription = $"Deadline updated to {dto.Deadline.Value:yyyy-MM-dd}"
+            });*/
         }
 
         if (dto.Priority.HasValue)
         {
             existingOperationRequest.UpdatePriority(dto.Priority.Value);
+       /*     logs.Add(new RequestsLog
+            {
+                OperationRequestId = new OperationRequestID(id),
+                ChangeDate = DateTime.UtcNow,
+                ChangeDescription = $"Priority updated to {dto.Priority.Value}"
+            });*/
         }
-
+/*
+        if (logs.Any())
+        {
+            // Salva os logs no repositório de logs
+            foreach (var log in logs)
+            {
+                await _operationRequestLogRepository.AddAsync(log);
+            }
+        }
+*/
             // Save the changes
             await _unitOfWork.CommitAsync();
 

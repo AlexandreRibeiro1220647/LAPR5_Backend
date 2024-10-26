@@ -47,6 +47,10 @@ namespace TodoApi.Infrastructure.Staff
                 .ToListAsync();
         }
 
+        public async Task<bool> ExistsAsync(LicenseNumber doctorId)
+        {
+        return await _context.Staffs.AnyAsync(p => p.Id == doctorId);
+        }   
 
     }
 }
