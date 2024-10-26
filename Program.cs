@@ -14,6 +14,7 @@ using TodoApi.Infrastructure.OperationType;
 using TodoApi.Infrastructure.Patient;
 using TodoApi.Infrastructure.Staff;
 using TodoApi.Infrastructure.OperationRequestLog;
+using TodoApi.Services.OperationType;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -119,6 +120,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IOperationRequestRepository, OperationRequestRepository>();
 builder.Services.AddScoped<IOperationRequestService, OperationRequestService>();
 builder.Services.AddScoped<IOperationTypeRepository, OperationTypeRepository>();
+builder.Services.AddScoped<IOperationTypeService, OperationTypeService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IStaffRepository, StaffRepository>();
