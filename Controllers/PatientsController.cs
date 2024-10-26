@@ -50,6 +50,67 @@ namespace TodoApi.Controllers
             }
         }
 
+        [HttpGet("email/{email}")]
+                public async Task<ActionResult<PatientDTO>> GetPatientByEmail(string email) {
+                    try {
+                        var patient = await _patientService.GetPatientByEmailAsync(email);
+                        return Ok(patient);
+                    } catch (Exception e) {
+                        return BadRequest(e.Message);
+                    }
+                }
+
+                [HttpGet("id/{id}")]
+                public async Task<ActionResult<PatientDTO>> GetPatientById(Guid id) {
+                    try {
+                        var patient = await _patientService.GetPatientByIdAsync(id);
+                        return Ok(patient);
+                    } catch (Exception e) {
+                        return BadRequest(e.Message);
+                    }
+                }
+
+                [HttpGet("name/{name}")]
+                public async Task<ActionResult<IEnumerable<PatientDTO>>> GetPatientsByName(string name) {
+                    try {
+                        var patients = await _patientService.GetPatientsByNameAsync(name);
+                        return Ok(patients);
+                    } catch (Exception e) {
+                        return BadRequest(e.Message);
+                    }
+                }
+
+                [HttpGet("contact/{contact}")]
+                public async Task<ActionResult<IEnumerable<PatientDTO>>> GetPatientsByContactInformation(string contact) {
+                    try {
+                        var patients = await _patientService.GetPatientsByContactInformationAsync(contact);
+                        return Ok(patients);
+                    } catch (Exception e) {
+                        return BadRequest(e.Message);
+                    }
+                }
+
+                [HttpGet("gender/{gender}")]
+                public async Task<ActionResult<IEnumerable<PatientDTO>>> GetPatientsByGender(Gender gender) {
+                    try {
+                        var patients = await _patientService.GetPatientsByGenderAsync(gender);
+                        return Ok(patients);
+                    } catch (Exception e) {
+                        return BadRequest(e.Message);
+                    }
+                }
+
+                [HttpGet("dob/{dateOfBirth}")]
+                public async Task<ActionResult<IEnumerable<PatientDTO>>> GetPatientsByDateOfBirth(DateOnly dateOfBirth) {
+                    try {
+                        var patients = await _patientService.GetPatientsByDateOfBirthAsync(dateOfBirth);
+                        return Ok(patients);
+                    } catch (Exception e) {
+                        return BadRequest(e.Message);
+                    }
+                }
+
+
         [HttpDelete("{email}")]
         public async Task<IActionResult> DeletePatientByEmail(string email) {
             try {
