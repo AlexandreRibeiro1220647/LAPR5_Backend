@@ -12,4 +12,8 @@ public class OperationTypeRepository : BaseRepository<Models.OperationType.Opera
     {
         _dbSet = dbContext.Set<Models.OperationType.OperationType>();
     }
+    public async Task<Models.OperationType.OperationType?> GetByNameAsync(string name)
+    {
+        return await _dbSet.FirstOrDefaultAsync(o => o.Name == name);
+    }
 }
