@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TodoApi.Infrastructure;
+using TodoApi.Infrastructure.Patient;
 using TodoApi.Infrastructure.Shared;
 using TodoApi.Models.OperationRequest;
 using TodoApi.Models.OperationType;
@@ -11,6 +12,8 @@ public class OperationRequestRepository : BaseRepository<Models.OperationRequest
 {
     
     private readonly DbSet<Models.OperationRequest.OperationRequest> _dbSet;
+
+    private readonly IPatientRepository _patientRepository;
 
     public OperationRequestRepository(IPOContext context) : base(context.OperationRequests)
     {
@@ -26,12 +29,19 @@ public async Task<List<Models.OperationRequest.OperationRequest>> SearchAsync(st
 {
 
     IQueryable<Models.OperationRequest.OperationRequest> query = _dbSet;
-/*
-    if (!string.IsNullOrEmpty(patientName))
-    {
-        query = query.Where(op => op.Patient.Name.Contains(patientName));
-    }
-*/
+    
+    if(!string.IsNullOrEmpty(patientName)){
+        
+        var patients = await _patientRepository.GetByNameAsync(patientName);
+
+        var patientIds = patients.Select(p => p.Id).ToList();
+
+        if (patientIds.Any())
+        {
+            query = query.Where(op => patientIds.Contains(op.PacientId));
+        }
+    } 
+
     if (!string.IsNullOrEmpty(operationTypeId))
     {
         query = query.Where(op => op.OperationTypeID.Equals(operationTypeId));
@@ -46,12 +56,12 @@ public async Task<List<Models.OperationRequest.OperationRequest>> SearchAsync(st
     {
         query = query.Where(op => op.PacientId.Equals(patientId));
     }
-/*
-    if (!string.IsNullOrEmpty(deadline))
+    
+    if (!string.IsNullOrEmpty(deadline) && DateOnly.TryParse(deadline, out var deadlineDate))
     {
-        query = query.Where(op => op.Deadline.Equals(deadline));
+        query = query.Where(op => op.Deadline.deadline <= deadlineDate);
     }
-*/
+
     return await query.ToListAsync();
 }
 
