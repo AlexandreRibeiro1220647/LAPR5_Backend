@@ -12,10 +12,9 @@ public class OperationTypeConfiguration :  IEntityTypeConfiguration<Models.Opera
         {
             builder.HasKey(b => b.Id);
 
-            // Value converter for OperationTypeID
-            var operationTypeIdConverter = new ValueConverter<OperationTypeID, string>(
-                id => id.AsString(),
-                value => new OperationTypeID(value)
+             var operationTypeIdConverter = new ValueConverter<OperationTypeID, Guid>(
+                id => Guid.Parse(id.AsString()),
+                guid => new OperationTypeID(guid)
             );
 
             // Value converter for TimeSpan
@@ -24,8 +23,10 @@ public class OperationTypeConfiguration :  IEntityTypeConfiguration<Models.Opera
                 ticks => TimeSpan.FromTicks(ticks)
             );
 
+
             builder.Property(p => p.Id)
-                .HasConversion(operationTypeIdConverter);
+                .HasConversion(operationTypeIdConverter)
+                .IsRequired();
 
             builder.Property(p => p.Name)
                 .IsRequired()
