@@ -329,7 +329,37 @@ namespace TodoApi.Services.User
             {
                 Console.WriteLine($"Error sending password reset email: {responseString}");
             }
+        }
 
+        public async Task changePassword(string email) {
+
+            var accessToken = await GetManagementApiTokenAsync(); // Obtain Auth0 Management API token
+
+            using var client = new HttpClient();
+
+            // Set authorization header with the Management API access token
+            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+            var passwordChangeRequest = new
+            {
+                client_id = CLIENT_ID,
+                email = email,
+                connection = "Username-Password-Authentication",
+                redirect_uri = "https://localhost:5012/callback/post-activation"
+            };
+
+            var requestContent = new StringContent(JsonConvert.SerializeObject(passwordChangeRequest), Encoding.UTF8, "application/json");
+            var response = await client.PostAsync($"https://{DOMAIN}/dbconnections/change_password", requestContent);
+            var responseString = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Password reset email sent successfully.");
+            }
+            else
+            {
+                Console.WriteLine($"Error sending password reset email: {responseString}");
+            }
         }
 
     }

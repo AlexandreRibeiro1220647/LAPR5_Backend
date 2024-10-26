@@ -9,5 +9,6 @@ public interface IUserService
     Task<Models.User.User> GetUserByEmail(string email);
 
     Task createUserAuth0(RegisterUserDTO model);
+    Task changePassword(string email);
 
 }
