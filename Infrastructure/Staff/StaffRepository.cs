@@ -34,10 +34,10 @@ namespace TodoApi.Infrastructure.Staff
                 .ToListAsync();
         }
 
-        public async Task<List<Models.Staff.Staff>> SearchByEmail(string email)
+         public async Task<List<Models.Staff.Staff>> SearchByStatus(StaffStatus status)
         {
             return await _context.Staffs
-                .Where(s => s.Email.Value.Contains(email))
+                .Where(s => s.Status == status)
                 .ToListAsync();
         }
         public async Task<List<Models.Staff.Staff>> SearchByEmail(string email)

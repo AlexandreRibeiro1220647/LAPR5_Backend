@@ -113,12 +113,11 @@ namespace TodoApi.Controllers
             }
         }
 
-        [HttpPatch("updatestatus/{id}")]
-        public async Task<IActionResult> UpdateStaffStatus(Guid id, [FromBody] UpdateStaffDTO dto)
-        {
-            try
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> InactivateStaff(Guid id, [FromBody] UpdateStaffDTO dto)
+        {   try
             {
-                var updatedStaffStatusDto = await _staffService.UpdateStaffStatus(id, dto);
+                var updatedStaffStatusDto = await _staffService.InactivateStaff(id, dto);
                 return Ok(updatedStaffStatusDto);
             }
             catch (Exception e)

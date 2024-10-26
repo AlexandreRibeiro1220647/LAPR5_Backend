@@ -85,5 +85,10 @@ namespace TodoApi.Models.Staff
         {
             this.Status = status;
         }
+
+        public void Inactivate()
+        {
+            Status = StaffStatus.INACTIVE;
+        }
     }
 }
