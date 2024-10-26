@@ -19,6 +19,8 @@ public class IPOContext : DbContext
     
     public DbSet<Models.OperationRequest.OperationRequest> OperationRequests { get; set; }
 
+    public DbSet<Models.RequestsLog> requestsLogs {get; set; }
+
     public DbSet<Models.OperationType.OperationType> OperationTypes {get; set; }
 
     public DbSet<Models.Patient.Patient> Patients { get; set; }
@@ -31,6 +33,7 @@ public class IPOContext : DbContext
             modelBuilder.ApplyConfiguration(new OperationRequestConfiguration());
             modelBuilder.ApplyConfiguration(new OperationTypeConfiguration());
             modelBuilder.ApplyConfiguration(new PatientConfiguration());
+            modelBuilder.ApplyConfiguration(new OperationRequestLogConfiguration());
 
         }
     
