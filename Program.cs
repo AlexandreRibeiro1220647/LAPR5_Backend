@@ -77,17 +77,23 @@ builder.Services.Configure<Auth0Settings>(builder.Configuration.GetSection("Auth
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("PatientOnly", policy =>
+    options.AddPolicy("PatientPolicy", policy =>
         {
             policy.RequireClaim(Auth0Data.ROLES_URL, "Patient");
         });
-    options.AddPolicy("AdminOnly", policy =>
+    options.AddPolicy("AdminPolicy", policy =>
     {
         policy.RequireClaim(Auth0Data.ROLES_URL, "Admin");
     });
-    options.AddPolicy("DoctorOnly", policy =>
+    options.AddPolicy("DoctorPolicy", policy =>
     {
         policy.RequireClaim(Auth0Data.ROLES_URL, "Doctor");
+    });
+    options.AddPolicy("BackOfficeUserPolicy", policy =>
+    {
+        policy.RequireAssertion(context =>
+            context.User.HasClaim(c => c.Type == Auth0Data.ROLES_URL && 
+                                        (c.Value == "Admin" || c.Value == "Doctor")));
     });
 });
 
