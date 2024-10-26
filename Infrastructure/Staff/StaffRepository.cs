@@ -40,11 +40,12 @@ namespace TodoApi.Infrastructure.Staff
                 .Where(s => s.Email.Value.Contains(email))
                 .ToListAsync();
         }
-        public async Task<List<Models.Staff.Staff>> SearchByStatus(StaffStatus status)
+        public async Task<List<Models.Staff.Staff>> SearchByEmail(string email)
         {
-            return await _context.Staffs
-                .Where(s => s.Status == status)
-                .ToListAsync();
+            return _context.Staffs
+                .AsEnumerable()
+                .Where(s => s.Email.Value.Contains(email))
+                .ToList();
         }
 
         public async Task<bool> ExistsAsync(LicenseNumber doctorId)
