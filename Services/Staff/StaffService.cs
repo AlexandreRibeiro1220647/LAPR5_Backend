@@ -91,7 +91,7 @@ namespace TodoApi.Services
                 throw;
             }
         }
-        public async Task<StaffDTO> UpdateStaffStatus(Guid id, UpdateStaffDTO dto)
+        public async Task<StaffDTO> InactivateStaff(Guid id, UpdateStaffDTO dto)
         {
             try
             {
@@ -102,7 +102,7 @@ namespace TodoApi.Services
                     throw new Exception("Staff member not found");
                 }
 
-                existingStaff.UpdateStatus(dto.Status);
+                existingStaff.Inactivate();
 
                 await _unitOfWork.CommitAsync();
 
