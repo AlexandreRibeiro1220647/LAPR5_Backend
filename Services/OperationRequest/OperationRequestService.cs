@@ -56,11 +56,6 @@ public class OperationRequestService : IOperationRequestService
             throw new Exception("The specified doctor does not exist.");
         }
 
-        if (!int.TryParse(dto.operationTypeId, out int operationTypeId))
-        {
-            throw new Exception("Invalid operation type ID.");
-        }
-
         // Verifica a especialização do médico se o OperationTypeID for entre 1 e 10
         //if (operationTypeId >= 1 && operationTypeId <= 10)
         //{
