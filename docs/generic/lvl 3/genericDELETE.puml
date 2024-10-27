@@ -1,0 +1,50 @@
+@startuml
+autonumber
+skinparam packageStyle rect
+
+title Back-End delete objects
+
+participant AspnetRouter as router
+participant ObjectController as ctrl
+participant ObjectService as service
+participant ObjectRepository as repo
+
+-> router: DELETE /object/{email}
+activate router
+router -> ctrl: deleteObjectByEmail(email)
+activate ctrl
+ctrl -> service: delete(email)
+activate service
+service -> repo: getByEmail(email)
+activate repo
+
+repo --> service: returns domain (object)
+
+deactivate repo
+
+alt object exists
+    service -> repo: delete(domain)
+    
+    
+    activate repo
+        repo -> : Remove object by Email
+        
+        repo <-- : Returns success response (object deleted)
+
+    repo --> service: returns success message
+    deactivate repo
+    service --> ctrl: returns success message
+else resource does not exist
+    service --> ctrl: object not found error
+end
+
+deactivate service
+ctrl --> router: returns result (success or error)
+
+deactivate ctrl
+
+ <-- router: returns response to user
+
+deactivate router
+
+@enduml

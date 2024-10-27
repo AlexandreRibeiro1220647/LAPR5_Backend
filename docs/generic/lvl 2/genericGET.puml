@@ -1,0 +1,38 @@
+@startuml Process View - Level 2
+
+autonumber
+skinparam packageStyle rect
+
+title GET object
+
+participant "Front-End" as FE <<C4 Container>>
+participant "Back-End" as BE <<C4 Container>>
+participant "DataBase" as DB <<C4 Container>>
+
+-> FE: GET request
+activate FE
+FE -> BE: GET /object
+activate BE
+alt user authorized
+
+    alt object exists
+
+        BE -> DB: Get all object
+        activate DB
+        DB --> BE: Returns all object
+        deactivate DB
+
+        BE --> FE: Returns all object
+        deactivate BE
+        <-- FE: Displays all object
+    
+else user unauthorized
+
+<-- FE: Sends message to client: unauthorized access (401)
+else database unavailable
+<-- FE: Sends message to client: service unavailable (503)
+end alt
+deactivate FE
+
+
+@enduml
