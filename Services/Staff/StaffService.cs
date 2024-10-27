@@ -27,6 +27,20 @@ namespace TodoApi.Services
         {
             try
             {
+                // Verifica se o email já existe
+                var existingEmails = await _staffRepository.SearchByEmail(dto.Email);
+                if (existingEmails.Any())
+                {
+                    throw new Exception("O email já está em uso.");
+                }
+
+                // Verifica se o telefone já existe
+                var existingPhone = await _staffRepository.GetByPhoneAsync(dto.Phone);
+                if (existingPhone != null)
+                {
+                    throw new Exception("O número de telefone já está em uso.");
+                }
+
                 Staff staff = _mapper.ToEntity(dto);
 
                 await _staffRepository.AddAsync(staff);
@@ -61,6 +75,21 @@ namespace TodoApi.Services
                 {
                     throw new Exception("Staff member not found");
                 }
+
+                // Verifica se o email já existe para outro staff
+                var existingEmails = await _staffRepository.SearchByEmail(dto.Email);
+                if (existingEmails.Any(e => e.Id != existingStaff.Id))
+                {
+                    throw new Exception("O email já está em uso.");
+                }
+
+                // Verifica se o telefone já existe para outro staff
+                var existingPhone = await _staffRepository.GetByPhoneAsync(dto.Phone);
+                if (existingPhone != null && existingPhone.Id != existingStaff.Id)
+                {
+                    throw new Exception("O número de telefone já está em uso.");
+                }
+
                 existingStaff.UpdateFullName(dto.FullName);
                 existingStaff.UpdatePhone(dto.Phone);
                 existingStaff.UpdateEmail(dto.Email);

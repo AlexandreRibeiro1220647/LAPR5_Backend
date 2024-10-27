@@ -14,7 +14,6 @@ namespace TodoApi.Infrastructure.Staff
             _context = dbContext;
         }
 
-
         public Task<Models.Staff.Staff> GetByLicenseNumber(LicenseNumber licenseNumber)
         {
             throw new NotImplementedException();
@@ -34,23 +33,29 @@ namespace TodoApi.Infrastructure.Staff
                 .ToListAsync();
         }
 
-         public async Task<List<Models.Staff.Staff>> SearchByStatus(StaffStatus status)
+        public async Task<List<Models.Staff.Staff>> SearchByStatus(StaffStatus status)
         {
             return await _context.Staffs
                 .Where(s => s.Status == status)
                 .ToListAsync();
         }
-        public async Task<List<Models.Staff.Staff>> SearchByEmail(string email)        {
+
+        public async Task<List<Models.Staff.Staff>> SearchByEmail(string email)
+        {
             return _context.Staffs
                 .AsEnumerable()
                 .Where(s => s.Email.Value.Contains(email))
                 .ToList();
         }
 
+        public async Task<Models.Staff.Staff> GetByPhoneAsync(string phone)
+        {
+            return await _context.Staffs.FirstOrDefaultAsync(s => s.Phone.phoneNumber == phone);
+        }
+
         public async Task<bool> ExistsAsync(LicenseNumber doctorId)
         {
-        return await _context.Staffs.AnyAsync(p => p.Id == doctorId);
-        }   
-
+            return await _context.Staffs.AnyAsync(p => p.Id == doctorId);
+        }
     }
 }
