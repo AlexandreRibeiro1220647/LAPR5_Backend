@@ -41,8 +41,8 @@ namespace TodoApi.Infrastructure.OperationRequest
 
             
             var deadlineConverter = new ValueConverter<Deadline, DateTime>(
-                deadline => deadline.deadline.ToDateTime(TimeOnly.MinValue),
-                value => new Deadline(DateOnly.FromDateTime(value))
+                deadline => DateTime.SpecifyKind(deadline.deadline.ToDateTime(TimeOnly.MinValue), DateTimeKind.Utc),
+                value => new Deadline(DateOnly.FromDateTime(value.ToUniversalTime())) // Certifique-se de converter para UTC
             );
 
             // Configurações das propriedades
@@ -65,8 +65,7 @@ namespace TodoApi.Infrastructure.OperationRequest
 
             builder.Property(o => o.Deadline)
                 .IsRequired()
-                .HasConversion(deadlineConverter); 
-
+                .HasConversion(deadlineConverter);
             builder.Property(o => o.Priority)
                 .IsRequired()
                 .HasConversion<int>(); // Enum armazenado como inteiro
