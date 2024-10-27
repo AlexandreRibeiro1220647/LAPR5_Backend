@@ -8,8 +8,8 @@ namespace TodoApi.Mappers;
 public class PatientMapper : IPatientMapper {
 
     public PatientDTO ToDto(Patient entity) {
-        return new PatientDTO(entity.fullName.ToString(), entity.dateOfBirth.ToString(), entity.gender.ToString(), entity.Id.ToString(), entity.contactInformation.ToString(), 
-        entity.email.ToString(), entity.medicalConditions.medicalConditions, entity.emergencyContact.ToString(), entity.appointmentHistory.appointments);
+        return new PatientDTO(entity.fullName.fullName, entity.dateOfBirth.dateOfBirth.ToString(), entity.gender.ToString(), entity.Id.AsString(), entity.contactInformation.contactInformation.phoneNumber, 
+        entity.email.Value, entity.medicalConditions.medicalConditions, entity.emergencyContact.emergencyContact.phoneNumber, entity.appointmentHistory.appointments);
     }
 
     public Patient ToEntity(PatientDTO dto) {
