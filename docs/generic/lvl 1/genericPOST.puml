@@ -1,0 +1,36 @@
+@startuml Process View - Level 1
+
+autonumber
+skinparam packageStyle rect
+
+title Create Request
+
+participant "System" as S <<system (C4)>>
+
+-> S:PUT request
+
+activate S
+
+alt success
+
+  <-- S: object created successfully (200)
+
+else invalid input
+
+  <-- S: bad request (400)
+
+else unauthorized
+
+  <-- S: unauthorized (401)
+
+else object already exists
+
+  <-- S: conflict (409)
+
+else unavailable server
+
+  <-- S: service unavailable (503)
+
+end
+
+@enduml

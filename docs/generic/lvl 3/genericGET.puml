@@ -1,0 +1,52 @@
+@startuml
+autonumber
+skinparam packageStyle rect
+
+title Back-End GET objects
+
+participant AspnetRouter as router
+participant ObjectController as ctrl
+participant ObjectService as service
+participant ObjectDTO as dto
+participant ObjectMapper as mapper
+participant ObjectRepository as repo
+database DB
+
+-> router: GET /object
+activate router
+
+router -> ctrl: getAllObjects()
+activate ctrl
+
+ctrl -> service: getAllObjects()
+activate service
+
+service -> repo: getAllObjects()
+
+activate repo
+
+
+repo -> DB: Fetch all objects
+
+repo <-- DB: returns objects
+
+
+repo --> service: returns object entities
+deactivate repo
+
+service -> mapper: mapResourcesToDTOs(object entities)
+activate mapper
+
+mapper --> service: returns mapped resource DTOs
+deactivate mapper
+
+service --> ctrl: returns resource DTOs
+deactivate service
+
+ctrl --> router: returns resource DTOs
+deactivate ctrl
+
+ <-- router : returns resource DTOs
+deactivate router
+
+@enduml

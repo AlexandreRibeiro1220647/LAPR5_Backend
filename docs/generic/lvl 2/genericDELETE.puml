@@ -1,0 +1,40 @@
+@startuml Process View - Level 2
+
+autonumber
+skinparam packageStyle rect
+
+title DELETE object
+
+participant "Front-End" as FE <<C4 Container>>
+participant "Back-End" as BE <<C4 Container>>
+participant "DataBase" as DB <<C4 Container>>
+
+-> FE: DELETE request
+activate FE
+FE -> BE: DELETE /object/{email}
+activate BE
+alt user authorized
+
+    alt object exists
+
+        BE -> DB: Delete object by email
+        activate DB
+        DB --> BE: Object deleted successfully
+        deactivate DB
+
+        BE --> FE: Object deleted successfully
+        deactivate BE
+        <-- FE: Displays success message to user
+    else object not found
+         <-- FE: Displays message: object not found
+    end
+
+else user unauthorized
+     <-- FE: Sends message to client: unauthorized access (401)
+
+
+
+deactivate BE
+deactivate FE
+
+@enduml
