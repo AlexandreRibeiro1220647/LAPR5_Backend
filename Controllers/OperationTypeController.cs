@@ -1,4 +1,5 @@
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TodoApi.DTOs.OperationType;
 using TodoApi.Services.OperationType;
@@ -63,4 +64,65 @@ public class OperationTypeController : ControllerBase
             return BadRequest(e.Message);
         }
     }
+
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> GetStaff()
+        {
+            try
+            {
+                var operationTypes = await _operationTypeService.GetOperationTypes();
+                return Ok(operationTypes);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [Authorize]
+        [HttpGet("search/specialization/{specialization}")]
+        public async Task<ActionResult<List<OperationTypeDTO>>> SearchBySpecialization(string specialization)
+        {
+            try
+            {
+                var operationTypes = await _operationTypeService.GetOperationTypesBySpecialization(specialization);
+                return Ok(operationTypes);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+        
+        [Authorize]
+        [HttpGet("search/name/{name}")]
+        public async Task<ActionResult<List<OperationTypeDTO>>> SearchByName(string name)
+        {
+            try
+            {
+                var operationTypes = await _operationTypeService.GetOperationTypesByName(name);
+                return Ok(operationTypes);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [Authorize]
+        [HttpGet("search/status/{status}")]
+        public async Task<ActionResult<List<OperationTypeDTO>>> SearchByStatus(bool status)
+        {
+            try
+            {
+                var operationTypes = await _operationTypeService.GetOperationTypesByStatus(status);
+                return Ok(operationTypes);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
 }
