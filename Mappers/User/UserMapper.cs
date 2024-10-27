@@ -28,6 +28,6 @@ public class UserMapper : IUserMapper
         return new User(
             new UserEmail(dto.Email), 
             dto.Name,
-            dto.Role, "Passwo1_");
+            dto.Role);
     }
 }

@@ -23,22 +23,12 @@ public class UserEntityTypeConfiguration : IEntityTypeConfiguration<User>
             value => new UserEmail(value)
         );
 
-        // Value converter for Password
-        var passwordConverter = new ValueConverter<Password, string>(
-            password => password.Value,
-            value => new Password(value)
-        );
 
         builder.Property(u => u.Id)
             .HasConversion(userIdConverter);
 
         builder.Property(u => u.Email)
             .HasConversion(userEmailConverter)
-            .IsRequired()
-            .HasMaxLength(60);
-
-        builder.Property(u => u.Password)
-            .HasConversion(passwordConverter)
             .IsRequired()
             .HasMaxLength(60);
 

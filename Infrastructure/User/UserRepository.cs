@@ -3,6 +3,7 @@ using TodoApi.Infrastructure;
 using TodoApi.Infrastructure.Shared;
 using TodoApi.Models.User;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 
 public class UserRepository : BaseRepository<User, UserID>, IUserRepository
 {
@@ -20,6 +21,6 @@ public class UserRepository : BaseRepository<User, UserID>, IUserRepository
     
     public async Task<User?> GetByEmailAsync(string email)
     {
-        return await _dbSet.FirstOrDefaultAsync(u => u.Email.Value == email);
+        return await _dbSet.FirstOrDefaultAsync(u => u.Email == new UserEmail(email));
     }
 }
