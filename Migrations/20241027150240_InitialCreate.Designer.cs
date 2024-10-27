@@ -13,7 +13,7 @@ using TodoApi.Infrastructure;
 namespace TodoApi.Migrations
 {
     [DbContext(typeof(IPOContext))]
-    [Migration("20241027115100_InitialCreate")]
+    [Migration("20241027150240_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -162,11 +162,6 @@ namespace TodoApi.Migrations
                         .HasColumnType("character varying(60)");
 
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)");
-
-                    b.Property<string>("Password")
                         .IsRequired()
                         .HasMaxLength(60)
                         .HasColumnType("character varying(60)");
