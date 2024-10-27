@@ -30,5 +30,9 @@ public class OperationType : Entity<OperationTypeID>
         public void UpdateEstimatedDuration(TimeSpan estimatedDuration){
             this.EstimatedDuration = estimatedDuration;
         }
+
+        public void Delete(){
+            this.IsActive = false;
+        }
     }
 }

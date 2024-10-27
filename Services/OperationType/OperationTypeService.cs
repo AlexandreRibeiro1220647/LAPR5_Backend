@@ -98,7 +98,44 @@ public class OperationTypeService : IOperationTypeService
                 existingOperationType.Name,
                 existingOperationType.RequiredStaffBySpecialization,
                 existingOperationType.EstimatedDuration,
-                existingOperationType.Id.AsString()
+                existingOperationType.Id.AsString(),
+                existingOperationType.IsActive
+            );
+
+            return updatedOperationTypeDto;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error updating operation type");
+            throw;
+        }
+    }
+
+
+    public async Task<OperationTypeDTO> DeleteOperationType(Guid id)
+    {
+        try
+        {
+            
+            Models.OperationType.OperationType existingOperationType = await _operationTypeRepository.GetByIdAsync(new OperationTypeID(id));
+
+            if (existingOperationType == null)
+            {
+                throw new Exception("OperationRequest not found");
+            }
+
+            existingOperationType.Delete();
+
+            // Save the changes
+            await _unitOfWork.CommitAsync();
+
+            // Create the updated DTO with the required parameters in the correct order
+            OperationTypeDTO updatedOperationTypeDto = new OperationTypeDTO(
+                existingOperationType.Name,
+                existingOperationType.RequiredStaffBySpecialization,
+                existingOperationType.EstimatedDuration,
+                existingOperationType.Id.AsString(),
+                existingOperationType.IsActive
             );
 
             return updatedOperationTypeDto;

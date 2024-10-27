@@ -36,13 +36,27 @@ public class OperationTypeController : ControllerBase
         }
     }
 
-        [HttpPut("update/{id}")]
-    public async Task<IActionResult> UpdateOperationRequest(Guid id, [FromBody] UpdateOperationTypeDTO dto)
+    [HttpPut("update/{id}")]
+    public async Task<IActionResult> UpdateOperationType(Guid id, [FromBody] UpdateOperationTypeDTO dto)
     {
         try
         {
-            var updatedOperationRequestDto = await _operationTypeService.UpdateOperationTypeAsync(id, dto);                
-            return Ok(updatedOperationRequestDto);
+            var updatedOperationTypeDto = await _operationTypeService.UpdateOperationTypeAsync(id, dto);                
+            return Ok(updatedOperationTypeDto);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpPut("delete/{id}")]
+    public async Task<IActionResult> DeleteOperation([FromQuery] Guid operationId)
+    {
+        try
+        {
+            var updatedOperationTypeDto = await _operationTypeService.DeleteOperationType(operationId);                
+            return Ok(updatedOperationTypeDto);
         }
         catch (Exception e)
         {
