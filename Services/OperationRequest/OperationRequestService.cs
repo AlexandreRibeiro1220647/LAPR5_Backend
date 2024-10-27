@@ -60,7 +60,7 @@ public class OperationRequestService : IOperationRequestService
         //if (operationTypeId >= 1 && operationTypeId <= 10)
         //{
             var doctor = await _staffRepository.GetByIdAsync(doctorId);
-            if (!doctor.Specialization.Equals("Orthopedics"))
+            if (!doctor.Specialization.Area.Equals("Orthopedics"))
             {
                 throw new Exception("The doctor must have a specialization in Orthopedics for this operation type.");
             }
@@ -92,9 +92,14 @@ public class OperationRequestService : IOperationRequestService
         }
         catch (Exception e)
         {
-            this._logger.LogError(e, "Error registering operation");
-            throw;
-        }
+        // Captura a exceção interna, se houver
+            var innerExceptionMessage = e.InnerException != null ? e.InnerException.Message : "No inner exception";
+
+             _logger.LogError(e, $"Error saving entity changes. Inner Exception: {innerExceptionMessage}");
+             throw new Exception($"Error saving entity changes. Details: {e.Message} | Inner Exception: {innerExceptionMessage}", e);
+
+            }
+
 }
 
     public async Task<OperationRequestDTO> UpdateOperationRequestAsync(Guid id, UpdateOperationRequestDTO dto)

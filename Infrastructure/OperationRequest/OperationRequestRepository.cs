@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using TodoApi.Infrastructure;
 using TodoApi.Infrastructure.Patient;
 using TodoApi.Infrastructure.Shared;
+using TodoApi.Models;
 using TodoApi.Models.OperationRequest;
 using TodoApi.Models.OperationType;
 using TodoApi.Models.Patient;
@@ -15,9 +16,10 @@ public class OperationRequestRepository : BaseRepository<Models.OperationRequest
 
     private readonly IPatientRepository _patientRepository;
 
-    public OperationRequestRepository(IPOContext context) : base(context.OperationRequests)
+    public OperationRequestRepository(IPOContext context, IPatientRepository patientRepository) : base(context.OperationRequests)
     {
         _dbSet = context.Set<Models.OperationRequest.OperationRequest>();
+        _patientRepository=patientRepository;
     }
 
     public async Task<bool> ExistsAsync(MedicalRecordNumber patientId, OperationTypeID operationTypeID)
@@ -40,30 +42,39 @@ public async Task<List<Models.OperationRequest.OperationRequest>> SearchAsync(st
         {
             query = query.Where(op => patientIds.Contains(op.PacientId));
         }
+        else
+        {
+            return new List<Models.OperationRequest.OperationRequest>();
+        }
     } 
 
     if (!string.IsNullOrEmpty(operationTypeId))
     {
-        query = query.Where(op => op.OperationTypeID.Equals(operationTypeId));
+
+        var operationTypeIdParsed = new OperationTypeID(operationTypeId);
+        query = query.Where(op => op.OperationTypeID.Equals(operationTypeIdParsed));
     }
 
     if (!string.IsNullOrEmpty(priority))
     {
-        query = query.Where(op => op.Priority.ToString().Equals(priority, StringComparison.OrdinalIgnoreCase));
+    if (Enum.TryParse<Priority>(priority, true, out var priorityEnum))
+    {
+        query = query.Where(op => op.Priority == priorityEnum);
+    }
     }
 
     if (!string.IsNullOrEmpty(patientId))
     {
-        query = query.Where(op => op.PacientId.Equals(patientId));
+        query = query.Where(op => op.PacientId.Equals(new MedicalRecordNumber(patientId)));
     }
-    
-    if (!string.IsNullOrEmpty(deadline) && DateOnly.TryParse(deadline, out var deadlineDate))
-    {
-        query = query.Where(op => op.Deadline.deadline <= deadlineDate);
-    }
+          if (!string.IsNullOrEmpty(deadline) && DateOnly.TryParse(deadline, out var deadlineDate))
+          {
+
+          query = query.Where(op => op.Deadline.Equals(new Deadline(deadlineDate)));
+          }
+
 
     return await query.ToListAsync();
 }
-
-
 }
+
