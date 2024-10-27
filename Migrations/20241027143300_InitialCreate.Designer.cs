@@ -13,7 +13,7 @@ using TodoApi.Infrastructure;
 namespace TodoApi.Migrations
 {
     [DbContext(typeof(IPOContext))]
-    [Migration("20241027123454_InitialCreate")]
+    [Migration("20241027143300_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
