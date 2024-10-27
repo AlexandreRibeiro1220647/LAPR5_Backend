@@ -27,7 +27,7 @@ public class UserServiceTests
             _configMock.Object,
             _httpClientMock.Object
         );
-        _mapperMock = new Mock<IUserMapper>(); // Mock for your mapper
+        _mapperMock = new Mock<IUserMapper>();
 
     }
     [Fact]
@@ -40,10 +40,9 @@ public class UserServiceTests
 
         _userRepositoryMock
             .Setup(repo => repo.AddAsync(It.IsAny<User>()))
-            .ReturnsAsync(user); // Corrected to return Task.CompletedTask without a result
+            .ReturnsAsync(user);
     
-        // Correct the setup for CommitAsync to return Task.CompletedTask
-        _unitOfWorkMock.Setup(uow => uow.CommitAsync()).ReturnsAsync(1); // Correctly returns Task<int>
+        _unitOfWorkMock.Setup(uow => uow.CommitAsync()).ReturnsAsync(1);
 
         // Act
         var result = await _userService.CreateUser(registerUserDto);
