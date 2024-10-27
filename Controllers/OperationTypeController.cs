@@ -35,4 +35,18 @@ public class OperationTypeController : ControllerBase
             return StatusCode(500, "Internal server error: " + ex.Message);
         }
     }
+
+        [HttpPut("update/{id}")]
+    public async Task<IActionResult> UpdateOperationRequest(Guid id, [FromBody] UpdateOperationTypeDTO dto)
+    {
+        try
+        {
+            var updatedOperationRequestDto = await _operationTypeService.UpdateOperationTypeAsync(id, dto);                
+            return Ok(updatedOperationRequestDto);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
 }

@@ -19,6 +19,16 @@ public class OperationType : Entity<OperationTypeID>
             EstimatedDuration = estimatedDuration;
             IsActive = true; 
         }
+        public void UpdateName(string name){
+            this.Name = name;
+        }
 
+        public void UpdateRequiredStaffBySpecialization(List<string> requiredStaffBySpecialization){
+            this.RequiredStaffBySpecialization = requiredStaffBySpecialization;
+        }
+
+        public void UpdateEstimatedDuration(TimeSpan estimatedDuration){
+            this.EstimatedDuration = estimatedDuration;
+        }
     }
 }

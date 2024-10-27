@@ -61,4 +61,53 @@ public class OperationTypeService : IOperationTypeService
             throw;
         }
     }
+
+
+        public async Task<OperationTypeDTO> UpdateOperationTypeAsync(Guid id, UpdateOperationTypeDTO dto)
+    {
+        try
+        {
+            
+            Models.OperationType.OperationType existingOperationType = await _operationTypeRepository.GetByIdAsync(new OperationTypeID(id));
+
+            if (existingOperationType == null)
+            {
+                throw new Exception("OperationRequest not found");
+            }
+
+        if (!dto.Name.Equals(""))
+        {
+            existingOperationType.UpdateName(dto.Name);
+        }
+
+        if (dto.EstimatedDuration.HasValue)
+        {
+            existingOperationType.UpdateEstimatedDuration(dto.EstimatedDuration.Value);
+        }
+
+        if (dto.RequiredStaffBySpecialization.Count != 0)
+        {
+            existingOperationType.UpdateRequiredStaffBySpecialization(dto.RequiredStaffBySpecialization);
+        }
+
+            // Save the changes
+            await _unitOfWork.CommitAsync();
+
+            // Create the updated DTO with the required parameters in the correct order
+            OperationTypeDTO updatedOperationTypeDto = new OperationTypeDTO(
+                existingOperationType.Name,
+                existingOperationType.RequiredStaffBySpecialization,
+                existingOperationType.EstimatedDuration,
+                existingOperationType.Id.AsString()
+            );
+
+            return updatedOperationTypeDto;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error updating operation type");
+            throw;
+        }
+    }
+
 }
