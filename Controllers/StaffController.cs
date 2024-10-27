@@ -2,6 +2,9 @@ using TodoApi.Models.Staff;
 using TodoApi.DTOs;
 using TodoApi.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
+using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TodoApi.Controllers
 {
@@ -14,6 +17,34 @@ namespace TodoApi.Controllers
         public StaffController(IStaffService staffService)
         {
             _staffService = staffService;
+        }
+
+        [HttpPost("GoThroughAuthorizeAsync")]
+        public async Task<IActionResult> GoThroughAuthorizeAsync([FromBody] string url) {
+            
+            System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
+
+            var access_token = HttpContext.Session.GetString("AccessToken");
+
+            using (var client = new HttpClient())
+            {
+                // Add the Authorization header with Bearer token
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
+
+                // Make the authorized request
+
+                var response = await client.GetAsync($"http://localhost:5012/api/staff/{url}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var data = await response.Content.ReadAsStringAsync();
+                    return Content(data);
+                }
+                else
+                {
+                    return Unauthorized();
+                }
+            }
         }
 
         [HttpPost("create")]
@@ -30,6 +61,7 @@ namespace TodoApi.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetStaff()
         {

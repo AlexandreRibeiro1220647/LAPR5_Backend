@@ -99,6 +99,13 @@ builder.Services.AddAuthorization(options =>
     });
 });
 
+builder.Services.AddDistributedMemoryCache(); // Required for session storage
+builder.Services.AddSession(options =>
+    {
+        options.IdleTimeout = TimeSpan.FromMinutes(30); // Set your desired timeout
+        options.Cookie.HttpOnly = true; // Optional: make the session cookie HTTP-only
+        options.Cookie.IsEssential = true; // Required for session to be available during consent
+    });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -141,6 +148,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseSession();
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

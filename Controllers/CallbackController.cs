@@ -24,35 +24,26 @@ namespace TodoApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task IndexAsync()
         {
 
             var access_token = await _loginService.GetManagementApiTokenAsync();
-            //var id_token = await _loginService.GetAuthenticationToken();
+            /*//var id_token = await _loginService.GetAuthenticationToken();
 
-            System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
+                // Decode the JWT token
+    var handler = new JwtSecurityTokenHandler();
+    var jwtToken = handler.ReadJwtToken(access_token);
+    
+        var subject = jwtToken.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
 
-
-            using (var client = new HttpClient())
-            {
-                // Add the Authorization header with Bearer token
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
-
-                // Make the authorized requepst
-                var response = await client.GetAsync("http://localhost:5012/api/User/index");
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var data = await response.Content.ReadAsStringAsync();
-                    return Content(data);
-                }
-                else
-                {
-                    return Unauthorized();
-                }
-            }
+        UserInfo userInfo =  await _loginService.GetUserInfoBySubjectAsync(subject, access_token);
 
 
+        _logger.LogInformation($"roles: {subject}", userInfo);*/
+
+            HttpContext.Session.SetString("AccessToken", access_token);
+
+            return;
         }
 
         [HttpGet("post-activation")]

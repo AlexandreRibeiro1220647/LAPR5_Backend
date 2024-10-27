@@ -12,6 +12,8 @@ using TodoApi.Services;
 using TodoApi.Services.Login;
 using TodoApi.Services.User;
 using System.Security.Claims;
+using System.Net;
+using System.Net.Http.Headers;
 
 namespace TodoApi.Controllers
 {
@@ -22,11 +24,38 @@ namespace TodoApi.Controllers
         private readonly IUserService _userService;
         private readonly ILoginService _loginService;
 
-
         public UserController(IUserService userService, ILoginService loginService)
         {
             _userService = userService;
             _loginService = loginService;
+        }
+
+        [HttpPost("GoThroughAuthorizeAsync")]
+        public async Task<IActionResult> GoThroughAuthorizeAsync([FromBody] string url) {
+            
+            System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
+
+            var access_token = HttpContext.Session.GetString("AccessToken");
+
+            using (var client = new HttpClient())
+            {
+                // Add the Authorization header with Bearer token
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
+
+                // Make the authorized request
+
+                var response = await client.GetAsync($"http://localhost:5012/api/User/{url}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var data = await response.Content.ReadAsStringAsync();
+                    return Content(data);
+                }
+                else
+                {
+                    return Unauthorized();
+                }
+            }
         }
 
         // GET: api/Users
@@ -59,69 +88,6 @@ namespace TodoApi.Controllers
             }
         }
 
-        /*// PUT: api/Users/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(long id, User user)
-        {
-            if (id != user.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(user).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Users
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
-        {
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetUser", new { id = user.Id }, user);
-        }
-
-        // DELETE: api/Users/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(long id)
-        {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool UserExists(long id)
-        {
-            return _context.Users.Any(e => e.Id == id);
-        } */
-
         
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUser([FromBody] RegisterUserDTO model)
@@ -150,7 +116,6 @@ namespace TodoApi.Controllers
             return Ok(); // Return a success response
         }
 
-        [Authorize(Policy = "BackOfficeUserPolicy")]
         [HttpPost("changePassword")]
         public async Task<IActionResult> ChangePassword([FromBody] String email)
         {

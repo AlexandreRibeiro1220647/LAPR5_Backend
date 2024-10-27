@@ -1,5 +1,6 @@
 
 using System.Net;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using Newtonsoft.Json;
@@ -39,44 +40,6 @@ public class LoginService : ILoginService {
                 FileName = authorizationUrl,
                 UseShellExecute = true
             });
-
-            // Wait for the callback and get the authorization code
-            string? code = await WaitForCodeAsync();
-            Console.WriteLine(code);
-            if (!string.IsNullOrEmpty(code))
-            {
-                // Exchange the authorization code for an access token and ID token
-                var tokenUrl = $"https://{domain}/oauth/token";
-                var tokenPayload = new
-                {
-                    client_id = clientId,
-                    client_secret = CLIENT_SECRET, // Replace with correct Client Secret
-                    code = code,
-                    redirect_uri = redirectUri,
-                    grant_type = "authorization_code"
-                };
-
-                var json = System.Text.Json.JsonSerializer.Serialize(tokenPayload);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                // Send request to Auth0 using the injected HttpClient
-                var response = await _httpClient.PostAsync(tokenUrl, content);
-                if (response.IsSuccessStatusCode)
-                {
-                    var result = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine("Token Response: " + result); // Log the entire response
-
-                    var tokenResponse = System.Text.Json.JsonSerializer.Deserialize<JsonElement>(result);
-                    var accessToken = tokenResponse.GetProperty("access_token").GetString();
-                    var idToken = tokenResponse.GetProperty("id_token").GetString(); // Extract ID token
-
-                    return idToken;
-                }
-                else
-                {
-                    Console.WriteLine($"Error obtaining token: {response.StatusCode}");
-                }
-            }
 
             return null;
 
@@ -344,6 +307,27 @@ public class LoginService : ILoginService {
                 Console.WriteLine($"Error sending password reset email: {responseString}");
             }
         }
+
+        public async Task<UserInfo> GetUserInfoBySubjectAsync(string subject, string accessToken)
+{
+        using var client = new HttpClient();
+
+        // Fetch user info from the management API
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+        var response = await client.GetAsync($"https://{DOMAIN}/api/v2/users/{subject}");
+
+        if (response.IsSuccessStatusCode)
+        {
+            var result = await response.Content.ReadAsStringAsync();
+            // Deserialize the user information
+            var userInfo = JsonConvert.DeserializeObject<UserInfo>(result); // Create UserInfo class based on expected structure
+            return userInfo;
+        }
+        else
+        {
+            throw new Exception($"Error fetching user info: {response.StatusCode}");
+        }
+    }
 
     }
 }

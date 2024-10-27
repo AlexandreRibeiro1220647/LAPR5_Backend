@@ -10,5 +10,6 @@ public interface ILoginService
 
     Task createUserAuth0(RegisterUserDTO model);
     Task changePassword(string email);
+    Task<UserInfo> GetUserInfoBySubjectAsync(string subject, string accessToken);
     
 }

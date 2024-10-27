@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +10,7 @@ using TodoApi.DTOs;
 using TodoApi.Infrastructure;
 using TodoApi.Models.Patient;
 using TodoApi.Services;
+using TodoApi.Services.Login;
 
 namespace TodoApi.Controllers
 {
@@ -15,11 +18,41 @@ namespace TodoApi.Controllers
     [ApiController]
     public class PatientsController : ControllerBase {
         private readonly IPatientService _patientService;
+        private readonly ILoginService _loginService;
 
-        public PatientsController(IPatientService patientService) {
+        public PatientsController(IPatientService patientService, ILoginService loginService) {
             _patientService = patientService;
+            _loginService = loginService;
         }
 
+        [HttpPost("GoThroughAuthorizeAsync")]
+        public async Task<IActionResult> GoThroughAuthorizeAsync([FromBody] string url) {
+            
+            System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
+
+            var access_token = HttpContext.Session.GetString("AccessToken");
+
+            using (var client = new HttpClient())
+            {
+                // Add the Authorization header with Bearer token
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
+
+                // Make the authorized request
+
+                var response = await client.GetAsync($"http://localhost:5012/api/Patients/{url}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var data = await response.Content.ReadAsStringAsync();
+                    return Content(data);
+                }
+                else
+                {
+                    return Unauthorized();
+                }
+            }
+        }
+        
         [HttpPost]
         public async Task<ActionResult<PatientDTO>> RegisterPatient([FromBody] RegisterPatientDTO dto) {
             try {
@@ -40,6 +73,7 @@ namespace TodoApi.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PatientDTO>>> GetAllPatients() {
             try {
@@ -50,6 +84,7 @@ namespace TodoApi.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet("email/{email}")]
                 public async Task<ActionResult<PatientDTO>> GetPatientByEmail(string email) {
                     try {
@@ -59,7 +94,8 @@ namespace TodoApi.Controllers
                         return BadRequest(e.Message);
                     }
                 }
-
+                
+                [Authorize]
                 [HttpGet("id/{id}")]
                 public async Task<ActionResult<PatientDTO>> GetPatientById(Guid id) {
                     try {
@@ -70,6 +106,7 @@ namespace TodoApi.Controllers
                     }
                 }
 
+                [Authorize]
                 [HttpGet("name/{name}")]
                 public async Task<ActionResult<IEnumerable<PatientDTO>>> GetPatientsByName(string name) {
                     try {
@@ -80,6 +117,7 @@ namespace TodoApi.Controllers
                     }
                 }
 
+                [Authorize]
                 [HttpGet("contact/{contact}")]
                 public async Task<ActionResult<IEnumerable<PatientDTO>>> GetPatientsByContactInformation(string contact) {
                     try {
@@ -90,6 +128,7 @@ namespace TodoApi.Controllers
                     }
                 }
 
+                [Authorize]
                 [HttpGet("gender/{gender}")]
                 public async Task<ActionResult<IEnumerable<PatientDTO>>> GetPatientsByGender(Gender gender) {
                     try {
@@ -100,6 +139,7 @@ namespace TodoApi.Controllers
                     }
                 }
 
+                [Authorize]
                 [HttpGet("dob/{dateOfBirth}")]
                 public async Task<ActionResult<IEnumerable<PatientDTO>>> GetPatientsByDateOfBirth(DateOnly dateOfBirth) {
                     try {
