@@ -7,7 +7,7 @@ public class RequestsLog : Entity<OperationRequestLogID>
 {
     public OperationRequestID OperationRequestId { get; set; }
     public DateTime ChangeDate { get; set; }
-    public required string ChangeDescription { get; set; } 
+    public string ChangeDescription { get; set; } 
 
     public RequestsLog(){
     }

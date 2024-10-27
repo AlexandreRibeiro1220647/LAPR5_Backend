@@ -119,21 +119,21 @@ public class OperationRequestService : IOperationRequestService
         if (dto.Deadline.HasValue)
         {
             existingOperationRequest.UpdateDeadline(dto.Deadline.Value);
-            logs.Add(new RequestsLog{OperationRequestId = new OperationRequestID(id),
-                ChangeDate = DateTime.UtcNow,
-                ChangeDescription = $"Deadline updated to {dto.Deadline.Value:yyyy-MM-dd}"
-            });
+            logs.Add(new RequestsLog(
+                new OperationRequestID(id),
+                DateTime.UtcNow,
+                $"Deadline updated to {dto.Deadline.Value:yyyy-MM-dd}"
+            ));
         }
 
         if (dto.Priority.HasValue)
         {
             existingOperationRequest.UpdatePriority(dto.Priority.Value);
-            logs.Add(new RequestsLog
-            {
-                OperationRequestId = new OperationRequestID(id),
-                ChangeDate = DateTime.UtcNow,
-                ChangeDescription = $"Priority updated to {dto.Priority.Value}"
-            });
+            logs.Add(new RequestsLog(
+                new OperationRequestID(id),
+                DateTime.UtcNow,
+                $"Priority updated to {dto.Priority.Value}"
+            ));
         }
 
         if (logs.Any())
