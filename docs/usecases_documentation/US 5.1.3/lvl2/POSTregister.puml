@@ -1,0 +1,74 @@
+@startuml Process View - Level 2
+
+autonumber
+skinparam packageStyle rect
+
+title POST object
+
+participant "Front-End" as FE <<C4 Container>>
+participant "Back-End" as BE <<C4 Container>>
+participant "DataBase" as DB <<C4 Container>>
+participant "IAM API" as IAM <<External API>>
+
+-> FE: GET request (authenticate)
+activate FE
+FE -> BE: GET /object
+activate BE
+alt user authorized
+
+    alt object exists
+
+        BE -> IAM: authenticate
+        activate IAM
+        IAM --> BE: Returns success
+        deactivate IAM
+
+        BE --> FE: Returns success
+        deactivate BE
+        <-- FE: Displays success
+
+else user unauthorized
+
+<-- FE: Sends message to client: unauthorized access (401)
+else database unavailable
+<-- FE: Sends message to client: service unavailable (503)
+end alt
+deactivate FE
+
+
+-> FE: POST request (register)
+activate FE
+FE -> BE: POST /object {data}
+activate BE
+alt user authorized
+
+    alt user authorized
+
+        BE -> DB: Insert data
+        activate DB
+        DB --> BE: Returns success message
+        deactivate DB
+
+
+
+        BE --> FE: Returns success message
+        deactivate BE
+        <-- FE: Displays success message
+    
+else user unauthorized
+
+<-- FE: Sends message to client: unauthorized access (401)
+else database unavailable
+<-- FE: Sends message to client: service unavailable (503)
+else invalid input
+
+<-- FE: Sends message to client: bad request (400)
+
+else object already exists
+
+<-- FE: Sends message to client: conflict (409)
+
+end alt
+deactivate FE
+
+@enduml
