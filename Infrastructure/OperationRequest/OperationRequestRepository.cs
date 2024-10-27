@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using TodoApi.Infrastructure;
 using TodoApi.Infrastructure.Patient;
 using TodoApi.Infrastructure.Shared;
+using TodoApi.Models;
 using TodoApi.Models.OperationRequest;
 using TodoApi.Models.OperationType;
 using TodoApi.Models.Patient;
@@ -45,22 +46,27 @@ public async Task<List<Models.OperationRequest.OperationRequest>> SearchAsync(st
 
     if (!string.IsNullOrEmpty(operationTypeId))
     {
+
+        var operationTypeIdParsed = new OperationTypeID(operationTypeId);
         query = query.Where(op => op.OperationTypeID.Equals(operationTypeId));
     }
 
     if (!string.IsNullOrEmpty(priority))
     {
-        query = query.Where(op => op.Priority.ToString().Equals(priority, StringComparison.OrdinalIgnoreCase));
+    if (Enum.TryParse<Priority>(priority, true, out var priorityEnum))
+    {
+        query = query.Where(op => op.Priority == priorityEnum);
+    }
     }
 
     if (!string.IsNullOrEmpty(patientId))
     {
-        query = query.Where(op => op.PacientId.Equals(patientId));
+        query = query.Where(op => op.PacientId.Equals(new MedicalRecordNumber(patientId)));
     }
     
     if (!string.IsNullOrEmpty(deadline) && DateOnly.TryParse(deadline, out var deadlineDate))
     {
-        query = query.Where(op => op.Deadline.deadline <= deadlineDate);
+        query = query.Where(op => op.Deadline.deadline == deadlineDate);
     }
 
     return await query.ToListAsync();

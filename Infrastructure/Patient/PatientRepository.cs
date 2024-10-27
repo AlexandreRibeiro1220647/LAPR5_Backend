@@ -27,7 +27,7 @@ public class PatientRepository : BaseRepository<Models.Patient.Patient, MedicalR
     }
 
     public async Task<List<Models.Patient.Patient>> GetByNameAsync(string name) {
-        return await _dbSet.Where(p => p.fullName.fullName.Contains(name)).ToListAsync();
+        return await _dbSet.Where(p => p.fullName.fullName.Equals(name)).ToListAsync();
     }
 
     public async Task<List<Models.Patient.Patient>> GetByContactInformationAsync(string contact) {
