@@ -1,4 +1,6 @@
 
+using System.Net;
+using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TodoApi.DTOs.OperationType;
@@ -16,6 +18,35 @@ public class OperationTypeController : ControllerBase
     {
         _operationTypeService = operationTypeService;
     }
+
+
+        [HttpPost("GoThroughAuthorizeAsync/{url}")]
+        public async Task<IActionResult> GoThroughAuthorizeAsync(string url) {
+            
+            System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
+
+            var access_token = HttpContext.Session.GetString("AccessToken");
+
+            using (var client = new HttpClient())
+            {
+                // Add the Authorization header with Bearer token
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
+
+                // Make the authorized request
+
+                var response = await client.GetAsync($"http://localhost:5012/api/OperationType/{url}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var data = await response.Content.ReadAsStringAsync();
+                    return Content(data);
+                }
+                else
+                {
+                    return Unauthorized();
+                }
+            }
+        }
 
     [HttpPost]
     public async Task<IActionResult> CreateOperationType([FromBody] CreateOperationTypeDTO createOperationTypeDto)
