@@ -42,13 +42,17 @@ public async Task<List<Models.OperationRequest.OperationRequest>> SearchAsync(st
         {
             query = query.Where(op => patientIds.Contains(op.PacientId));
         }
+        else
+        {
+            return new List<Models.OperationRequest.OperationRequest>();
+        }
     } 
 
     if (!string.IsNullOrEmpty(operationTypeId))
     {
 
         var operationTypeIdParsed = new OperationTypeID(operationTypeId);
-        query = query.Where(op => op.OperationTypeID.Equals(operationTypeId));
+        query = query.Where(op => op.OperationTypeID.Equals(operationTypeIdParsed));
     }
 
     if (!string.IsNullOrEmpty(priority))
@@ -66,7 +70,8 @@ public async Task<List<Models.OperationRequest.OperationRequest>> SearchAsync(st
     
     if (!string.IsNullOrEmpty(deadline) && DateOnly.TryParse(deadline, out var deadlineDate))
     {
-        query = query.Where(op => op.Deadline.deadline == deadlineDate);
+        var deadlineDateTime = deadlineDate.ToDateTime(TimeOnly.MinValue);
+        query = query.Where(op => op.Deadline.deadline.ToDateTime(TimeOnly.MinValue) == deadlineDateTime);
     }
 
     return await query.ToListAsync();
