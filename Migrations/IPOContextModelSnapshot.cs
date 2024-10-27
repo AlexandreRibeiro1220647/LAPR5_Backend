@@ -163,6 +163,11 @@ namespace TodoApi.Migrations
                         .HasMaxLength(60)
                         .HasColumnType("character varying(60)");
 
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
                     b.Property<int>("Role")
                         .HasMaxLength(30)
                         .HasColumnType("integer");

@@ -99,6 +99,7 @@ namespace TodoApi.Migrations
                     Id = table.Column<string>(type: "text", nullable: false),
                     Email = table.Column<string>(type: "character varying(60)", maxLength: 60, nullable: false),
                     Name = table.Column<string>(type: "character varying(60)", maxLength: 60, nullable: false),
+                    Password = table.Column<string>(type: "character varying(60)", maxLength: 60, nullable: false),
                     Role = table.Column<int>(type: "integer", maxLength: 30, nullable: false)
                 },
                 constraints: table =>

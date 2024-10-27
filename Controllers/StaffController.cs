@@ -19,8 +19,8 @@ namespace TodoApi.Controllers
             _staffService = staffService;
         }
 
-        [HttpPost("GoThroughAuthorizeAsync/{url}")]
-        public async Task<IActionResult> GoThroughAuthorizeAsync(string url) {
+        [HttpPost("GoThroughAuthorizeAsync")]
+        public async Task<IActionResult> GoThroughAuthorizeAsync([FromBody] string url) {
             
             System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
 

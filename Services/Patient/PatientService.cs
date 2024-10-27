@@ -79,7 +79,7 @@ public class PatientService : IPatientService {
     
     public async Task<bool> DeletePatientByEmailAsync(string email) {
         try {
-            var patient = await _patientRepository.GetByEmailAsync(email);
+            Patient patient = await _patientRepository.GetByEmailAsync(email);
             if (patient == null) {
                 throw new Exception($"Patient with email {email} does not exist");
             }

@@ -20,8 +20,7 @@ public class OperationTypeMapper : IOperationTypeMapper
                 entity.Name,
                 entity.RequiredStaffBySpecialization,
                 entity.EstimatedDuration,
-                entity.Id.AsString(),
-                entity.IsActive
+                entity.Id.AsString()
             )
             {
                 IsActive = entity.IsActive
