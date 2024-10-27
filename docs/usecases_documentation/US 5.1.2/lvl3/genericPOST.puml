@@ -1,0 +1,38 @@
+@startuml
+autonumber
+skinparam packageStyle rect
+
+title Change Password SSD lvl3
+
+participant AspnetRouter as router
+participant ObjectController as ctrl
+participant ILoginService as LS <<Interface>>
+participant "IAM API" as IAM <<External API>>
+
+
+-> router: POST /object {object data}
+activate router
+router -> ctrl: changePassword
+activate ctrl
+ctrl -> LS: changePassword(email)
+activate LS
+LS -> LS : GetManagementApiTokenAsync()
+LS -> IAM : httpClient.PostAsync() {ask for token}
+activate IAM
+IAM --> LS : response (token)
+deactivate IAM
+LS -> IAM : httpClient.PostAsync() {change password}
+activate IAM
+IAM --> LS : response (success)
+deactivate IAM
+LS --> ctrl : response (success)
+deactivate LS
+ctrl --> router : response (success)
+
+deactivate ctrl
+
+<-- router  : returns success message
+
+deactivate router
+
+@enduml

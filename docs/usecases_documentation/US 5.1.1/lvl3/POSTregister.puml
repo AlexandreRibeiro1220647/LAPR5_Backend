@@ -2,7 +2,7 @@
 autonumber
 skinparam packageStyle rect
 
-title Back-End post objects
+title Register User SSD lvl3
 
 participant AspnetRouter as router
 participant ObjectController as ctrl
