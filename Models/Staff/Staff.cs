@@ -23,7 +23,7 @@ namespace TodoApi.Models.Staff
             this.Email = email;
             this.Phone = phone;
             this.AvailabilitySlots = availabilitySlots ?? new AvailabilitySlots();
-            this.Status = status;
+            this.Status = StaffStatus.ACTIVE;
         }
 
         public Staff(FullName fullName, Specialization specialization, UserEmail email, Phone phone, StaffStatus status)
@@ -34,7 +34,7 @@ namespace TodoApi.Models.Staff
             this.Email = email;
             this.Phone = phone;
             this.AvailabilitySlots = new AvailabilitySlots(new List<Slot>());
-            this.Status = status;
+            this.Status = StaffStatus.ACTIVE;
         }
 
         public void SetAvailabilitySlots(AvailabilitySlots availabilitySlots)
