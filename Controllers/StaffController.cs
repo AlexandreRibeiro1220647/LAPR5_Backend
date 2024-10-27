@@ -76,8 +76,9 @@ namespace TodoApi.Controllers
             }
         }
 
-        [HttpGet("search/specialization")]
-        public async Task<ActionResult<List<object>>> SearchBySpecialization([FromQuery] string specialization)
+        [Authorize]
+        [HttpGet("search/specialization/{specialization}")]
+        public async Task<ActionResult<List<object>>> SearchBySpecialization(string specialization)
         {
             try
             {
@@ -89,9 +90,10 @@ namespace TodoApi.Controllers
                 return BadRequest(e.Message);
             }
         }
-
-        [HttpGet("search/name")]
-        public async Task<ActionResult<List<StaffDTO>>> SearchByName([FromQuery] string name)
+        
+        [Authorize]
+        [HttpGet("search/name/{name}")]
+        public async Task<ActionResult<List<StaffDTO>>> SearchByName(string name)
         {
             try
             {
@@ -104,8 +106,9 @@ namespace TodoApi.Controllers
             }
         }
 
-        [HttpGet("search/email")]
-        public async Task<ActionResult<List<StaffDTO>>> SearchByEmail([FromQuery] string email)
+        [Authorize]
+        [HttpGet("search/email/{email}")]
+        public async Task<ActionResult<List<StaffDTO>>> SearchByEmail(string email)
         {
             try
             {
@@ -117,8 +120,10 @@ namespace TodoApi.Controllers
                 return BadRequest(e.Message);
             }
         }
-        [HttpGet("search/status")]
-        public async Task<ActionResult<List<StaffDTO>>> SearchByStatus([FromQuery] StaffStatus status)
+
+        [Authorize]
+        [HttpGet("search/status/{status}")]
+        public async Task<ActionResult<List<StaffDTO>>> SearchByStatus(StaffStatus status)
         {
             try
             {
