@@ -235,7 +235,7 @@ public class LoginService : ILoginService {
             };
             var roleId = Auth0Data.map[model.Role.ToString()];  // Get the role ID for "Patient"
 
-            // Send POST request to assign the "Patient" role
+            // Send POST request to assign the role
             requestContent = new StringContent(JsonConvert.SerializeObject(assignees), Encoding.UTF8, "application/json");
             response = await client.PostAsync($"https://{DOMAIN}/api/v2/roles/{roleId}/users", requestContent);
             responseString = await response.Content.ReadAsStringAsync();
