@@ -16,4 +16,22 @@ public class OperationTypeRepository : BaseRepository<Models.OperationType.Opera
     {
         return await _dbSet.FirstOrDefaultAsync(o => o.Name == name);
     }
+    
+            public async Task<List<Models.OperationType.OperationType>> SearchByName(string name)
+        {
+            return await _dbSet.Where(o => o.Name.Contains(name))
+                .ToListAsync();
+        }
+
+        public async Task<List<Models.OperationType.OperationType>> SearchBySpecialization(string specialization)
+        {
+            return await _dbSet.Where(o => o.RequiredStaffBySpecialization.Contains(specialization))
+                .ToListAsync();
+        }
+
+        public async Task<List<Models.OperationType.OperationType>> SearchByStatus(bool status)
+        {
+            return await _dbSet.Where(o => o.IsActive == status)
+                .ToListAsync();
+        }
 }

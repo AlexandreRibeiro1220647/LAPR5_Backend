@@ -8,13 +8,13 @@ namespace TodoApi.DTOs.OperationType
         public string OperationTypeId { get; set; }
         public bool IsActive { get; set; } // New property
 
-        public OperationTypeDTO(string operationName, List<string> requiredStaffBySpecialization, TimeSpan estimatedDuration, string operationTypeId)
+        public OperationTypeDTO(string operationName, List<string> requiredStaffBySpecialization, TimeSpan estimatedDuration, string operationTypeId, bool isActive)
         {
             Name = operationName;
             RequiredStaffBySpecialization = requiredStaffBySpecialization;
             EstimatedDuration = estimatedDuration;
             OperationTypeId = operationTypeId;
-            IsActive = true; // Default value
+            IsActive = isActive; // Default value
         }
     }
 }

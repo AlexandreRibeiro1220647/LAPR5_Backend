@@ -30,8 +30,8 @@ namespace TodoApi.Controllers
             _loginService = loginService;
         }
 
-        [HttpPost("GoThroughAuthorizeAsync")]
-        public async Task<IActionResult> GoThroughAuthorizeAsync([FromBody] string url) {
+        [HttpPost("GoThroughAuthorizeAsync/{url}")]
+        public async Task<IActionResult> GoThroughAuthorizeAsync(string url) {
             
             System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
 
