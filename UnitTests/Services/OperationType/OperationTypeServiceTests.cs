@@ -1,15 +1,10 @@
 using Moq;
-using System;
-using System.Threading.Tasks;
 using TodoApi.DTOs.OperationType;
 using TodoApi.Infrastructure.OperationType;
 using TodoApi.Mappers.OperationType;
 using TodoApi.Models.OperationType;
 using TodoApi.Models.Shared;
 using TodoApi.Services;
-using Xunit;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
 
 namespace TodoApi.Tests.Services
 {
