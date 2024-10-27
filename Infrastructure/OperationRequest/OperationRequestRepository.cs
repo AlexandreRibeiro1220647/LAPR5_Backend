@@ -67,15 +67,14 @@ public async Task<List<Models.OperationRequest.OperationRequest>> SearchAsync(st
     {
         query = query.Where(op => op.PacientId.Equals(new MedicalRecordNumber(patientId)));
     }
-    
-    if (!string.IsNullOrEmpty(deadline) && DateOnly.TryParse(deadline, out var deadlineDate))
-    {
-        var deadlineDateTime = deadlineDate.ToDateTime(TimeOnly.MinValue);
-        query = query.Where(op => op.Deadline.deadline.ToDateTime(TimeOnly.MinValue) == deadlineDateTime);
-    }
+          if (!string.IsNullOrEmpty(deadline) && DateOnly.TryParse(deadline, out var deadlineDate))
+          {
+
+          query = query.Where(op => op.Deadline.Equals(new Deadline(deadlineDate)));
+          }
+
 
     return await query.ToListAsync();
 }
-
-
 }
+
