@@ -15,9 +15,10 @@ public class OperationRequestRepository : BaseRepository<Models.OperationRequest
 
     private readonly IPatientRepository _patientRepository;
 
-    public OperationRequestRepository(IPOContext context) : base(context.OperationRequests)
+    public OperationRequestRepository(IPOContext context, IPatientRepository patientRepository) : base(context.OperationRequests)
     {
         _dbSet = context.Set<Models.OperationRequest.OperationRequest>();
+        _patientRepository=patientRepository;
     }
 
     public async Task<bool> ExistsAsync(MedicalRecordNumber patientId, OperationTypeID operationTypeID)
