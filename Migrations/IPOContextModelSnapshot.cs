@@ -106,6 +106,28 @@ namespace TodoApi.Migrations
                     b.ToTable("Patients");
                 });
 
+            modelBuilder.Entity("TodoApi.Models.RequestsLog", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ChangeDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ChangeDescription")
+                        .IsRequired()
+                        .HasMaxLength(600)
+                        .HasColumnType("character varying(600)");
+
+                    b.Property<string>("OperationRequestId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OperationRequestLogs", (string)null);
+                });
+
             modelBuilder.Entity("TodoApi.Models.Staff.Staff", b =>
                 {
                     b.Property<string>("Id")
