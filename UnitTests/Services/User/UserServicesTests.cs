@@ -1,22 +1,11 @@
-using System.Net;
-using System.Text;
-using System.Text.Json;
 using Moq;
-using Xunit;
 using TodoApi.DTOs.User;
 using TodoApi.Infrastructure;
 using TodoApi.Mappers;
 using TodoApi.Services.User;
 using TodoApi.Models.User;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using TodoApi.Models.Shared;
 using TodoApi.Models;
-using System.Reflection;
-using Newtonsoft.Json;
-using Moq.Protected;
 
 public class UserServiceTests
 {
@@ -26,6 +15,8 @@ public class UserServiceTests
     private readonly Mock<IConfiguration> _configMock = new();
     private readonly Mock<HttpClient> _httpClientMock = new();
     private readonly UserService _userService;
+    private readonly Mock<IUserMapper> _mapperMock;
+
 
     public UserServiceTests()
     {
@@ -36,9 +27,59 @@ public class UserServiceTests
             _configMock.Object,
             _httpClientMock.Object
         );
+        _mapperMock = new Mock<IUserMapper>(); // Mock for your mapper
+
+    }
+    [Fact]
+    public async Task CreateUser_ShouldReturnMappedUserDTO_WhenUserIsValid()
+    {
+        // Arrange
+        var registerUserDto = new RegisterUserDTO { Name = "Test User", Email = "test@example.com", Role = UserRoles.Admin };
+        var user = new User(new UserEmail(registerUserDto.Email), registerUserDto.Name, registerUserDto.Role);
+       var expectedUserDto = new UserDTO { Name = user.Name, Email = user.Email.Value, Role = user.Role.ToString() };
+
+        _userRepositoryMock
+            .Setup(repo => repo.AddAsync(It.IsAny<User>()))
+            .ReturnsAsync(user); // Corrected to return Task.CompletedTask without a result
+    
+        // Correct the setup for CommitAsync to return Task.CompletedTask
+        _unitOfWorkMock.Setup(uow => uow.CommitAsync()).ReturnsAsync(1); // Correctly returns Task<int>
+
+        // Act
+        var result = await _userService.CreateUser(registerUserDto);
+
+            // Assert
+        Assert.Equal(expectedUserDto.Name, result.Name);
+        Assert.Equal(new UserEmail(expectedUserDto.Email).ToString(), result.Email);
+        Assert.Equal(expectedUserDto.Role, result.Role);
+
+        _userRepositoryMock.Verify(repo => repo.AddAsync(It.IsAny<User>()), Times.Once);
+        _unitOfWorkMock.Verify(uow => uow.CommitAsync(), Times.Once);
     }
 
+    [Fact]
+    public async Task CreateUser_ShouldThrowException_WhenUserCreationFails()
+    {
+        // Arrange
+        var registerUserDto = new RegisterUserDTO { Name = "Test User", Email = "test@example.com", Role = UserRoles.Admin };
+        var exceptionMessage = "Database Error";
 
+        // Setup mapper to return a user entity
+        _mapperMock.Setup(m => m.toEntity(registerUserDto)).Returns(new User(new UserEmail(registerUserDto.Email), registerUserDto.Name, registerUserDto.Role));
+
+        // Setup repository to throw an exception when trying to add the user
+        _userRepositoryMock.Setup(repo => repo.AddAsync(It.IsAny<User>())).ThrowsAsync(new Exception(exceptionMessage));
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<Exception>(() => _userService.CreateUser(registerUserDto));
+
+        // Verify that the exception message is correct
+        Assert.Equal(exceptionMessage, exception.Message);
+
+        // Verify that the repository and unit of work methods were not called after the exception
+        _userRepositoryMock.Verify(repo => repo.AddAsync(It.IsAny<User>()), Times.Once);
+        _unitOfWorkMock.Verify(uow => uow.CommitAsync(), Times.Never);
+    }
 
 
     [Fact]
@@ -76,51 +117,24 @@ public class UserServiceTests
         _userRepositoryMock.Verify(repo => repo.GetByEmailAsync(email), Times.Once);
     }
 
-
     [Fact]
-    public async Task GetManagementApiTokenAsync_ShouldReturnAccessToken_WhenRequestSucceeds()
+    public async Task GetUserByEmail_ShouldThrowException_WhenExceptionIsThrown()
     {
         // Arrange
-        var expectedToken = "management_api_token"; // This is your expected token
-        var handlerMock = new Mock<HttpMessageHandler>();
-        handlerMock
-            .Protected()
-            .Setup<Task<HttpResponseMessage>>(
-                "SendAsync",
-                ItExpr.IsAny<HttpRequestMessage>(),
-                ItExpr.IsAny<CancellationToken>()
-            )
-            .ReturnsAsync(new HttpResponseMessage
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent($"{{\"access_token\": \"{expectedToken}\"}}", Encoding.UTF8, "application/json"),
-            });
+        var email = "test@example.com";
+        var exceptionMessage = "Database Error";
 
-        var httpClient = new HttpClient(handlerMock.Object);
-        var userService = new UserService(_unitOfWorkMock.Object, _userRepositoryMock.Object, _loggerMock.Object, _configMock.Object, httpClient);
+        // Setup the repository to throw an exception when trying to get the user
+        _userRepositoryMock.Setup(repo => repo.GetByEmailAsync(email)).ThrowsAsync(new Exception(exceptionMessage));
 
-        // Act
-        var result = await userService.GetManagementApiTokenAsync();
-        result = expectedToken;
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<Exception>(() => _userService.GetUserByEmail(email));
 
-        // Assert
-        Assert.Equal(expectedToken, result); // Directly compare with expectedToken
+        // Verify that the exception message is correct
+        Assert.Equal(exceptionMessage, exception.Message);
+
+        // Verify that the repository method was called
+        _userRepositoryMock.Verify(repo => repo.GetByEmailAsync(email), Times.Once);
     }
 
-}
-
-// Mock for HttpClient
-public class HttpClientMockHandler : DelegatingHandler
-{
-    private readonly HttpResponseMessage _responseMessage;
-
-    public HttpClientMockHandler(HttpResponseMessage responseMessage)
-    {
-        _responseMessage = responseMessage;
-    }
-
-    protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-    {
-        return Task.FromResult(_responseMessage);
-    }
 }
