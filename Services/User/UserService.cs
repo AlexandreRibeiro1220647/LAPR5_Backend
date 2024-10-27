@@ -13,7 +13,7 @@ using TodoApi.Models;
 
 namespace TodoApi.Services.User
 {
-    public class UserService : IUserService, ILoginService
+    public class UserService : IUserService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUserRepository _userRepository;
@@ -239,128 +239,6 @@ namespace TodoApi.Services.User
             return null;
         }
 
-
-        public async Task createUserAuth0(RegisterUserDTO model) {
-
-            // *****************************
-            // User creation
-            // *****************************
-
-
-            var accessToken = await GetManagementApiTokenAsync(); // Obtain Auth0 Management API token
-
-            using var client = new HttpClient();
-
-            // Set authorization header with the Management API access token
-            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
-
-            // User registration payload
-            var user = new
-            {
-                email = model.Email,
-                user_id = model.Email,  // Using email as user_id
-                password = "TemporaryPassword123_",
-                connection = "Username-Password-Authentication"  // Default Auth0 connection
-            };
-
-            // Send POST request to create the user
-            var requestContent = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
-            var response = await client.PostAsync($"https://{DOMAIN}/api/v2/users", requestContent);
-            var responseString = await response.Content.ReadAsStringAsync();
-
-            if (response.IsSuccessStatusCode)
-            {
-                Console.WriteLine("User created successfully.");
-            }
-            else
-            {
-                Console.WriteLine($"Error creating user: {responseString}");
-                throw new ExistingUserException("User already registered in the system");
-            }
-
-            // *****************************
-            // Role assignment
-            // *****************************
-
-
-            var assignees = new
-            {
-                users = new string[1] { "auth0|" + model.Email } // User identifier with 'auth0|' prefix
-            };
-            var roleId = Auth0Data.map[model.Role.ToString()];  // Get the role ID for "Patient"
-
-            // Send POST request to assign the "Patient" role
-            requestContent = new StringContent(JsonConvert.SerializeObject(assignees), Encoding.UTF8, "application/json");
-            response = await client.PostAsync($"https://{DOMAIN}/api/v2/roles/{roleId}/users", requestContent);
-            responseString = await response.Content.ReadAsStringAsync();
-
-            if (response.IsSuccessStatusCode)
-            {
-                Console.WriteLine($"{roleId}, Patient role assigned successfully.");
-            }
-            else
-            {
-                Console.WriteLine($"Error assigning role: {responseString}");
-                throw new InvalidDataException("Role does not exist in the system");
-            }
-
-            // ==================================
-            // Password reset email
-            // ==================================
-
-
-            var passwordChangeRequest = new
-            {
-                client_id = CLIENT_ID,
-                email = model.Email,
-                connection = "Username-Password-Authentication",
-                redirect_uri = "https://localhost:5012/callback/post-activation"
-            };
-
-            requestContent = new StringContent(JsonConvert.SerializeObject(passwordChangeRequest), Encoding.UTF8, "application/json");
-            response = await client.PostAsync($"https://{DOMAIN}/dbconnections/change_password", requestContent);
-            responseString = await response.Content.ReadAsStringAsync();
-
-            if (response.IsSuccessStatusCode)
-            {
-                Console.WriteLine("Password reset email sent successfully.");
-            }
-            else
-            {
-                Console.WriteLine($"Error sending password reset email: {responseString}");
-            }
-        }
-
-        public async Task changePassword(string email) {
-
-            var accessToken = await GetManagementApiTokenAsync(); // Obtain Auth0 Management API token
-
-            using var client = new HttpClient();
-
-            // Set authorization header with the Management API access token
-            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
-
-            var passwordChangeRequest = new
-            {
-                client_id = CLIENT_ID,
-                email = email,
-                connection = "Username-Password-Authentication",
-                redirect_uri = "https://localhost:5012/callback/post-activation"
-            };
-
-            var requestContent = new StringContent(JsonConvert.SerializeObject(passwordChangeRequest), Encoding.UTF8, "application/json");
-            var response = await client.PostAsync($"https://{DOMAIN}/dbconnections/change_password", requestContent);
-            var responseString = await response.Content.ReadAsStringAsync();
-
-            if (response.IsSuccessStatusCode)
-            {
-                Console.WriteLine("Password reset email sent successfully.");
-            }
-            else
-            {
-                Console.WriteLine($"Error sending password reset email: {responseString}");
-            }
-        }
 
     }
 }

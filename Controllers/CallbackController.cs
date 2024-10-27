@@ -1,7 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
+using System.Net;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 using TodoApi.Services;
+using TodoApi.Services.Login;
 
 namespace TodoApi.Controllers
 {
@@ -11,42 +15,44 @@ namespace TodoApi.Controllers
 
         private readonly ILogger<UserController> _logger;
         private readonly EmailService _emailService;
+        private readonly ILoginService _loginService;
 
-        public CallbackController(ILogger<UserController> logger, EmailService emailService){
+        public CallbackController(ILogger<UserController> logger, EmailService emailService, ILoginService loginService){
             _logger = logger;
             _emailService = emailService;
+            _loginService = loginService;
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            // Retrieve user claims
-            var userClaims = User.Claims;
 
-            // Extract roles from the claims
-            var roles = userClaims
-                .Where(c => c.Type == "http://myapp.com/roles")
-                .Select(c => c.Value)
-                .ToList();
+            var access_token = await _loginService.GetManagementApiTokenAsync();
+            //var id_token = await _loginService.GetAuthenticationToken();
 
-            _logger.LogInformation("User roles: {roles}", roles);
+            System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
 
-            // Redirect based on role
-            if (roles.Contains("Admin"))
+
+            using (var client = new HttpClient())
             {
-                _logger.LogInformation("Redirecting to User index for Admin role.");
-                return RedirectToAction("Index", "User");
+                // Add the Authorization header with Bearer token
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
+
+                // Make the authorized requepst
+                var response = await client.GetAsync("http://localhost:5012/api/User/index");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var data = await response.Content.ReadAsStringAsync();
+                    return Content(data);
+                }
+                else
+                {
+                    return Unauthorized();
+                }
             }
-            else if (roles.Contains("Staff"))
-            {
-                _logger.LogInformation("Redirecting to Staff index for Staff role.");
-                return RedirectToAction("Index", "Staff");
-            }
-            else
-            {
-                _logger.LogInformation("Redirecting to Home index as default.");
-                return RedirectToAction("Index", "Home");
-            }
+
+
         }
 
         [HttpGet("post-activation")]

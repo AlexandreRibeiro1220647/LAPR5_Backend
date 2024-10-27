@@ -130,7 +130,7 @@ namespace TodoApi.Controllers
             {
                 var user = await _userService.CreateUser(model);
 
-                await _userService.createUserAuth0(model);
+                await _loginService.createUserAuth0(model);
 
                 return Ok(user);
             }
@@ -145,26 +145,9 @@ namespace TodoApi.Controllers
         public async Task<ActionResult<string>> AuthenticateUser()
         {
             // Call the method from AuthServicePatient
-            var token = await _loginService.AuthenticateUser();
+            _loginService.AuthenticateUser();
 
-            if (string.IsNullOrEmpty(token))
-            {
-                return Unauthorized(); // Return Unauthorized if authentication fails
-            }
-
-            // Set the access token in a cookie
-            var cookieOptions = new CookieOptions
-            {
-                HttpOnly = true, // Prevent client-side access to the cookie
-                Secure = false, // Use Secure cookies in production
-                SameSite = SameSiteMode.Strict, // Prevent CSRF attacks
-                Expires = DateTimeOffset.UtcNow.AddMinutes(10) // Set expiration
-            };
-
-            Response.Cookies.Append("access_token", token, cookieOptions);
-
-
-            return Ok(new { AccessToken = token }); // Return a success response
+            return Ok(); // Return a success response
         }
 
         [Authorize(Policy = "BackOfficeUserPolicy")]
@@ -173,7 +156,7 @@ namespace TodoApi.Controllers
         {
             try
             {
-                await _userService.changePassword(email);
+                await _loginService.changePassword(email);
 
                 return Ok(email);
             }
@@ -183,7 +166,7 @@ namespace TodoApi.Controllers
             }
         }
 
-        [Authorize(Policy = "AdminPolicy")]
+        [Authorize]
         [HttpGet("index")]
         public IActionResult Index()
         {

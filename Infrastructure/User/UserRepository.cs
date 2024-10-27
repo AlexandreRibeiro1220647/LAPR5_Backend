@@ -10,6 +10,7 @@ public class UserRepository : BaseRepository<User, UserID>, IUserRepository
 
     public UserRepository(IPOContext dbContext) : base(dbContext.Users)
     {
+        _dbSet = dbContext.Set<TodoApi.Models.User.User>();
     }
 
     public async Task<IEnumerable<User>> GetAllUsersAsync()

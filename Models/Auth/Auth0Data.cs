@@ -5,9 +5,9 @@ public class Auth0Data
     public const string CLIENT_ID = "qp7iwBhAwup1NdT0NAPswPBa3nvVfkvs";
     public const string CLIENT_SECRET = "b7M9jLQy4zadf97tTZ8uSX_u61v-GFbHTMdq5va-SmWVOK2rqhERPL0HXd9TPq-3";
     public const string REDIRECTURI = "http://localhost:5012/callback";
-    public const string AUDIENCE = "https://healthcarelogin.com";
+    public const string AUDIENCE = $"https://{DOMAIN}/api/v2/";
 
-    public const string REDIRECTURI2 = "http://localhost:5012/callback/";
+    public const string REDIRECTURI2 = "http://localhost:5007/";
     public const string ROLES_URL = "http://dev-b2f7avjyddz6kpot.us.auth0.comroles";
 
     public const string ADMIN_ID = "rol_UhqXdIfzGmE8Tmo5";

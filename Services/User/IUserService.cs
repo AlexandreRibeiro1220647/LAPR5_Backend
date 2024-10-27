@@ -8,7 +8,4 @@ public interface IUserService
     Task<IEnumerable<Models.User.User>> GetAllUsersAsync();
     Task<Models.User.User> GetUserByEmail(string email);
 
-    Task createUserAuth0(RegisterUserDTO model);
-    Task changePassword(string email);
-
 }
