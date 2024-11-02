@@ -12,8 +12,6 @@ public class UserServiceTests
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
     private readonly Mock<IUserRepository> _userRepositoryMock = new();
     private readonly Mock<ILogger<IUserService>> _loggerMock = new();
-    private readonly Mock<IConfiguration> _configMock = new();
-    private readonly Mock<HttpClient> _httpClientMock = new();
     private readonly UserService _userService;
     private readonly Mock<IUserMapper> _mapperMock;
 
@@ -23,9 +21,7 @@ public class UserServiceTests
         _userService = new UserService(
             _unitOfWorkMock.Object,
             _userRepositoryMock.Object,
-            _loggerMock.Object,
-            _configMock.Object,
-            _httpClientMock.Object
+            _loggerMock.Object
         );
         _mapperMock = new Mock<IUserMapper>();
 

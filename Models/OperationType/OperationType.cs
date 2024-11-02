@@ -13,20 +13,26 @@ public class OperationType : Entity<OperationTypeID>
 
         public OperationType(string operationName, List<string> requiredStaffBySpecialization, TimeSpan estimatedDuration)
         {
-            assureDurationPositive(estimatedDuration);
-
             Id = new OperationTypeID(Guid.NewGuid());
             Name = operationName;
             RequiredStaffBySpecialization = requiredStaffBySpecialization;
             EstimatedDuration = estimatedDuration;
             IsActive = true; 
         }
-
-        private void assureDurationPositive(TimeSpan estimatedDuration) {
-            if (estimatedDuration < TimeSpan.FromMilliseconds(0)) {
-                throw new ArgumentOutOfRangeException("Duration can't be negative.");
-            }
+        public void UpdateName(string name){
+            this.Name = name;
         }
 
+        public void UpdateRequiredStaffBySpecialization(List<string> requiredStaffBySpecialization){
+            this.RequiredStaffBySpecialization = requiredStaffBySpecialization;
+        }
+
+        public void UpdateEstimatedDuration(TimeSpan estimatedDuration){
+            this.EstimatedDuration = estimatedDuration;
+        }
+
+        public void Delete(){
+            this.IsActive = false;
+        }
     }
 }
