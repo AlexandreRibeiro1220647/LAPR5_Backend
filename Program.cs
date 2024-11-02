@@ -45,7 +45,7 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = $"https://{domain}",
 
         ValidateAudience = true,
-        ValidAudience = audience,
+        ValidAudience = audience, // Add both API and Client ID
 
         ValidateLifetime = true,
 
@@ -66,23 +66,10 @@ builder.Services.AddAuthentication(options =>
             return Task.CompletedTask;
         }
     };
-
-                // Configure to map the custom role namespace claim to ClaimTypes.Role
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        RoleClaimType = "https://myapp.com/roles"  // use the namespace from the Auth0 rule
-    };
 });
-// Bind Auth0 settings from appsettings.json
-builder.Services.Configure<Auth0Settings>(builder.Configuration.GetSection("Auth0"));
-
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("PatientPolicy", policy =>
-        {
-            policy.RequireClaim(Auth0Data.ROLES_URL, "Patient");
-        });
     options.AddPolicy("AdminPolicy", policy =>
     {
         policy.RequireClaim(Auth0Data.ROLES_URL, "Admin");
@@ -91,11 +78,23 @@ builder.Services.AddAuthorization(options =>
     {
         policy.RequireClaim(Auth0Data.ROLES_URL, "Doctor");
     });
+    options.AddPolicy("TechnicianPolicy", policy =>
+        {
+            policy.RequireClaim(Auth0Data.ROLES_URL, "Technician");
+    });
+    options.AddPolicy("NursePolicy", policy =>
+        {
+            policy.RequireClaim(Auth0Data.ROLES_URL, "Nurse");
+    });
+    options.AddPolicy("PatientPolicy", policy =>
+        {
+            policy.RequireClaim(Auth0Data.ROLES_URL, "Patient");
+    });
     options.AddPolicy("BackOfficeUserPolicy", policy =>
     {
         policy.RequireAssertion(context =>
             context.User.HasClaim(c => c.Type == Auth0Data.ROLES_URL && 
-                                        (c.Value == "Admin" || c.Value == "Doctor")));
+                                        (c.Value == "Admin" || c.Value == "Doctor" || c.Value == "Technician" || c.Value == "Nurse")));
     });
 });
 

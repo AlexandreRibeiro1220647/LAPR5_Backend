@@ -30,35 +30,15 @@ namespace TodoApi.Controllers
             _loginService = loginService;
         }
 
-        [HttpPost("GoThroughAuthorizeAsync")]
-        public async Task<IActionResult> GoThroughAuthorizeAsync([FromBody] string url) {
-            
-            System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
-
-            var access_token = HttpContext.Session.GetString("AccessToken");
-
-            using (var client = new HttpClient())
-            {
-                // Add the Authorization header with Bearer token
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
-
-                // Make the authorized request
-
-                var response = await client.GetAsync($"http://localhost:5012/api/User/{url}");
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var data = await response.Content.ReadAsStringAsync();
-                    return Content(data);
-                }
-                else
-                {
-                    return Unauthorized();
-                }
-            }
+        [HttpPost("authenticate")]
+        public async Task<ActionResult<string>> AuthenticateUser()
+        {
+            await _loginService.AuthenticateUser();
+            return Ok();
         }
 
         // GET: api/Users
+        [Authorize(Policy = "AdminPolicy")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
@@ -73,7 +53,8 @@ namespace TodoApi.Controllers
             }
         } 
 
-        // GET: api/Users/5
+        // GET: api/Users/{email}
+        [Authorize(Policy = "AdminPolicy")]
         [HttpGet("{email}")]
         public async Task<ActionResult<User>> GetUser(string email)
         {
@@ -88,7 +69,7 @@ namespace TodoApi.Controllers
             }
         }
 
-        
+        [Authorize(Policy = "AdminPolicy")]
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUser([FromBody] RegisterUserDTO model)
         {
@@ -106,16 +87,7 @@ namespace TodoApi.Controllers
             }
         }
 
-        
-        [HttpPost("authenticate")]
-        public async Task<ActionResult<string>> AuthenticateUser()
-        {
-            // Call the method from AuthServicePatient
-            _loginService.AuthenticateUser();
-
-            return Ok(); // Return a success response
-        }
-
+        [Authorize(Policy = "BackOfficeUserPolicy")]
         [HttpPost("changePassword")]
         public async Task<IActionResult> ChangePassword([FromBody] String email)
         {
@@ -129,13 +101,6 @@ namespace TodoApi.Controllers
             {
                 return BadRequest(e.Message);
             }
-        }
-
-        [Authorize]
-        [HttpGet("index")]
-        public IActionResult Index()
-        {
-            return Content("Login successful");
         }
     }
 }

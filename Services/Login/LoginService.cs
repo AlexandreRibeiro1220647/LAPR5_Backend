@@ -1,4 +1,5 @@
 
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
@@ -21,17 +22,14 @@ public class LoginService : ILoginService {
         private const string CLIENT_SECRET = Auth0Data.CLIENT_SECRET;
         private const string REDIRECTURI = Auth0Data.REDIRECTURI;
         private const string REDIRECTURI2 = Auth0Data.REDIRECTURI2;
-        private const string AUDIENCE = $"https://{DOMAIN}/api/v2/";
+        private const string AUDIENCE = Auth0Data.AUDIENCE;
 
 
         public async Task<string> AuthenticateUser()
         {
-            var clientId = CLIENT_ID; // Auth0 Client ID
-            var domain = DOMAIN; // Auth0 Domain
-            var redirectUri = REDIRECTURI; // Redirect URI
 
             // Adding 'prompt=login' to force new login
-            var authorizationUrl = $"https://{domain}/authorize?response_type=code&client_id={clientId}&redirect_uri={redirectUri}&scope=openid profile email=login";
+            var authorizationUrl = $"https://{DOMAIN}/authorize?response_type=code&client_id={CLIENT_ID}&redirect_uri={REDIRECTURI}&scope=openid profile email&&prompt=login";
             Console.WriteLine($"Redirecting to Auth0 for authentication: {authorizationUrl}");
 
             // Automatically open the Auth0 login page
@@ -44,23 +42,23 @@ public class LoginService : ILoginService {
             return null;
 
         }
-
-        public async Task<string> GetManagementApiTokenAsync()
+        public async Task<string> ExchangeAuthorizationCodeForTokensAsync(string code)
         {
-            using var client = new HttpClient();
+            var tokenUrl = $"https://{DOMAIN}/oauth/token";
 
             var tokenRequest = new
             {
-            client_id = CLIENT_ID,
-            client_secret = CLIENT_SECRET,
-            audience = AUDIENCE,
-            grant_type = "client_credentials",
-            scope = "create:users"
+                client_id = CLIENT_ID,
+                client_secret = CLIENT_SECRET,
+                code = code,
+                redirect_uri = REDIRECTURI,
+                grant_type = "authorization_code"
             };
 
             var requestContent = new StringContent(JsonConvert.SerializeObject(tokenRequest), Encoding.UTF8, "application/json");
 
-            var response = await client.PostAsync($"https://{DOMAIN}/oauth/token", requestContent);
+            using var client = new HttpClient();
+            var response = await client.PostAsync(tokenUrl, requestContent);
             var responseString = await response.Content.ReadAsStringAsync();
 
             if (!response.IsSuccessStatusCode)
@@ -69,123 +67,58 @@ public class LoginService : ILoginService {
             }
 
             var tokenResponse = JsonConvert.DeserializeObject<dynamic>(responseString);
-            var accessToken = tokenResponse.access_token;
 
-            // Optionally decode the token to check its scopes
-            Console.WriteLine($"Management API Token: {accessToken}");
-            return tokenResponse.access_token;
+    Console.WriteLine("Token Response: " + tokenResponse);
+
+            var id_token = tokenResponse.id_token;
+
+    Console.WriteLine("Access Token: " + id_token);
+            return id_token;
         }
 
-        public async Task<string> GetAuthenticationToken() {
+public async Task<string> GetManagementApiTokenAsync()
+{
+    using var client = new HttpClient();
 
-            var clientId = CLIENT_ID; // Auth0 Client ID
-            var domain = DOMAIN; // Auth0 Domain
-            var redirectUri = REDIRECTURI; // Redirect URI
+    var tokenRequest = new
+    {
+        client_id = CLIENT_ID,
+        client_secret = CLIENT_SECRET,
+        audience = $"https://{DOMAIN}/api/v2/",
+        grant_type = "client_credentials",
+        scope = "read:users create:users create:roles update:users update:roles create:client_grants read:client_grants read:roles"
+    };
 
-            // Wait for the callback and get the authorization code
-            string? code = await WaitForCodeAsync();
-            Console.WriteLine(code);
-            if (!string.IsNullOrEmpty(code))
-            {
-                // Exchange the authorization code for an access token and ID token
-                var tokenUrl = $"https://{domain}/oauth/token";
-                var tokenPayload = new
-                {
-                    client_id = clientId,
-                    client_secret = CLIENT_SECRET, // Replace with correct Client Secret
-                    code = code,
-                    redirect_uri = redirectUri,
-                    grant_type = "authorization_code"
-                };
+    var requestContent = new StringContent(JsonConvert.SerializeObject(tokenRequest), Encoding.UTF8, "application/json");
 
-                var json = System.Text.Json.JsonSerializer.Serialize(tokenPayload);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
+    var response = await client.PostAsync($"https://{DOMAIN}/oauth/token", requestContent);
+    var responseString = await response.Content.ReadAsStringAsync();
 
-                // Send request to Auth0 using the injected HttpClient
-                var response = await _httpClient.PostAsync(tokenUrl, content);
-                if (response.IsSuccessStatusCode)
-                {
-                    var result = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine("Token Response: " + result); // Log the entire response
+    if (!response.IsSuccessStatusCode)
+    {
+        throw new Exception($"Error retrieving token: {responseString}");
+    }
 
-                    var tokenResponse = System.Text.Json.JsonSerializer.Deserialize<JsonElement>(result);
-                    var accessToken = tokenResponse.GetProperty("access_token").GetString();
-                    var idToken = tokenResponse.GetProperty("id_token").GetString(); // Extract ID token
+    var tokenResponse = JsonConvert.DeserializeObject<dynamic>(responseString);
+    var accessToken = tokenResponse.access_token;
 
-                    return idToken;
-                }
-                else
-                {
-                    Console.WriteLine($"Error obtaining token: {response.StatusCode}");
-                }
-            }
+    Console.WriteLine($"Management API Token: {accessToken}");
+    return accessToken;
+}
 
-            return null;
-        }
+    public string GetEmailFromIdToken(string idToken)
+    {
+        // Initialize the JwtSecurityTokenHandler
+        var handler = new JwtSecurityTokenHandler();
+    
+        // Read the token
+        var jwtToken = handler.ReadJwtToken(idToken);
+    
+        // Retrieve the email claim
+        var email = jwtToken.Claims.FirstOrDefault(claim => claim.Type == "email")?.Value;
 
-                        // WaitForCodeAsync method
-        public async Task<string> WaitForCodeAsync()
-        {
-            using (var listener = new HttpListener()) // Create a new listener instance here
-            {
-                listener.Prefixes.Add(REDIRECTURI2);
-                listener.Start();
-                Console.WriteLine("Waiting for authentication...");
-
-                var context = await listener.GetContextAsync();
-                var code = context.Request.QueryString["code"];
-
-                // If the authorization code is null or empty, throw an exception
-                if (string.IsNullOrEmpty(code))
-                {
-                    Console.WriteLine("Verification on your email necessary to continue");
-                    return null;
-                }
-
-                // Send a response to the browser after the login is completed
-                using (var writer = new StreamWriter(context.Response.OutputStream))
-                {
-                    context.Response.StatusCode = 200;
-                    writer.WriteLine("Authentication completed. You can close this window.");
-                    writer.Flush(); // Ensure the response is sent to the browser
-                }
-
-                return code;
-            }
-        }
-
-        // ExtractEmailFromIdToken method
-        private string? ExtractEmailFromIdToken(string idToken)
-        {
-            try
-            {
-                var parts = idToken.Split('.');
-                if (parts.Length == 3)
-                {
-                    var payload = parts[1];
-                    // Add padding if necessary
-                    switch (payload.Length % 4)
-                    {
-                        case 2: payload += "=="; break;
-                        case 3: payload += "="; break;
-                    }
-                    var jsonBytes = Convert.FromBase64String(payload);
-                    var json = Encoding.UTF8.GetString(jsonBytes);
-                    var jsonElement = System.Text.Json.JsonSerializer.Deserialize<JsonElement>(json);
-                    return jsonElement.GetProperty("email").GetString();
-                }
-            }
-            catch (FormatException ex)
-            {
-                Console.WriteLine($"Error decoding ID token: {ex.Message}");
-            }
-            catch (System.Text.Json.JsonException ex)
-            {
-                Console.WriteLine($"Error processing JSON: {ex.Message}");
-            }
-            return null;
-        }
-
+        return email;
+    }
         public async Task createUserAuth0(RegisterUserDTO model) {
 
             // *****************************
@@ -204,9 +137,9 @@ public class LoginService : ILoginService {
             var user = new
             {
                 email = model.Email,
-                user_id = model.Email,  // Using email as user_id
+                user_id = model.Email,
                 password = "TemporaryPassword123_",
-                connection = "Username-Password-Authentication"  // Default Auth0 connection
+                connection = "Username-Password-Authentication"
             };
 
             // Send POST request to create the user
@@ -233,7 +166,7 @@ public class LoginService : ILoginService {
             {
                 users = new string[1] { "auth0|" + model.Email } // User identifier with 'auth0|' prefix
             };
-            var roleId = Auth0Data.map[model.Role.ToString()];  // Get the role ID for "Patient"
+            var roleId = Auth0Data.map[model.Role.ToString()];  // Get the role ID
 
             // Send POST request to assign the role
             requestContent = new StringContent(JsonConvert.SerializeObject(assignees), Encoding.UTF8, "application/json");
@@ -307,27 +240,6 @@ public class LoginService : ILoginService {
                 Console.WriteLine($"Error sending password reset email: {responseString}");
             }
         }
-
-        public async Task<UserInfo> GetUserInfoBySubjectAsync(string subject, string accessToken)
-{
-        using var client = new HttpClient();
-
-        // Fetch user info from the management API
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-        var response = await client.GetAsync($"https://{DOMAIN}/api/v2/users/{subject}");
-
-        if (response.IsSuccessStatusCode)
-        {
-            var result = await response.Content.ReadAsStringAsync();
-            // Deserialize the user information
-            var userInfo = JsonConvert.DeserializeObject<UserInfo>(result); // Create UserInfo class based on expected structure
-            return userInfo;
-        }
-        else
-        {
-            throw new Exception($"Error fetching user info: {response.StatusCode}");
-        }
-    }
 
     }
 }
