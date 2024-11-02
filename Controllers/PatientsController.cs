@@ -25,34 +25,6 @@ namespace TodoApi.Controllers
             _loginService = loginService;
         }
 
-        [HttpPost("GoThroughAuthorizeAsync")]
-        public async Task<IActionResult> GoThroughAuthorizeAsync([FromBody] string url) {
-            
-            System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
-
-            var access_token = HttpContext.Session.GetString("AccessToken");
-
-            using (var client = new HttpClient())
-            {
-                // Add the Authorization header with Bearer token
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
-
-                // Make the authorized request
-
-                var response = await client.GetAsync($"http://localhost:5012/api/Patients/{url}");
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var data = await response.Content.ReadAsStringAsync();
-                    return Content(data);
-                }
-                else
-                {
-                    return Unauthorized();
-                }
-            }
-        }
-        
         [HttpPost]
         public async Task<ActionResult<PatientDTO>> RegisterPatient([FromBody] RegisterPatientDTO dto) {
             try {
@@ -63,6 +35,7 @@ namespace TodoApi.Controllers
             }        
         }
 
+        
         [HttpPut("{id}")]
         public async Task<ActionResult<PatientDTO>> UpdatePatient(Guid id, [FromBody] UpdatePatientDTO dto) {
             try {

@@ -19,34 +19,6 @@ namespace TodoApi.Controllers
             _staffService = staffService;
         }
 
-        [HttpPost("GoThroughAuthorizeAsync")]
-        public async Task<IActionResult> GoThroughAuthorizeAsync([FromBody] string url) {
-            
-            System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
-
-            var access_token = HttpContext.Session.GetString("AccessToken");
-
-            using (var client = new HttpClient())
-            {
-                // Add the Authorization header with Bearer token
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", access_token);
-
-                // Make the authorized request
-
-                var response = await client.GetAsync($"http://localhost:5012/api/staff/{url}");
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var data = await response.Content.ReadAsStringAsync();
-                    return Content(data);
-                }
-                else
-                {
-                    return Unauthorized();
-                }
-            }
-        }
-
         [HttpPost("create")]
         public async Task<IActionResult> RegisterStaff([FromBody] CreateStaffDTO dto)
         {
@@ -61,7 +33,7 @@ namespace TodoApi.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Policy = "AdminPolicy")]
         [HttpGet]
         public async Task<IActionResult> GetStaff()
         {
