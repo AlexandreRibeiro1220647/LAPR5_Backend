@@ -1,6 +1,4 @@
 
-using System.Net;
-using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TodoApi.Services;
@@ -11,11 +9,11 @@ namespace TodoApi.Controllers;
 [ApiController]
 public class OperationRequestController : ControllerBase {
      
-     private readonly IOperationRequestService operationRequestService;
+    private readonly IOperationRequestService operationRequestService;
 
-     public OperationRequestController(IOperationRequestService operationRequestService){
+    public OperationRequestController(IOperationRequestService operationRequestService){
         this.operationRequestService = operationRequestService;
-     }
+    }
 
     [Authorize(Policy = "Doctor")]
     [HttpPost("create")]

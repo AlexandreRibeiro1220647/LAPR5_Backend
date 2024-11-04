@@ -1,13 +1,6 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using TodoApi.DTOs;
-using TodoApi.Infrastructure;
 using TodoApi.Models.Patient;
 using TodoApi.Services;
 using TodoApi.Services.Login;
@@ -25,7 +18,8 @@ namespace TodoApi.Controllers
             _loginService = loginService;
         }
 
-        [HttpPost]
+        [Authorize(Policy = "PatientPolicy")]
+        [HttpPost("register/patient")]
         public async Task<ActionResult<PatientDTO>> RegisterPatient([FromBody] RegisterPatientDTO dto) {
             try {
                 var patient = await _patientService.RegisterPatient(dto);
@@ -40,6 +34,17 @@ namespace TodoApi.Controllers
             }        
         }
 
+        [Authorize(Policy = "AdminPolicy")]
+        [HttpPost("register/admin")]
+        public async Task<ActionResult<PatientDTO>> RegisterPatientAdmin([FromBody] RegisterPatientDTO dto) {
+            try {
+                var patient = await _patientService.RegisterPatient(dto);
+
+                return Ok();
+            } catch (Exception e) {
+                return BadRequest(e.Message);
+            }        
+        }
         
         [HttpPut("{id}")]
         public async Task<ActionResult<PatientDTO>> UpdatePatient(Guid id, [FromBody] UpdatePatientDTO dto) {

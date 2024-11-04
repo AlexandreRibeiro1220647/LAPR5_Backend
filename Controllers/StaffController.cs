@@ -2,8 +2,6 @@ using TodoApi.Models.Staff;
 using TodoApi.DTOs;
 using TodoApi.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
-using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Authorization;
 
 namespace TodoApi.Controllers

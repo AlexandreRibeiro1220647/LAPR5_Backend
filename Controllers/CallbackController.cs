@@ -1,9 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Net;
-using System.Net.Http.Headers;
 using System.Security.Claims;
 using TodoApi.Services;
 using TodoApi.Services.Login;
