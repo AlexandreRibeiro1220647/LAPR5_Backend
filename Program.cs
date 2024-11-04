@@ -72,29 +72,40 @@ builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminPolicy", policy =>
     {
-        policy.RequireClaim(Auth0Data.ROLES_URL, "Admin");
+        policy.RequireAssertion(context =>
+            context.User.HasClaim(c => c.Type == Auth0Data.ROLES_URL && (c.Value == "Admin")) &&
+            context.User.HasClaim(c => c.Type == "email_verified" && c.Value == "true"));
     });
     options.AddPolicy("DoctorPolicy", policy =>
     {
-        policy.RequireClaim(Auth0Data.ROLES_URL, "Doctor");
+    policy.RequireAssertion(context =>
+            context.User.HasClaim(c => c.Type == Auth0Data.ROLES_URL && (c.Value == "Doctor")) &&
+            context.User.HasClaim(c => c.Type == "email_verified" && c.Value == "true"));
     });
     options.AddPolicy("TechnicianPolicy", policy =>
-        {
-            policy.RequireClaim(Auth0Data.ROLES_URL, "Technician");
+    {
+        policy.RequireAssertion(context =>
+            context.User.HasClaim(c => c.Type == Auth0Data.ROLES_URL && (c.Value == "Technician")) &&
+            context.User.HasClaim(c => c.Type == "email_verified" && c.Value == "true"));
     });
     options.AddPolicy("NursePolicy", policy =>
-        {
-            policy.RequireClaim(Auth0Data.ROLES_URL, "Nurse");
+    {
+        policy.RequireAssertion(context =>
+            context.User.HasClaim(c => c.Type == Auth0Data.ROLES_URL && (c.Value == "Nurse")) &&
+            context.User.HasClaim(c => c.Type == "email_verified" && c.Value == "true"));
     });
     options.AddPolicy("PatientPolicy", policy =>
-        {
-            policy.RequireClaim(Auth0Data.ROLES_URL, "Patient");
+    {
+        policy.RequireAssertion(context =>
+            context.User.HasClaim(c => c.Type == Auth0Data.ROLES_URL && (c.Value == "Patient")) &&
+            context.User.HasClaim(c => c.Type == "email_verified" && c.Value == "true"));
     });
     options.AddPolicy("BackOfficeUserPolicy", policy =>
     {
         policy.RequireAssertion(context =>
             context.User.HasClaim(c => c.Type == Auth0Data.ROLES_URL && 
-                                        (c.Value == "Admin" || c.Value == "Doctor" || c.Value == "Technician" || c.Value == "Nurse")));
+                                        (c.Value == "Admin" || c.Value == "Doctor" || c.Value == "Technician" || c.Value == "Nurse")) &&
+            context.User.HasClaim(c => c.Type == "email_verified" && c.Value == "true"));
     });
 });
 
