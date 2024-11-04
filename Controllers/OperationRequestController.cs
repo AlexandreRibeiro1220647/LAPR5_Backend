@@ -17,7 +17,8 @@ public class OperationRequestController : ControllerBase {
         this.operationRequestService = operationRequestService;
      }
 
-     [HttpPost("create")]
+    [Authorize(Policy = "Doctor")]
+    [HttpPost("create")]
     public async Task<IActionResult> CreateOperation([FromBody] CreateOperationRequestDTO dto)
     {
         try
@@ -31,6 +32,7 @@ public class OperationRequestController : ControllerBase {
         }
     }
 
+    [Authorize(Policy = "Doctor")]
     [HttpDelete]
     public async Task<IActionResult> DeleteOperation([FromQuery] Guid operationId)
     {
@@ -45,6 +47,7 @@ public class OperationRequestController : ControllerBase {
         }
     }
 
+    [Authorize(Policy = "Doctor")]
     [HttpPut("update/{id}")]
     public async Task<IActionResult> UpdateOperationRequest(Guid id, [FromBody] UpdateOperationRequestDTO dto)
     {
@@ -59,7 +62,7 @@ public class OperationRequestController : ControllerBase {
             }
         }
 
-    [Authorize]
+    [Authorize(Policy = "Doctor")]    
     [HttpGet]
     public async Task<IActionResult> GetOperations()
     {
@@ -73,8 +76,9 @@ public class OperationRequestController : ControllerBase {
             return BadRequest(e.Message);
         }
     }
-    
-     [HttpGet("search")]
+
+    [Authorize(Policy = "Doctor")]
+    [HttpGet("search")]
     public async Task<IActionResult> SearchOperationRequests([FromQuery] string? patientName, [FromQuery] string? patientId, [FromQuery] string? operationType, [FromQuery] string? priority, [FromQuery] string? status)
     {
         try
