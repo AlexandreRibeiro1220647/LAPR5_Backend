@@ -61,8 +61,8 @@ public class UserControllerTests
     public async Task RegisterUser_ShouldReturnOk_WhenUserIsRegistered()
     {
         // Arrange
-        var userDto = new RegisterUserDTO { Name = "New User", Email = "newuser@example.com" };
-        var user = new User(new UserEmail(userDto.Email), userDto.Name, UserRoles.Admin);
+        var userDto = new RegisterUserDTO("New User", "newuser@example.com", UserRoles.Admin);
+        var user = new User(new UserEmail(userDto.Email), userDto.Name, userDto.Role);
         var userResponseDto = new UserDTO { Email = userDto.Email, Name = userDto.Name }; // Adjust as needed
 
         // Setup the mock to return the UserDTO

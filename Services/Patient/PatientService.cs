@@ -10,6 +10,7 @@ using TodoApi.Models.Patient;
 using TodoApi.Mappers;
 using TodoApi.Infrastructure;
 using TodoApi.Infrastructure.Patient;
+using TodoApi.Services.User;
 
 
 namespace TodoApi.Services;
@@ -18,20 +19,20 @@ public class PatientService : IPatientService {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IPatientRepository _patientRepository;
     private readonly ILogger<IPatientService> _logger;
-    private readonly IConfiguration _config;
-    private readonly IUserRepository _userRepository;
+    private readonly IUserService _userService;
     private PatientMapper _mapper = new PatientMapper();
 
-    public PatientService(IUnitOfWork unitOfWork, IPatientRepository patientRepository, ILogger<IPatientService> logger, IConfiguration config, IUserRepository userRepository) {
+    public PatientService(IUnitOfWork unitOfWork, IPatientRepository patientRepository, ILogger<IPatientService> logger, IUserService userService) {
         _unitOfWork = unitOfWork;
         _patientRepository = patientRepository;
         _logger = logger;
-        _config = config;
-        _userRepository = userRepository;
+        _userService = userService;
     }
 
     public async Task<PatientDTO> RegisterPatient(RegisterPatientDTO dto) {
         try {
+            await _userService.CreateUser(new DTOs.User.RegisterUserDTO(dto.FullName, dto.Email, UserRoles.Patient));
+            
             Patient mapped = _mapper.toEntity(dto);
             await _patientRepository.AddAsync(mapped);
             PatientDTO mappedDto = _mapper.ToDto(mapped);

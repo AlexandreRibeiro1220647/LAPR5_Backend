@@ -5,9 +5,9 @@ public class Auth0Data
     public const string CLIENT_ID = "aPDW8t4xJC8D3wDnyn8BCC9lpAilc9jq";
     public const string CLIENT_SECRET = "M9EXNTVw9UQ7RKNURtk6YGg4is3ii_eZR7rG5XbSRLVu9zUWQb3X4xVrg28mZvN8";
     public const string REDIRECTURI = "http://localhost:5012/callback";
-    public const string AUDIENCE = "aPDW8t4xJC8D3wDnyn8BCC9lpAilc9jq";
+    public const string AUDIENCE = $"https://{DOMAIN}/api/v2/";
 
-    public const string REDIRECTURI2 = "http://localhost:5012/callback";
+    public const string REDIRECTURI_REGISTER_PATIENT = "http://localhost:5012/callback/register-patient";
     public const string ROLES_URL = "https://hellth.com/claims/roles";
 
     public const string ADMIN_ID = "rol_UhqXdIfzGmE8Tmo5";

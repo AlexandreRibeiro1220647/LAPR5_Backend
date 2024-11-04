@@ -21,11 +21,11 @@ public class LoginService : ILoginService {
         private const string CLIENT_ID = Auth0Data.CLIENT_ID;
         private const string CLIENT_SECRET = Auth0Data.CLIENT_SECRET;
         private const string REDIRECTURI = Auth0Data.REDIRECTURI;
-        private const string REDIRECTURI2 = Auth0Data.REDIRECTURI2;
+        private const string REDIRECTURI_REGISTER_PATIENT = Auth0Data.REDIRECTURI_REGISTER_PATIENT;
         private const string AUDIENCE = Auth0Data.AUDIENCE;
 
 
-        public async Task<string> AuthenticateUser()
+        public Task<string> AuthenticateUser()
         {
 
             // Adding 'prompt=login' to force new login
@@ -42,6 +42,25 @@ public class LoginService : ILoginService {
             return null;
 
         }
+
+        public Task<string> RegisterPatient()
+        {
+
+            // Adding 'prompt=login' to force new login
+            var authorizationUrl = $"https://{DOMAIN}/authorize?response_type=code&client_id={CLIENT_ID}&redirect_uri={REDIRECTURI_REGISTER_PATIENT}&scope=openid profile email&&prompt=login";
+            Console.WriteLine($"Redirecting to Auth0 for authentication: {authorizationUrl}");
+
+            // Automatically open the Auth0 login page
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = authorizationUrl,
+                UseShellExecute = true
+            });
+
+            return null;
+
+        }
+
         public async Task<string> ExchangeAuthorizationCodeForTokensAsync(string code)
         {
             var tokenUrl = $"https://{DOMAIN}/oauth/token";
@@ -68,11 +87,11 @@ public class LoginService : ILoginService {
 
             var tokenResponse = JsonConvert.DeserializeObject<dynamic>(responseString);
 
-    Console.WriteLine("Token Response: " + tokenResponse);
+            Console.WriteLine("Token Response: " + tokenResponse);
 
             var id_token = tokenResponse.id_token;
 
-    Console.WriteLine("Access Token: " + id_token);
+            Console.WriteLine("Access Token: " + id_token);
             return id_token;
         }
 
@@ -84,7 +103,7 @@ public async Task<string> GetManagementApiTokenAsync()
     {
         client_id = CLIENT_ID,
         client_secret = CLIENT_SECRET,
-        audience = $"https://{DOMAIN}/api/v2/",
+        audience = AUDIENCE,
         grant_type = "client_credentials",
         scope = "read:users create:users create:roles update:users update:roles create:client_grants read:client_grants read:roles"
     };
@@ -105,20 +124,6 @@ public async Task<string> GetManagementApiTokenAsync()
     Console.WriteLine($"Management API Token: {accessToken}");
     return accessToken;
 }
-
-    public string GetEmailFromIdToken(string idToken)
-    {
-        // Initialize the JwtSecurityTokenHandler
-        var handler = new JwtSecurityTokenHandler();
-    
-        // Read the token
-        var jwtToken = handler.ReadJwtToken(idToken);
-    
-        // Retrieve the email claim
-        var email = jwtToken.Claims.FirstOrDefault(claim => claim.Type == "email")?.Value;
-
-        return email;
-    }
         public async Task createUserAuth0(RegisterUserDTO model) {
 
             // *****************************
@@ -241,5 +246,77 @@ public async Task<string> GetManagementApiTokenAsync()
             }
         }
 
+        public async Task defineIAMRoleAsPatient(string id_token) {
+
+            string user_id = GetSubjectFromIdToken(id_token);
+            
+            // *****************************
+            // Role assignment
+            // *****************************
+
+            var accessToken = await GetManagementApiTokenAsync(); // Obtain Auth0 Management API token
+
+            using var client = new HttpClient();
+
+            // Set authorization header with the Management API access token
+            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+
+            var assignees = new
+            {
+                users = new string[1] { user_id } // User identifier with 'auth0|' prefix
+            };
+            var roleId = Auth0Data.map["Patient"];  // Get the role ID
+
+            // Send POST request to assign the role
+            var requestContent = new StringContent(JsonConvert.SerializeObject(assignees), Encoding.UTF8, "application/json");
+            var response = await client.PostAsync($"https://{DOMAIN}/api/v2/roles/{roleId}/users", requestContent);
+            var responseString = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine($"{roleId}, Patient role assigned successfully.");
+            }
+            else
+            {
+                Console.WriteLine($"Error assigning role: {responseString}");
+                throw new InvalidDataException("Role does not exist in the system");
+            }
+        }
+
+        public string GetEmailFromIdToken(string idToken)
+        {
+            // Initialize the JwtSecurityTokenHandler
+            var handler = new JwtSecurityTokenHandler();
+    
+            // Read the token
+            var jwtToken = handler.ReadJwtToken(idToken);
+    
+            // Retrieve the email claim
+            var email = jwtToken.Claims.FirstOrDefault(claim => claim.Type == "email")?.Value;
+
+            return email;
+        }
+
+        public string GetSubjectFromIdToken(string idToken)
+        {
+            var handler = new JwtSecurityTokenHandler();
+    
+            // Validate if the token is in a proper JWT format
+            if (handler.CanReadToken(idToken))
+            {
+                // Decode the token
+                var jsonToken = handler.ReadJwtToken(idToken);
+        
+                // Retrieve the "sub" claim
+                var subjectClaim = jsonToken.Claims.FirstOrDefault(c => c.Type == "sub");
+        
+                return subjectClaim?.Value; // Returns null if "sub" is not found
+            }
+            else
+            {
+                throw new ArgumentException("Invalid ID token format.");
+            }
+        }
     }
 }

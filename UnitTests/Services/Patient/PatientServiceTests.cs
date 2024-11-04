@@ -8,16 +8,15 @@ using TodoApi.Models.Patient;
 using TodoApi.Models.Shared;
 using TodoApi.Models;
 using TodoApi.Infrastructure.Patient;
+using TodoApi.Services.User;
 
 public class PatientServiceTests
 {
     private readonly Mock<IPatientRepository> _patientRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<ILogger<IPatientService>> _loggerMock;
-    private readonly Mock<IConfiguration> _configMock;
     private readonly PatientService _patientService;
-    private readonly Mock<IUserRepository> _userRepositoryMock;
-    private readonly Mock<IPatientMapper> _mapperMock;
+    private readonly Mock<IUserService> _userService;
 
 
     public PatientServiceTests()
@@ -25,9 +24,7 @@ public class PatientServiceTests
         _patientRepositoryMock = new Mock<IPatientRepository>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
         _loggerMock = new Mock<ILogger<IPatientService>>();
-        _configMock = new Mock<IConfiguration>();
-        _userRepositoryMock = new Mock<IUserRepository>();
-        _patientService = new PatientService(_unitOfWorkMock.Object, _patientRepositoryMock.Object, _loggerMock.Object, _configMock.Object, _userRepositoryMock.Object);
+        _patientService = new PatientService(_unitOfWorkMock.Object, _patientRepositoryMock.Object, _loggerMock.Object, _userService.Object);
 
     }
     [Fact]

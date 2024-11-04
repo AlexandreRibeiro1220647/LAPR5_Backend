@@ -16,10 +16,12 @@ namespace TodoApi.Controllers
 
         private readonly EmailService _emailService;
         private readonly ILoginService _loginService;
+        private readonly IPatientService _patientService;
 
-        public CallbackController(EmailService emailService, ILoginService loginService){
+        public CallbackController(EmailService emailService, ILoginService loginService, IPatientService patientService){
             _emailService = emailService;
             _loginService = loginService;
+            _patientService = patientService;
         }
 
         [HttpGet]
@@ -54,6 +56,42 @@ namespace TodoApi.Controllers
 
         }
 
+        [HttpGet("register-patient")]
+        public async Task<IActionResult> RegisterPatient([FromQuery] string code)
+        {   
+            string email = HttpContext.Session.GetString("patient_email");
+            if (string.IsNullOrEmpty(code))
+            {
+                await _patientService.DeletePatientByEmailAsync(email);
+                HttpContext.Session.Remove("patient_email");
+                return BadRequest("Authorization code is missing.");
+            }
+
+            var id_token = "";
+
+            try {
+                id_token = await _loginService.ExchangeAuthorizationCodeForTokensAsync(code);
+                HttpContext.Session.SetString("id_token", id_token);
+            } catch (Exception e) {
+                await _patientService.DeletePatientByEmailAsync(email);
+                HttpContext.Session.Remove("patient_email");
+                return BadRequest($"Error exchanging code for tokens.\n{e.ToString}");
+            }
+
+            string email_from_id = _loginService.GetEmailFromIdToken(id_token);
+
+            if (!email.Equals(email_from_id)) {
+                await _patientService.DeletePatientByEmailAsync(email);
+                HttpContext.Session.Remove("patient_email");
+                return BadRequest("Email registered in the application is different from the one used to register in the IAM.");
+            }
+
+            HttpContext.Session.Remove("patient_email");
+
+            await _loginService.defineIAMRoleAsPatient(id_token);
+
+            return Ok("Patient registered successfully");
+        }
 
     }
 }

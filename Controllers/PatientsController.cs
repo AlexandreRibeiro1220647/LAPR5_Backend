@@ -29,7 +29,12 @@ namespace TodoApi.Controllers
         public async Task<ActionResult<PatientDTO>> RegisterPatient([FromBody] RegisterPatientDTO dto) {
             try {
                 var patient = await _patientService.RegisterPatient(dto);
-                return Ok(patient);
+
+                HttpContext.Session.SetString("patient_email", dto.Email);
+
+                await _loginService.RegisterPatient();
+
+                return Ok();
             } catch (Exception e) {
                 return BadRequest(e.Message);
             }        

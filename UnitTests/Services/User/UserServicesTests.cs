@@ -30,7 +30,7 @@ public class UserServiceTests
     public async Task CreateUser_ShouldReturnMappedUserDTO_WhenUserIsValid()
     {
         // Arrange
-        var registerUserDto = new RegisterUserDTO { Name = "Test User", Email = "test@example.com", Role = UserRoles.Admin };
+        var registerUserDto = new RegisterUserDTO("New User", "newuser@example.com", UserRoles.Admin);
         var user = new User(new UserEmail(registerUserDto.Email), registerUserDto.Name, registerUserDto.Role);
        var expectedUserDto = new UserDTO { Name = user.Name, Email = user.Email.Value, Role = user.Role.ToString() };
 
@@ -56,7 +56,7 @@ public class UserServiceTests
     public async Task CreateUser_ShouldThrowException_WhenUserCreationFails()
     {
         // Arrange
-        var registerUserDto = new RegisterUserDTO { Name = "Test User", Email = "test@example.com", Role = UserRoles.Admin };
+        var registerUserDto = new RegisterUserDTO("New User", "newuser@example.com", UserRoles.Admin);
         var exceptionMessage = "Database Error";
 
         // Setup mapper to return a user entity
