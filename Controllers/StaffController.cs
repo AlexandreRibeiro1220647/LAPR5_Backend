@@ -106,7 +106,7 @@ namespace TodoApi.Controllers
                 return BadRequest(e.Message);
             }
         }
-
+        [HttpPut("update/{id}")]
         [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> UpdateStaff(Guid id, [FromBody] UpdateStaffDTO dto)
         {
@@ -120,7 +120,8 @@ namespace TodoApi.Controllers
                 return BadRequest(e.Message);
             }
         }
-
+        
+        [HttpDelete("{id}")]
         [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> InactivateStaff(Guid id, [FromBody] UpdateStaffDTO dto)
         {   try
