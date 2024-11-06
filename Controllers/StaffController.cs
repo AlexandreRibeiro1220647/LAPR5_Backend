@@ -17,6 +17,7 @@ namespace TodoApi.Controllers
             _staffService = staffService;
         }
 
+        [Authorize(Policy = "AdminPolicy")]
         [HttpPost("create")]
         public async Task<IActionResult> RegisterStaff([FromBody] CreateStaffDTO dto)
         {
@@ -46,7 +47,7 @@ namespace TodoApi.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Policy = "AdminPolicy")]
         [HttpGet("search/specialization/{specialization}")]
         public async Task<ActionResult<List<object>>> SearchBySpecialization(string specialization)
         {
@@ -61,7 +62,7 @@ namespace TodoApi.Controllers
             }
         }
         
-        [Authorize]
+        [Authorize(Policy = "AdminPolicy")]
         [HttpGet("search/name/{name}")]
         public async Task<ActionResult<List<StaffDTO>>> SearchByName(string name)
         {
@@ -76,7 +77,7 @@ namespace TodoApi.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Policy = "AdminPolicy")]
         [HttpGet("search/email/{email}")]
         public async Task<ActionResult<List<StaffDTO>>> SearchByEmail(string email)
         {
@@ -91,7 +92,7 @@ namespace TodoApi.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Policy = "AdminPolicy")]
         [HttpGet("search/status/{status}")]
         public async Task<ActionResult<List<StaffDTO>>> SearchByStatus(StaffStatus status)
         {
@@ -106,7 +107,7 @@ namespace TodoApi.Controllers
             }
         }
 
-        [HttpPut("update/{id}")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> UpdateStaff(Guid id, [FromBody] UpdateStaffDTO dto)
         {
             try
@@ -120,7 +121,7 @@ namespace TodoApi.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> InactivateStaff(Guid id, [FromBody] UpdateStaffDTO dto)
         {   try
             {
