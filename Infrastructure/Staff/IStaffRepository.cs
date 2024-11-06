@@ -10,6 +10,7 @@ namespace TodoApi.Infrastructure.Staff
         Task<List<Models.Staff.Staff>> SearchByName(string name);
         Task<List<Models.Staff.Staff>> SearchBySpecialization(string specialization);
         Task<List<Models.Staff.Staff>> SearchByEmail(string email);
+        Task<IEnumerable<Staff>> SearchByRole(string role);
         Task<List<Models.Staff.Staff>> SearchByStatus(StaffStatus status);
         Task<Models.Staff.Staff> GetByPhoneAsync(string phone);
     }

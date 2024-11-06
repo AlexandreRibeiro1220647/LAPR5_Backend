@@ -28,6 +28,9 @@ public class StaffEntityTypeConfiguration : IEntityTypeConfiguration<Models.Staf
             s => new UserEmail(s)
         );
 
+        builder.Property(s => s.UserId)
+               .IsRequired();
+
         builder.Property(s => s.Email)
             .HasConversion(userEmailConverter);
 

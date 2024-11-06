@@ -20,13 +20,14 @@ namespace TodoApi.Mappers
                 availabilitySlots.Add(availabilitySlot);
             }
 
+            var availabilitySlotsObj = new AvailabilitySlots(availabilitySlots);
+
             return new Staff(
-                new FullName(createDto.FullName),
                 new Specialization(createDto.Specialization),
-                new UserEmail(createDto.Email),
                 new Phone(createDto.Phone),
-                new AvailabilitySlots(availabilitySlots),
-                createDto.Status
+                availabilitySlotsObj,
+                createDto.Status,
+                createDto.UserId
             );
         }
         public Staff ToEntity(StaffDTO dto)
@@ -42,12 +43,11 @@ namespace TodoApi.Mappers
             var availabilitySlotsObj = new AvailabilitySlots(availabilitySlots);
 
             return new Staff(
-                new FullName(dto.FullName),
                 new Specialization(dto.Specialization),
-                new UserEmail(dto.Email),
                 new Phone(dto.Phone),
                 availabilitySlotsObj,
-                dto.Status
+                dto.Status,
+                dto.UserId
             );
         }
 
@@ -65,15 +65,15 @@ namespace TodoApi.Mappers
                 availabilitySlotDTOs.Add(availabilitySlotDTO);
             }
 
-            return new StaffDTO(
-                entity.FullName.fullName,
-                entity.Specialization.Area,
-                entity.Id.AsString(),
-                entity.Email.Value,
-                entity.Phone.phoneNumber,
-                availabilitySlotDTOs,
-                entity.Status
-            );
+            return new StaffDTO
+            {
+                Specialization = entity.Specialization.Value,
+                LicenseNumber = entity.Id.Value,
+                Phone = entity.Phone.Value,
+                AvailabilitySlots = availabilitySlotDTOs,
+                Status = entity.Status,
+                UserId = entity.UserId
+            };
         }
 
         public Staff toEntity(CreateStaffDTO createDto)
