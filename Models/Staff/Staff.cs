@@ -6,23 +6,16 @@ namespace TodoApi.Models.Staff
 {
     public class Staff : Entity<LicenseNumber>
     {
+        public FullName FullName { get; private set; }
         public Specialization Specialization { get; private set; }
+        public UserEmail Email { get; private set; }
         public Phone Phone { get; private set; }
         public AvailabilitySlots AvailabilitySlots { get; private set; }
         public StaffStatus Status { get; private set; }
-        public string UserId { get; private set; }
+
         public Staff() { }
 
-        public Staff(Specialization specialization, Phone phone, AvailabilitySlots availabilitySlots, StaffStatus status, string userId)
-        {
-            this.Specialization = specialization;
-            Id = new LicenseNumber(Guid.NewGuid().ToString());
-            this.Phone = phone;
-            this.AvailabilitySlots = availabilitySlots ?? new AvailabilitySlots();
-            this.Status = status.ACTIVE;
-            this.UserId = userId;
-        }
-        }
+        public Staff(FullName fullName, Specialization specialization, UserEmail email, Phone phone, AvailabilitySlots availabilitySlots, StaffStatus status)
         {
             this.FullName = fullName;
             this.Specialization = specialization;
@@ -31,18 +24,17 @@ namespace TodoApi.Models.Staff
             this.Phone = phone;
             this.AvailabilitySlots = availabilitySlots ?? new AvailabilitySlots();
             this.Status = StaffStatus.ACTIVE;
-            this.UserId = userId;
-            this.Roles = roles;
         }
 
-        public Staff(Specialization specialization, Phone phone, StaffStatus status, string userId)
+        public Staff(FullName fullName, Specialization specialization, UserEmail email, Phone phone, StaffStatus status)
         {
+            this.FullName = fullName;
             this.Specialization = specialization;
             Id = new LicenseNumber(Guid.NewGuid().ToString());
+            this.Email = email;
             this.Phone = phone;
-            this.AvailabilitySlots = new AvailabilitySlots();
-            this.Status = status.ACTIVE;
-            this.UserId = userId;
+            this.AvailabilitySlots = new AvailabilitySlots(new List<Slot>());
+            this.Status = StaffStatus.ACTIVE;
         }
 
         public void SetAvailabilitySlots(AvailabilitySlots availabilitySlots)

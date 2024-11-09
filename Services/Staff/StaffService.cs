@@ -6,10 +6,6 @@ using TodoApi.DTOs;
 using TodoApi.Mappers;
 using TodoApi.Infrastructure.Staff;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace TodoApi.Services
 {
@@ -17,15 +13,13 @@ namespace TodoApi.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IStaffRepository _staffRepository;
-        private readonly IUserRepository _userRepository; 
         private readonly ILogger<IStaffService> _logger;
         private StaffMapper _mapper = new StaffMapper();
 
-        public StaffService(IUnitOfWork unitOfWork, IStaffRepository staffRepository, IUserRepository userRepository, ILogger<IStaffService> logger)
+        public StaffService(IUnitOfWork unitOfWork, IStaffRepository staffRepository, ILogger<IStaffService> logger)
         {
             _unitOfWork = unitOfWork;
             _staffRepository = staffRepository;
-            _userRepository = userRepository; 
             _logger = logger;
         }
 
@@ -47,20 +41,10 @@ namespace TodoApi.Services
                     throw new Exception("O número de telefone já está em uso.");
                 }
 
-                // Obtem o User a partir do UserId
-                var user = await _userRepository.GetByIdAsync(new UserID(dto.UserId));
-                if (user == null)
-                {
-                    throw new Exception("Usuário não encontrado.");
-                }
+                Staff staff = _mapper.ToEntity(dto);
 
-                // Atualiza o DTO com informações do User
-                dto.Email = user.Email;
-                dto.FullName = user.FullName;
-                dto.Roles = user.Roles;
-
-                Staff staff = _mapper.ToEntity(dto,user);
                 await _staffRepository.AddAsync(staff);
+
                 await _unitOfWork.CommitAsync();
 
                 return _mapper.ToDto(staff);

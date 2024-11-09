@@ -22,12 +22,7 @@ namespace TodoApi.Infrastructure.Staff
         public async Task<List<Models.Staff.Staff>> SearchByName(string name)
         {
             return await _context.Staffs
-                .Join(_context.Users,
-                      staff => staff.UserId,
-                      user => user.Id,
-                      (staff, user) => new { Staff = staff, User = user })
-                .Where(su => su.User.FullName.Contains(name))
-                .Select(su => su.Staff)
+                .Where(s => s.FullName.fullName.Contains(name))
                 .ToListAsync();
         }
 
@@ -47,26 +42,10 @@ namespace TodoApi.Infrastructure.Staff
 
         public async Task<List<Models.Staff.Staff>> SearchByEmail(string email)
         {
-            return await _context.Staffs
-                .Join(_context.Users,
-                      staff => staff.UserId,
-                      user => user.Id,
-                      (staff, user) => new { Staff = staff, User = user })
-                .Where(su => su.User.Email == email)
-                .Select(su => su.Staff)
-                .ToListAsync();
-        }
-
-        public async Task<List<Models.Staff.Staff>> SearchByRole(string role)
-        {
-            return await _context.Staffs
-                .Join(_context.Users,
-                      staff => staff.UserId,
-                      user => user.Id,
-                      (staff, user) => new { Staff = staff, User = user })
-                .Where(su => su.User.Roles.Contains(role))
-                .Select(su => su.Staff)
-                .ToListAsync();
+            return _context.Staffs
+                .AsEnumerable()
+                .Where(s => s.Email.Value.Contains(email))
+                .ToList();
         }
 
         public async Task<Models.Staff.Staff> GetByPhoneAsync(string phone)
