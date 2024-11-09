@@ -13,36 +13,22 @@ namespace TodoApi.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IStaffRepository _staffRepository;
-        private readonly IUserRepository _userRepository;
         private readonly ILogger<IStaffService> _logger;
         private StaffMapper _mapper = new StaffMapper();
-        private readonly IUserService _userService;
 
-        public StaffService(IUnitOfWork unitOfWork, IStaffRepository staffRepository, IUserRepository userRepository, ILogger<IStaffService> logger, IUserService userService)  
+        public StaffService(IUnitOfWork unitOfWork, IStaffRepository staffRepository, ILogger<IStaffService> logger)
         {
             _unitOfWork = unitOfWork;
             _staffRepository = staffRepository;
             _logger = logger;
-            _userService = userService;
-            _userRepository = userRepository;
         }
 
         public async Task<StaffDTO> CreateStaff(CreateStaffDTO dto)
         {
             try
             {
-                // Obtem o User a partir do UserId
-                var user = await _userRepository.GetByIdAsync(new UserID(RegisterStaffDTO.UserId));
-                if (user == null)
-                {
-                    throw new Exception("Usuário não encontrado.");
-                }
-
-                // Cria um usuário associado ao staff
-                await _userService.CreateUser(new DTOs.User.RegisterUserDTO(dto.FullName, user.Email, dto.Role));                
-               
                 // Verifica se o email já existe
-                var existingEmails = await _staffRepository.SearchByEmail(user.Email);
+                var existingEmails = await _staffRepository.SearchByEmail(dto.Email);
                 if (existingEmails.Any())
                 {
                     throw new Exception("O email já está em uso.");
@@ -58,6 +44,7 @@ namespace TodoApi.Services
                 Staff staff = _mapper.ToEntity(dto);
 
                 await _staffRepository.AddAsync(staff);
+
                 await _unitOfWork.CommitAsync();
 
                 return _mapper.ToDto(staff);
