@@ -15,14 +15,14 @@ public class OperationRequestController : ControllerBase {
         this.operationRequestService = operationRequestService;
     }
 
-    [Authorize(Policy = "Doctor")]
+    //[Authorize(Policy = "Doctor")]
     [HttpPost("create")]
     public async Task<IActionResult> CreateOperation([FromBody] CreateOperationRequestDTO dto)
     {
         try
         {
-            var operation = await operationRequestService.CreateOperationRequest(dto);
-            return Ok(operation);
+            OperationRequestDTO operation = await operationRequestService.CreateOperationRequest(dto);
+            return CreatedAtAction(nameof(CreateOperation), new { id = operation.operationId }, operation);
         }
         catch (Exception e)
         {
@@ -30,7 +30,7 @@ public class OperationRequestController : ControllerBase {
         }
     }
 
-    [Authorize(Policy = "Doctor")]
+    //[Authorize(Policy = "Doctor")]
     [HttpDelete]
     public async Task<IActionResult> DeleteOperation([FromQuery] Guid operationId)
     {
@@ -45,7 +45,7 @@ public class OperationRequestController : ControllerBase {
         }
     }
 
-    [Authorize(Policy = "Doctor")]
+    //[Authorize(Policy = "Doctor")]
     [HttpPut("update/{id}")]
     public async Task<IActionResult> UpdateOperationRequest(Guid id, [FromBody] UpdateOperationRequestDTO dto)
     {
@@ -60,7 +60,7 @@ public class OperationRequestController : ControllerBase {
             }
         }
 
-    [Authorize(Policy = "Doctor")]    
+    //[Authorize(Policy = "Doctor")]    
     [HttpGet]
     public async Task<IActionResult> GetOperations()
     {
@@ -75,13 +75,13 @@ public class OperationRequestController : ControllerBase {
         }
     }
 
-    [Authorize(Policy = "Doctor")]
+   // [Authorize(Policy = "Doctor")]
     [HttpGet("search")]
-    public async Task<IActionResult> SearchOperationRequests([FromQuery] string? patientName, [FromQuery] string? patientId, [FromQuery] string? operationType, [FromQuery] string? priority, [FromQuery] string? status)
+    public async Task<IActionResult> SearchOperationRequests([FromQuery] string? patientName, [FromQuery] string? patientId, [FromQuery] string? operationType, [FromQuery] string? priority, [FromQuery] string? deadline)
     {
         try
         {
-            List<OperationRequestDTO> results = await operationRequestService.SearchOperations(patientName, patientId, operationType, priority, status);
+            List<OperationRequestDTO> results = await operationRequestService.SearchOperations(patientName, patientId, operationType, priority, deadline);
             return Ok(results);
         }
         catch (Exception e)
