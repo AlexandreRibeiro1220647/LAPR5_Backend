@@ -5,6 +5,7 @@ using TodoApi.Infrastructure.Staff;
 using TodoApi.Infrastructure.OperationRequest;
 using TodoApi.Infrastructure.OperationType;
 using TodoApi.Infrastructure.Patient;
+using TodoApi.Models.Auth;
 
 namespace TodoApi.Infrastructure;
 
@@ -24,7 +25,10 @@ public class IPOContext : DbContext
     public DbSet<Models.OperationType.OperationType> OperationTypes {get; set; }
 
     public DbSet<Models.Patient.Patient> Patients { get; set; }
+
     public DbSet<Models.Staff.Staff> Staffs { get; set; }
+
+    public DbSet<UserSession> UserSessions { get; set; } 
 
      protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -34,7 +38,7 @@ public class IPOContext : DbContext
             modelBuilder.ApplyConfiguration(new OperationTypeConfiguration());
             modelBuilder.ApplyConfiguration(new PatientConfiguration());
             modelBuilder.ApplyConfiguration(new OperationRequestLogConfiguration());
-
+            modelBuilder.ApplyConfiguration(new UserSessionConfiguration());
         }
     
 }
