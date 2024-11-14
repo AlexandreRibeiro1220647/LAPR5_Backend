@@ -6,6 +6,11 @@ using System.Text;
 using System.Text.Json;
 using Newtonsoft.Json;
 using TodoApi.DTOs.User;
+using TodoApi.DTOs.Auth;
+using TodoApi.Infrastructure;
+using TodoApi.Mappers;
+using TodoApi.Models.Auth;
+using TodoApi.Models.Shared;
 
 namespace TodoApi.Services.Login
 {
@@ -13,8 +18,15 @@ namespace TodoApi.Services.Login
 public class LoginService : ILoginService {
 
     private readonly HttpClient _httpClient;
-    public LoginService(HttpClient httpClient) {
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IUserSessionRepository _userSessionRepository;
+    private readonly ILogger<ILoginService> _logger;
+    private readonly UserSessionMapper mapper = new();
+    
+    public LoginService(HttpClient httpClient, IUnitOfWork unitOfWork, IUserSessionRepository userSessionRepository) {
         _httpClient = httpClient;
+        _userSessionRepository = userSessionRepository;
+        _unitOfWork = unitOfWork;
     }
 
         private const string DOMAIN = Auth0Data.DOMAIN;
@@ -25,12 +37,12 @@ public class LoginService : ILoginService {
         private const string AUDIENCE = Auth0Data.AUDIENCE;
 
 
-        public Task<string> AuthenticateUser()
+        public async Task<UserSessionDTO> AuthenticateUser(string sessionId)
         {
 
             // Adding 'prompt=login' to force new login
-            var authorizationUrl = $"https://{DOMAIN}/authorize?response_type=code&client_id={CLIENT_ID}&redirect_uri={REDIRECTURI}&scope=openid profile email&&prompt=login";
-            Console.WriteLine($"Redirecting to Auth0 for authentication: {authorizationUrl}");
+            var authorizationUrl = $"https://{DOMAIN}/authorize?response_type=code&client_id={CLIENT_ID}&redirect_uri={REDIRECTURI}&scope=openid profile email&&state={sessionId}&&prompt=login";
+            Console.WriteLine($"Redirecting to Auth0 for sign up: {authorizationUrl}");
 
             // Automatically open the Auth0 login page
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
@@ -39,11 +51,19 @@ public class LoginService : ILoginService {
                 UseShellExecute = true
             });
 
-            return null;
+            var session = new UserSessionDTO {
+                SessionId = sessionId,
+                AccessToken = "",
+                IsAuthenticated = false,
+            };
+
+            var usdto = await CreateSessionAsync(session);
+
+            return usdto;
 
         }
 
-        public Task<string> RegisterPatient()
+        public Task<string> SignUpPatient()
         {
 
             // Adding 'prompt=login' to force new login
@@ -87,11 +107,10 @@ public class LoginService : ILoginService {
 
             var tokenResponse = JsonConvert.DeserializeObject<dynamic>(responseString);
 
-            Console.WriteLine("Token Response: " + tokenResponse);
-
             var id_token = tokenResponse.id_token;
 
             Console.WriteLine("Access Token: " + id_token);
+            
             return id_token;
         }
 
@@ -316,6 +335,66 @@ public async Task<string> GetManagementApiTokenAsync()
             else
             {
                 throw new ArgumentException("Invalid ID token format.");
+            }
+        }
+
+        public async Task<UserSessionDTO> CreateSessionAsync(UserSessionDTO model)
+        {   
+            try
+            {
+                UserSession mapped = mapper.ToEntity(model);
+
+                await _userSessionRepository.AddAsync(mapped);
+
+                UserSessionDTO mappedDto = mapper.ToDto(mapped);
+
+                await _unitOfWork.CommitAsync();
+
+                return mappedDto;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message);
+                throw;
+            }
+        }
+
+
+        public async Task<UserSessionDTO> MarkSessionAsAuthenticated(string sessionId, string id_token)
+    {
+        try
+        {
+            
+            UserSession session = await _userSessionRepository.GetBySessionIDAsync(sessionId);
+
+            if (session == null)
+            {
+                throw new Exception("OperationRequest not found");
+            }
+            
+            session.updateToken(id_token);
+            session.authenticate();
+            // Save the changes
+            await _unitOfWork.CommitAsync();
+
+            return new UserSessionDTO(session.Id.ToString(), session.SessionId, session.AccessToken, session.IsAuthenticated);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error updating operation type");
+            throw;
+        }
+    }
+
+        public async Task<UserSession> GetSessionByIdAsync(string id) {
+            try
+            { 
+                return await _userSessionRepository.GetBySessionIDAsync(id);
+            }
+            catch (Exception e)
+            {
+                this._logger.LogError(e.Message);
+                throw; // Re-throw the exception to ensure it's not silently swallowed
             }
         }
     }

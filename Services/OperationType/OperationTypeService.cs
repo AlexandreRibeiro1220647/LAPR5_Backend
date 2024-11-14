@@ -72,7 +72,7 @@ public class OperationTypeService : IOperationTypeService
                 throw new Exception("OperationRequest not found");
             }
 
-        if (!dto.Name.Equals(""))
+        if (dto.Name != null)
         {
             existingOperationType.UpdateName(dto.Name);
         }
@@ -82,7 +82,7 @@ public class OperationTypeService : IOperationTypeService
             existingOperationType.UpdateEstimatedDuration(dto.EstimatedDuration.Value);
         }
 
-        if (dto.RequiredStaffBySpecialization.Count != 0)
+        if (dto.RequiredStaffBySpecialization != null)
         {
             existingOperationType.UpdateRequiredStaffBySpecialization(dto.RequiredStaffBySpecialization);
         }

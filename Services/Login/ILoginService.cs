@@ -1,11 +1,13 @@
 using TodoApi.DTOs.User;
+using TodoApi.DTOs.Auth;
+using TodoApi.Models.Auth;
 
 namespace TodoApi.Services.Login;
 
 public interface ILoginService
 {
-    Task<string>  AuthenticateUser();
-    Task<string> RegisterPatient();
+    Task<UserSessionDTO>  AuthenticateUser(string sessionId);
+    Task<string> SignUpPatient();
     Task<string> GetManagementApiTokenAsync();
     Task<string> ExchangeAuthorizationCodeForTokensAsync(string code);
     Task createUserAuth0(RegisterUserDTO model);
@@ -13,4 +15,7 @@ public interface ILoginService
     Task defineIAMRoleAsPatient(string email);
     string GetEmailFromIdToken(string idToken);
     string GetSubjectFromIdToken(string idToken);
+    Task<UserSessionDTO> CreateSessionAsync(UserSessionDTO model);
+    Task<UserSessionDTO> MarkSessionAsAuthenticated(string sessionId, string id_token);
+    Task<UserSession> GetSessionByIdAsync(string id);
 }

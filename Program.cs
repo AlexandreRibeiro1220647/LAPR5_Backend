@@ -152,6 +152,7 @@ builder.Services.AddScoped<IStaffRepository, StaffRepository>();
 builder.Services.AddScoped<IStaffService, StaffService>();
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<IOperationRequestLogRepository, OperationRequestLogRepository>();
+builder.Services.AddScoped<IUserSessionRepository, UserSessionRepository>();
 
 
 // Register UserService with HttpClient

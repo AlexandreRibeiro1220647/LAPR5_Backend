@@ -18,22 +18,24 @@ namespace TodoApi.Services;
 public class PatientService : IPatientService {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IPatientRepository _patientRepository;
+    private readonly IUserRepository _userRepository;
     private readonly ILogger<IPatientService> _logger;
     private readonly IUserService _userService;
     private PatientMapper _mapper = new PatientMapper();
 
-    public PatientService(IUnitOfWork unitOfWork, IPatientRepository patientRepository, ILogger<IPatientService> logger, IUserService userService) {
+    public PatientService(IUnitOfWork unitOfWork, IPatientRepository patientRepository, ILogger<IPatientService> logger, IUserService userService, IUserRepository userRepository) {
         _unitOfWork = unitOfWork;
         _patientRepository = patientRepository;
         _logger = logger;
         _userService = userService;
+        _userRepository = userRepository;
     }
 
     public async Task<PatientDTO> RegisterPatient(RegisterPatientDTO dto) {
         try {
-            await _userService.CreateUser(new DTOs.User.RegisterUserDTO(dto.FullName, dto.Email, UserRoles.Patient));
-            
-            Patient mapped = _mapper.toEntity(dto);
+            TodoApi.DTOs.User.UserDTO user = await _userService.CreateUser(new DTOs.User.RegisterUserDTO(dto.FullName, dto.Email, UserRoles.Patient));
+
+            Patient mapped = _mapper.toEntity(dto, user);
             await _patientRepository.AddAsync(mapped);
             PatientDTO mappedDto = _mapper.ToDto(mapped);
             await _unitOfWork.CommitAsync();
@@ -48,6 +50,7 @@ public class PatientService : IPatientService {
     public async Task<PatientDTO> UpdatePatientAsync(Guid id, UpdatePatientDTO dto) {
         try {
             Patient patient = await _patientRepository.GetByIdAsync(new MedicalRecordNumber(id));
+            TodoApi.Models.User.User user = await _userRepository.GetByIdAsync(new UserID(patient.user.Id));
             if (patient == null) {
                 throw new Exception("Patient does not exist");
             }
@@ -56,10 +59,12 @@ public class PatientService : IPatientService {
             patient.UpdateEmail(dto.Email);
             patient.UpdateMedicalConditions(dto.MedicalConditions);
             patient.UpdateEmergencyContact(dto.EmergencyContact);
+            user.UpdateFullName(dto.FullName);
+            user.UpdateEmail(dto.Email);
             await _unitOfWork.CommitAsync();
 
-            PatientDTO newPatientDto = new PatientDTO(patient.fullName.ToString(), patient.dateOfBirth.ToString(), patient.gender.ToString(), patient.Id.AsString(), 
-            patient.contactInformation.ToString(), patient.email.Value, patient.medicalConditions.medicalConditions, patient.emergencyContact.ToString(), patient.appointmentHistory.appointments);
+            PatientDTO newPatientDto = new PatientDTO(patient.dateOfBirth.ToString(), patient.gender.ToString(), patient.Id.AsString(), 
+            patient.contactInformation.ToString(), patient.medicalConditions.medicalConditions, patient.emergencyContact.ToString(), patient.appointmentHistory.appointments, new TodoApi.DTOs.User.UserDTO(user.Id.ToString(), user.Name, user.Email.Value, user.Role.ToString()));
             return newPatientDto;
         }
         catch (Exception e) {
@@ -78,28 +83,21 @@ public class PatientService : IPatientService {
         return patientDTOList;
     }
     
-    public async Task<bool> DeletePatientByEmailAsync(string email) {
+    public async Task<bool> DeletePatientByIDAsync(Guid id) {
         try {
-            var patient = await _patientRepository.GetByEmailAsync(email);
+            var patient = await _patientRepository.GetByIdAsync(new MedicalRecordNumber(id));
             if (patient == null) {
-                throw new Exception($"Patient with email {email} does not exist");
+                throw new Exception($"Patient with id {id} does not exist");
             }
             _patientRepository.Remove(patient);
             await _unitOfWork.CommitAsync();
-            _logger.LogInformation($"Patient with email {email} was deleted");
+            _logger.LogInformation($"Patient with email {id} was deleted");
             return true;
         }
         catch (Exception e) {
-            _logger.LogError(e, $"Error deleting patient with email {email}");
+            _logger.LogError(e, $"Error deleting patient with email {id}");
             throw;
         }
-    }
-    public async Task<PatientDTO> GetPatientByEmailAsync(string email) {
-        Patient patient = await _patientRepository.GetByEmailAsync(email);
-        if (patient == null) {
-            throw new Exception($"Patient with email {email} does not exist");
-        }
-        return _mapper.ToDto(patient);
     }
 
     public async Task<PatientDTO> GetPatientByIdAsync(Guid id) {
@@ -108,11 +106,6 @@ public class PatientService : IPatientService {
             throw new Exception($"Patient with id {id} does not exist");
         }
         return _mapper.ToDto(patient);
-    }
-
-    public async Task<List<PatientDTO>> GetPatientsByNameAsync(string name) {
-        List<Patient> patients = await _patientRepository.GetByNameAsync(name);
-        return patients.Select(p => _mapper.ToDto(p)).ToList();
     }
 
     public async Task<List<PatientDTO>> GetPatientsByContactInformationAsync(string contact) {
