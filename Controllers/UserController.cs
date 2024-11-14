@@ -23,12 +23,31 @@ namespace TodoApi.Controllers
         [HttpPost("authenticate")]
         public async Task<ActionResult<string>> AuthenticateUser()
         {
-            await _loginService.AuthenticateUser();
-            return Ok();
+            var sessionId = Guid.NewGuid().ToString();
+            await _loginService.AuthenticateUser(sessionId);
+
+            return Ok(new { message = "Login successful", sessionId = sessionId } );
+        }
+
+        [HttpGet("get-token/{sessionId}")]
+        public async Task<IActionResult> GetToken(string sessionId)
+        {
+            // Retrieve the token from the session
+            var userSession = await _loginService.GetSessionByIdAsync(sessionId);
+
+            Console.WriteLine("Access Token 2: " + userSession.AccessToken);
+
+            if (string.IsNullOrEmpty(userSession.AccessToken))
+            {
+                return Unauthorized(new { message = "Token not found" });
+            }
+
+            // Return the token
+            return Ok(new { userSession.AccessToken });
         }
 
         // GET: api/Users
-        [Authorize(Policy = "AdminPolicy")]
+        //[Authorize(Policy = "AdminPolicy")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {

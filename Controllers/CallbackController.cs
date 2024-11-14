@@ -1,11 +1,13 @@
+using Auth0.ManagementApi.Models.Users;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using TodoApi.Services;
 using TodoApi.Services.Login;
+using TodoApi.DTOs.Auth;
 
 namespace TodoApi.Controllers
 {
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class CallbackController : Controller
     {
 
@@ -20,13 +22,15 @@ namespace TodoApi.Controllers
         }
 
         [HttpGet]
-        public async Task Callback([FromQuery] string code)
+        public async Task<ActionResult> Callback([FromQuery] string code, [FromQuery] string state)
         {
 
             var id_token = await _loginService.ExchangeAuthorizationCodeForTokensAsync(code);
             HttpContext.Session.SetString("id_token", id_token);
 
-            return;
+            await _loginService.MarkSessionAsAuthenticated(state, id_token);
+
+            return Ok();
         }
 
         [HttpGet("post-activation")]
@@ -51,10 +55,19 @@ namespace TodoApi.Controllers
 
         }
 
+        [HttpGet("isAuth/{sessionId}")]
+        public async Task<bool> CheckIfSessionIsAuthenticated(string sessionId)
+        {
+            // Query the session data to see if it's marked as authenticated
+            var session =  await _loginService.GetSessionByIdAsync(sessionId);
+            return session?.IsAuthenticated ?? false;
+        }
+
+
         [HttpGet("register-patient")]
         public async Task<IActionResult> RegisterPatient([FromQuery] string code)
         {   
-            string email = HttpContext.Session.GetString("patient_email");
+            /*string email = HttpContext.Session.GetString("patient_email");
             if (string.IsNullOrEmpty(code))
             {
                 await _patientService.DeletePatientByEmailAsync(email);
@@ -81,9 +94,19 @@ namespace TodoApi.Controllers
                 return BadRequest("Email registered in the application is different from the one used to register in the IAM.");
             }
 
-            HttpContext.Session.Remove("patient_email");
+            HttpContext.Session.Remove("patient_email");*/
 
+            var id_token = await _loginService.ExchangeAuthorizationCodeForTokensAsync(code);
+            HttpContext.Session.SetString("id_token", id_token);
             await _loginService.defineIAMRoleAsPatient(id_token);
+
+            // Optionally, set the token as a HttpOnly cookie
+            Response.Cookies.Append("AuthToken", id_token, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true, // Only in HTTPS
+                SameSite = SameSiteMode.Strict
+            });
 
             return Ok("Patient registered successfully");
         }
