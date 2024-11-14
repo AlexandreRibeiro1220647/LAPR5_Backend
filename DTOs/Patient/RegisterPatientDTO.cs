@@ -3,7 +3,6 @@
 namespace TodoApi.DTOs;
 
 public class RegisterPatientDTO {
-    public string? Username { get; set; }
     public string FullName { get;  set; }
     public string DateOfBirth { get;  set; }
     public string Gender { get;  set; }

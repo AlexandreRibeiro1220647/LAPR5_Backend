@@ -23,4 +23,12 @@ public class User : Entity<UserID>
         Email = email;
         Id=new UserID(Guid.NewGuid());
     }
+
+    public void UpdateFullName(string fullName) {
+        this.Name = fullName;
+    }
+
+    public void UpdateEmail(string email) {
+        this.Email = new UserEmail(email);
+    }
 }

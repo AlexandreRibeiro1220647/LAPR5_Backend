@@ -14,20 +14,12 @@ public class PatientRepository : BaseRepository<Models.Patient.Patient, MedicalR
         _dbSet = dbContext.Set<Models.Patient.Patient>();
     }
 
-    public async Task<Models.Patient.Patient?> GetByEmailAsync(string email) {
-        return await _dbSet.FirstOrDefaultAsync(p => p.email == new UserEmail(email));
-    }
-
     public void DeletePatient(Models.Patient.Patient patient) {
         _dbSet.Remove(patient);
     }
 
     public async Task<Models.Patient.Patient?> GetByIdAsync(MedicalRecordNumber id) {
         return await _dbSet.FirstOrDefaultAsync(p => p.Id == id);
-    }
-
-    public async Task<List<Models.Patient.Patient>> GetByNameAsync(string name) {
-        return await _dbSet.Where(p => p.fullName.fullName.Equals(name)).ToListAsync();
     }
 
     public async Task<List<Models.Patient.Patient>> GetByContactInformationAsync(string contact) {
@@ -41,6 +33,11 @@ public class PatientRepository : BaseRepository<Models.Patient.Patient, MedicalR
    public async Task<List<Models.Patient.Patient>> GetByDateOfBirthAsync(DateOnly dateOfBirth) {
        return await _dbSet.Where(p => p.dateOfBirth.dateOfBirth == dateOfBirth).ToListAsync();
    }
+
+    public async Task<List<Models.Patient.Patient>> GetByUserAsync(TodoApi.DTOs.User.UserDTO user) {
+        return await _dbSet.Where(p => p.user.Id.Equals(user.Id)).ToListAsync();
+    }
+
    public async Task<bool> ExistsAsync(MedicalRecordNumber patientId)
     {
         return await _dbSet.AnyAsync(p => p.Id == patientId);

@@ -14,9 +14,6 @@ namespace TodoApi.Infrastructure.Patient {
 
             builder.Property(p => p.dateOfBirth).HasConversion(new ValueConverter<DateOfBirth, DateOnly>(b => b.dateOfBirth, d => new DateOfBirth(d)));
 
-            builder.Property(p => p.email).HasConversion(new ValueConverter<UserEmail, string>(e => e.Value, s => new UserEmail(s)));
-
-            builder.OwnsOne(p => p.fullName);
             builder.HasIndex(p => p.dateOfBirth);
             builder.HasIndex(p => p.gender);
             builder.OwnsOne(p => p.contactInformation, contactInfoBuilder =>
@@ -25,7 +22,6 @@ namespace TodoApi.Infrastructure.Patient {
                 .HasConversion(new ValueConverter<Phone, string>(p => p.phoneNumber, s => new Phone(s)));
 
             });
-            builder.HasIndex(p => p.email).IsUnique();
             builder.OwnsOne(p => p.medicalConditions);
             builder.OwnsOne(p => p.emergencyContact);
             builder.OwnsOne(p => p.emergencyContact, eContactInfoBuilder =>

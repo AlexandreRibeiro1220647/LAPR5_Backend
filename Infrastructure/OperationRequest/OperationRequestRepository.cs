@@ -32,7 +32,7 @@ public async Task<List<Models.OperationRequest.OperationRequest>> SearchAsync(st
 
     IQueryable<Models.OperationRequest.OperationRequest> query = _dbSet;
     
-    if(!string.IsNullOrEmpty(patientName)){
+    /*if(!string.IsNullOrEmpty(patientName)){
         
         var patients = await _patientRepository.GetByNameAsync(patientName);
 
@@ -46,7 +46,7 @@ public async Task<List<Models.OperationRequest.OperationRequest>> SearchAsync(st
         {
             return new List<Models.OperationRequest.OperationRequest>();
         }
-    } 
+    }*/
 
     if (!string.IsNullOrEmpty(operationTypeId))
     {

@@ -4,44 +4,41 @@ using TodoApi.Models.Shared;
 namespace TodoApi.Models.Patient;
 
 public class Patient : Entity<MedicalRecordNumber> {
-    public FullName fullName { get; private set; }
     public DateOfBirth dateOfBirth { get; private set; }
     public Gender gender { get; private set; }
     public ContactInformation contactInformation { get; private set; }
-    public UserEmail email { get; private set; }
     public MedicalConditions medicalConditions { get; private set; }
     public EmergencyContact emergencyContact { get; private set; }
     public AppointmentHistory appointmentHistory { get; private set; }
+    public TodoApi.DTOs.User.UserDTO user {get; private set; }
 
 
     public Patient() { }
 
-    public Patient(FullName fullName, DateOfBirth dateOfBirth, Gender gender, ContactInformation contactInformation, UserEmail email, MedicalConditions medicalConditions, EmergencyContact emergencyContact, AppointmentHistory appointmentHistory) {
-        this.fullName = fullName;
+    public Patient(DateOfBirth dateOfBirth, Gender gender, ContactInformation contactInformation, MedicalConditions medicalConditions, EmergencyContact emergencyContact, AppointmentHistory appointmentHistory, TodoApi.DTOs.User.UserDTO user) {
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
         Id = new MedicalRecordNumber(Guid.NewGuid());
         this.contactInformation = contactInformation;
-        this.email = email;
         this.medicalConditions = medicalConditions;
         this.emergencyContact = emergencyContact;
         this.appointmentHistory = appointmentHistory;
+        this.user = user;
     }
 
-    public Patient(FullName fullName, DateOfBirth dateOfBirth, Gender gender, MedicalRecordNumber medicalRecordNumber, ContactInformation contactInformation, UserEmail email, MedicalConditions medicalConditions, EmergencyContact emergencyContact, AppointmentHistory appointmentHistory) {
-        this.fullName = fullName;
+    public Patient(DateOfBirth dateOfBirth, Gender gender, MedicalRecordNumber medicalRecordNumber, ContactInformation contactInformation, MedicalConditions medicalConditions, EmergencyContact emergencyContact, AppointmentHistory appointmentHistory, TodoApi.DTOs.User.UserDTO user) {
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
         Id = medicalRecordNumber;
         this.contactInformation = contactInformation;
-        this.email = email;
         this.medicalConditions = medicalConditions;
         this.emergencyContact = emergencyContact;
         this.appointmentHistory = appointmentHistory;
+        this.user = user;
     }
 
     public void UpdateFullName(string fullName) {
-        this.fullName = new FullName(fullName);
+        this.user.Name = fullName;
     }
 
     public void UpdateContactInformation(string contact) {
@@ -53,7 +50,7 @@ public class Patient : Entity<MedicalRecordNumber> {
     }
 
     public void UpdateEmail(string email) {
-        this.email = new UserEmail(email);
+        this.user.Email = email;
     }
 
     public void UpdateMedicalConditions(string medicalConditions) {

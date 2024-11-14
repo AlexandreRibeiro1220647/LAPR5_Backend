@@ -18,6 +18,13 @@ namespace TodoApi.Controllers
             _loginService = loginService;
         }
 
+        [HttpPost("signup")]
+        public async Task<ActionResult<string>> SignUpPatient()
+        {
+            await _loginService.SignUpPatient();
+            return Ok();
+        }
+
         [Authorize(Policy = "PatientPolicy")]
         [HttpPost("register/patient")]
         public async Task<ActionResult<PatientDTO>> RegisterPatient([FromBody] RegisterPatientDTO dto) {
@@ -26,9 +33,7 @@ namespace TodoApi.Controllers
 
                 HttpContext.Session.SetString("patient_email", dto.Email);
 
-                await _loginService.RegisterPatient();
-
-                return Ok();
+                return Ok("Auth success");
             } catch (Exception e) {
                 return BadRequest(e.Message);
             }        
@@ -67,16 +72,7 @@ namespace TodoApi.Controllers
             }
         }
 
-        [Authorize]
-        [HttpGet("email/{email}")]
-                public async Task<ActionResult<PatientDTO>> GetPatientByEmail(string email) {
-                    try {
-                        var patient = await _patientService.GetPatientByEmailAsync(email);
-                        return Ok(patient);
-                    } catch (Exception e) {
-                        return BadRequest(e.Message);
-                    }
-                }
+
                 
                 [Authorize]
                 [HttpGet("id/{id}")]
@@ -89,16 +85,7 @@ namespace TodoApi.Controllers
                     }
                 }
 
-                [Authorize]
-                [HttpGet("name/{name}")]
-                public async Task<ActionResult<IEnumerable<PatientDTO>>> GetPatientsByName(string name) {
-                    try {
-                        var patients = await _patientService.GetPatientsByNameAsync(name);
-                        return Ok(patients);
-                    } catch (Exception e) {
-                        return BadRequest(e.Message);
-                    }
-                }
+
 
                 [Authorize]
                 [HttpGet("contact/{contact}")]
@@ -134,10 +121,10 @@ namespace TodoApi.Controllers
                 }
 
 
-        [HttpDelete("{email}")]
-        public async Task<IActionResult> DeletePatientByEmail(string email) {
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletePatientByID(Guid id) {
             try {
-                var result = await _patientService.DeletePatientByEmailAsync(email);
+                var result = await _patientService.DeletePatientByIDAsync(id);
                 return Ok();
             } catch (Exception e) {
                 return BadRequest(e.Message);

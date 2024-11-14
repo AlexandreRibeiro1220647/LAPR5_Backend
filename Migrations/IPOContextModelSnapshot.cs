@@ -23,6 +23,49 @@ namespace TodoApi.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("TodoApi.DTOs.User.UserDTO", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserDTO");
+                });
+
+            modelBuilder.Entity("TodoApi.Models.Auth.UserSession", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("AccessToken")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsAuthenticated")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("SessionId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserSessions");
+                });
+
             modelBuilder.Entity("TodoApi.Models.OperationRequest.OperationRequest", b =>
                 {
                     b.Property<string>("Id")
@@ -87,21 +130,19 @@ namespace TodoApi.Migrations
                     b.Property<DateOnly>("dateOfBirth")
                         .HasColumnType("date");
 
-                    b.Property<string>("email")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<int>("gender")
                         .HasColumnType("integer");
+
+                    b.Property<string>("userId")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
                     b.HasIndex("dateOfBirth");
 
-                    b.HasIndex("email")
-                        .IsUnique();
-
                     b.HasIndex("gender");
+
+                    b.HasIndex("userId");
 
                     b.ToTable("Patients");
                 });
@@ -174,6 +215,10 @@ namespace TodoApi.Migrations
 
             modelBuilder.Entity("TodoApi.Models.Patient.Patient", b =>
                 {
+                    b.HasOne("TodoApi.DTOs.User.UserDTO", "user")
+                        .WithMany()
+                        .HasForeignKey("userId");
+
                     b.OwnsOne("TodoApi.Models.Patient.AppointmentHistory", "appointmentHistory", b1 =>
                         {
                             b1.Property<Guid>("PatientId")
@@ -225,23 +270,6 @@ namespace TodoApi.Migrations
                                 .HasForeignKey("PatientId");
                         });
 
-                    b.OwnsOne("TodoApi.Models.Patient.FullName", "fullName", b1 =>
-                        {
-                            b1.Property<Guid>("PatientId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<string>("fullName")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.HasKey("PatientId");
-
-                            b1.ToTable("Patients");
-
-                            b1.WithOwner()
-                                .HasForeignKey("PatientId");
-                        });
-
                     b.OwnsOne("TodoApi.Models.Patient.MedicalConditions", "medicalConditions", b1 =>
                         {
                             b1.Property<Guid>("PatientId")
@@ -268,11 +296,10 @@ namespace TodoApi.Migrations
                     b.Navigation("emergencyContact")
                         .IsRequired();
 
-                    b.Navigation("fullName")
-                        .IsRequired();
-
                     b.Navigation("medicalConditions")
                         .IsRequired();
+
+                    b.Navigation("user");
                 });
 
             modelBuilder.Entity("TodoApi.Models.Staff.Staff", b =>
