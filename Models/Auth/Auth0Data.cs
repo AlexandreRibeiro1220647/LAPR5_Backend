@@ -4,7 +4,7 @@ public class Auth0Data
     public const string DOMAIN = "dev-05j84tecmi7hx6en.eu.auth0.com";
     public const string CLIENT_ID = "aPDW8t4xJC8D3wDnyn8BCC9lpAilc9jq";
     public const string CLIENT_SECRET = "M9EXNTVw9UQ7RKNURtk6YGg4is3ii_eZR7rG5XbSRLVu9zUWQb3X4xVrg28mZvN8";
-    public const string REDIRECTURI = "http://localhost:5012/callback";
+    public const string REDIRECTURI = "http://localhost:5012/api/callback";
     public const string AUDIENCE = $"https://{DOMAIN}/api/v2/";
 
     public const string REDIRECTURI_REGISTER_PATIENT = "http://localhost:5012/callback/register-patient";
