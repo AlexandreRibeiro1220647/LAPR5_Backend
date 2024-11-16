@@ -7,7 +7,6 @@ title POST object
 
 participant "Front-End" as FE <<C4 Container>>
 participant "Back-End" as BE <<C4 Container>>
-participant "DataBase" as DB <<C4 Container>>
 
 -> FE: POST request
 activate FE
@@ -16,12 +15,6 @@ activate BE
 alt user authorized
 
     alt user authorized
-
-        BE -> DB: Insert data
-        activate DB
-        DB --> BE: Returns success message
-        deactivate DB
-
         BE --> FE: Returns success message
         deactivate BE
         <-- FE: Displays success message
