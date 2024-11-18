@@ -31,6 +31,10 @@ namespace TodoApi.Infrastructure.Patient {
 
             });
             builder.OwnsOne(p => p.appointmentHistory);
+
+            builder.Property(p => p.user.Id);
+            builder.Property(p => p.user.Email);
+            builder.Property(p => p.user.Name);
         }
     }
 }
