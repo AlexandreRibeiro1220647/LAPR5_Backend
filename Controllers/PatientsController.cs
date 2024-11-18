@@ -20,20 +20,23 @@ namespace TodoApi.Controllers
 
         [HttpPost("signup")]
         public async Task<ActionResult<string>> SignUpPatient()
-        {
-            await _loginService.SignUpPatient();
-            return Ok();
+        {            
+            var sessionId = Guid.NewGuid().ToString();
+            await _loginService.SignUpPatient(sessionId);
+
+            return Ok(new { message = "Sign up sucessfull", sessionId = sessionId } );
         }
 
-        [Authorize(Policy = "PatientPolicy")]
+        //[Authorize(Policy = "PatientPolicy")]
         [HttpPost("register/patient")]
         public async Task<ActionResult<PatientDTO>> RegisterPatient([FromBody] RegisterPatientDTO dto) {
+                Console.WriteLine("Received RegisterPatient request: " + dto.Email);
             try {
                 var patient = await _patientService.RegisterPatient(dto);
 
                 HttpContext.Session.SetString("patient_email", dto.Email);
 
-                return Ok("Auth success");
+                return Ok(new { message = "Patient Registered!!", patient });
             } catch (Exception e) {
                 return BadRequest(e.Message);
             }        
