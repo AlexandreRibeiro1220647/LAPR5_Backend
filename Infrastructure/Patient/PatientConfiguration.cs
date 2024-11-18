@@ -32,9 +32,12 @@ namespace TodoApi.Infrastructure.Patient {
             });
             builder.OwnsOne(p => p.appointmentHistory);
 
-            builder.Property(p => p.user.Id);
-            builder.Property(p => p.user.Email);
-            builder.Property(p => p.user.Name);
+            builder.OwnsOne(p => p.user, userBuilder =>
+        {
+        userBuilder.Property(u => u.Id).HasColumnName("UserId");
+        userBuilder.Property(u => u.Name).HasColumnName("UserName").HasMaxLength(100);
+        userBuilder.Property(u => u.Email).HasColumnName("UserEmail").HasMaxLength(200);
+        });
         }
     }
 }

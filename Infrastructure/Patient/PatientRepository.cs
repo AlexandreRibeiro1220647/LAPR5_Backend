@@ -42,4 +42,8 @@ public class PatientRepository : BaseRepository<Models.Patient.Patient, MedicalR
     {
         return await _dbSet.AnyAsync(p => p.Id == patientId);
     }   
+    public async Task<List<Models.Patient.Patient>> GetByNameAsync(string name)
+{ 
+    return await _dbSet.Where(p => EF.Functions.Like(p.user.Name, $"%{name}%")).ToListAsync();
+}
 }

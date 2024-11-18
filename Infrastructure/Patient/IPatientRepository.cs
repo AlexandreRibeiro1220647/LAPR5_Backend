@@ -11,4 +11,6 @@ public interface IPatientRepository : IRepository<Models.Patient.Patient, Medica
     Task<List<Models.Patient.Patient>> GetByGenderAsync(Gender gender);
     Task<List<Models.Patient.Patient>> GetByDateOfBirthAsync(DateOnly dateOfBirth);
     Task<List<Models.Patient.Patient>> GetByUserAsync(TodoApi.DTOs.User.UserDTO user);
+
+    Task<List<Models.Patient.Patient>> GetByNameAsync(string name);
 }
