@@ -42,7 +42,7 @@ public class LoginService : ILoginService {
 
             // Adding 'prompt=login' to force new login
             var authorizationUrl = $"https://{DOMAIN}/authorize?response_type=code&client_id={CLIENT_ID}&redirect_uri={REDIRECTURI}&scope=openid profile email&&state={sessionId}&&prompt=login";
-            Console.WriteLine($"Redirecting to Auth0 for sign up: {authorizationUrl}");
+            Console.WriteLine($"Redirecting to Auth0 for authentication: {authorizationUrl}");
 
             // Automatically open the Auth0 login page
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
@@ -63,12 +63,11 @@ public class LoginService : ILoginService {
 
         }
 
-        public Task<string> SignUpPatient()
+        public async Task<UserSessionDTO> SignUpPatient(string sessionId)
         {
 
-            // Adding 'prompt=login' to force new login
-            var authorizationUrl = $"https://{DOMAIN}/authorize?response_type=code&client_id={CLIENT_ID}&redirect_uri={REDIRECTURI_REGISTER_PATIENT}&scope=openid profile email&&prompt=login";
-            Console.WriteLine($"Redirecting to Auth0 for authentication: {authorizationUrl}");
+            var authorizationUrl = $"https://{DOMAIN}/authorize?response_type=code&client_id={CLIENT_ID}&redirect_uri={REDIRECTURI_REGISTER_PATIENT}&scope=openid profile email&&state={sessionId}&&prompt=login&&screen_hint=signup";
+            Console.WriteLine($"Redirecting to Auth0 for sign up: {authorizationUrl}");
 
             // Automatically open the Auth0 login page
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
@@ -77,7 +76,15 @@ public class LoginService : ILoginService {
                 UseShellExecute = true
             });
 
-            return null;
+            var session = new UserSessionDTO {
+                SessionId = sessionId,
+                AccessToken = "",
+                IsAuthenticated = false,
+            };
+
+            var usdto = await CreateSessionAsync(session);
+
+            return usdto;
 
         }
 

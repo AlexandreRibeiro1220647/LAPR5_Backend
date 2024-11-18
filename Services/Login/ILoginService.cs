@@ -7,7 +7,7 @@ namespace TodoApi.Services.Login;
 public interface ILoginService
 {
     Task<UserSessionDTO>  AuthenticateUser(string sessionId);
-    Task<string> SignUpPatient();
+    Task<UserSessionDTO> SignUpPatient(string sessionId);
     Task<string> GetManagementApiTokenAsync();
     Task<string> ExchangeAuthorizationCodeForTokensAsync(string code);
     Task createUserAuth0(RegisterUserDTO model);
