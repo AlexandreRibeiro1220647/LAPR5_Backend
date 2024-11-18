@@ -7,7 +7,7 @@ public class Auth0Data
     public const string REDIRECTURI = "http://localhost:5012/api/callback";
     public const string AUDIENCE = $"https://{DOMAIN}/api/v2/";
 
-    public const string REDIRECTURI_REGISTER_PATIENT = "http://localhost:5012/callback/register-patient";
+    public const string REDIRECTURI_REGISTER_PATIENT = "http://localhost:5012/api/callback/register-patient";
     public const string ROLES_URL = "https://hellth.com/claims/roles";
 
     public const string ADMIN_ID = "rol_UhqXdIfzGmE8Tmo5";
