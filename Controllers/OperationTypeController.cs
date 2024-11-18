@@ -84,27 +84,12 @@ public class OperationTypeController : ControllerBase
     }
 
     //[Authorize(Policy = "AdminPolicy")]
-    [HttpGet("search/specialization/{specialization}")]
-    public async Task<ActionResult<List<OperationTypeDTO>>> SearchBySpecialization(string specialization)
+    [HttpGet("search")]
+    public async Task<ActionResult<List<OperationTypeDTO>>> SearchOperationTypes([FromQuery] string? name, [FromQuery] string? specialization, [FromQuery] string? estimatedDuration, [FromQuery] string? status)
     {
         try
         {
-            var operationTypes = await _operationTypeService.GetOperationTypesBySpecialization(specialization);
-            return Ok(operationTypes);
-        }
-        catch (Exception e)
-        {
-            return BadRequest(e.Message);
-        }
-    }
-        
-    //[Authorize(Policy = "AdminPolicy")]
-    [HttpGet("search/name/{name}")]
-    public async Task<ActionResult<List<OperationTypeDTO>>> SearchByName(string name)
-    {
-        try
-        {
-            var operationTypes = await _operationTypeService.GetOperationTypesByName(name);
+            var operationTypes = await _operationTypeService.SearchOperationTypes(name, specialization, estimatedDuration, status);
             return Ok(operationTypes);
         }
         catch (Exception e)
@@ -113,18 +98,4 @@ public class OperationTypeController : ControllerBase
         }
     }
 
-    //[Authorize(Policy = "AdminPolicy")]
-    [HttpGet("search/status/{status}")]
-    public async Task<ActionResult<List<OperationTypeDTO>>> SearchByStatus(bool status)
-    {
-        try
-        {
-            var operationTypes = await _operationTypeService.GetOperationTypesByStatus(status);
-            return Ok(operationTypes);
-        }
-        catch (Exception e)
-        {
-            return BadRequest(e.Message);
-        }
-    }
 }

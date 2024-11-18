@@ -150,44 +150,17 @@ public class OperationTypeService : IOperationTypeService
         return operationTypes.Select(operationType => _mapper.ToDto(operationType)).ToList();
     }
 
-    public async Task<List<OperationTypeDTO>> GetOperationTypesBySpecialization(string specialization)
-    {
-    try
-        {
-            var operationTypes = await _operationTypeRepository.SearchBySpecialization(specialization);
-            return operationTypes.Select(operationType => _mapper.ToDto(operationType)).ToList();
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Error searching staff by specialization");
-            throw;
-        }
-    }
 
-    public async Task<List<OperationTypeDTO>> GetOperationTypesByName(string name)
+    public async Task<List<OperationTypeDTO>> SearchOperationTypes(string? name, string? specialization, string? estimatedDuration, string? status)
     {
     try
         {
-            var operationTypes = await _operationTypeRepository.SearchByName(name);
+            var operationTypes = await _operationTypeRepository.SearchAsync(name, specialization, estimatedDuration, status);
             return operationTypes.Select(operationType => _mapper.ToDto(operationType)).ToList();
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error searching staff by specialization");
-            throw;
-        }
-    }
-
-    public async Task<List<OperationTypeDTO>> GetOperationTypesByStatus(bool status)
-    {
-    try
-        {
-            var operationTypes = await _operationTypeRepository.SearchByStatus(status);
-            return operationTypes.Select(operationType => _mapper.ToDto(operationType)).ToList();
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Error searching staff by specialization");
+            _logger.LogError(e, "Error searching Operation Types");
             throw;
         }
     }

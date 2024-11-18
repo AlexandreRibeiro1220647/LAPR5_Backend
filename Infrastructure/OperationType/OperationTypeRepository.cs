@@ -16,22 +16,43 @@ public class OperationTypeRepository : BaseRepository<Models.OperationType.Opera
     {
         return await _dbSet.FirstOrDefaultAsync(o => o.Name == name);
     }
-    
-            public async Task<List<Models.OperationType.OperationType>> SearchByName(string name)
+
+    public async Task<List<Models.OperationType.OperationType>> SearchAsync(string? name, string? specialization, string? estimatedDuration, string? status)
+    {   
+
+        IQueryable<Models.OperationType.OperationType> query = _dbSet;
+
+
+        if (!string.IsNullOrEmpty(name))
         {
-            return await _dbSet.Where(o => o.Name.Contains(name))
-                .ToListAsync();
+            query = query.Where(op => op.Name.Equals(name));
         }
 
-        public async Task<List<Models.OperationType.OperationType>> SearchBySpecialization(string specialization)
+        if (!string.IsNullOrEmpty(specialization))
         {
-            return await _dbSet.Where(o => o.RequiredStaffBySpecialization.Contains(specialization))
-                .ToListAsync();
+            query = query.Where(op => op.RequiredStaffBySpecialization.Contains(specialization));
         }
 
-        public async Task<List<Models.OperationType.OperationType>> SearchByStatus(bool status)
+        if (!string.IsNullOrEmpty(estimatedDuration))
         {
-            return await _dbSet.Where(o => o.IsActive == status)
-                .ToListAsync();
+            query = query.Where(op => op.EstimatedDuration.Equals(TimeSpan.Parse(estimatedDuration)));
+
         }
+
+        if (!string.IsNullOrEmpty(status))
+        {
+            if (bool.TryParse(status, out bool isActive))
+            {
+                query = query.Where(op => op.IsActive == isActive);
+            }
+            else
+            {
+                // Handle invalid status values (e.g., return a bad request or skip filtering)
+                throw new ArgumentException("Invalid value for status. Expected 'true' or 'false'.");
+            }        
+        }
+
+        return await query.ToListAsync();
+    }
+
 }
