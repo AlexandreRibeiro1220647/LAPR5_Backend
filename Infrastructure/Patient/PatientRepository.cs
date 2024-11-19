@@ -22,17 +22,28 @@ public class PatientRepository : BaseRepository<Models.Patient.Patient, MedicalR
         return await _dbSet.FirstOrDefaultAsync(p => p.Id == id);
     }
 
-    public async Task<List<Models.Patient.Patient>> GetByContactInformationAsync(string contact) {
-        return await _dbSet.Where(p => p.contactInformation.contactInformation.phoneNumber.Contains(contact)).ToListAsync();
+    public async Task<List<Models.Patient.Patient>> SearchAsync(string? contact, Gender? gender, DateOnly? dateOfBirth)
+    {
+        IQueryable<Models.Patient.Patient> query = _dbSet;
+
+        if (!string.IsNullOrEmpty(contact))
+        {
+            query = query.Where(p => p.contactInformation.contactInformation.phoneNumber.Contains(contact));
+        }
+
+        if (gender.HasValue)
+        {
+            query = query.Where(p => p.gender == gender);
+        }
+
+        if (dateOfBirth.HasValue)
+        {
+            query = query.Where(p => p.dateOfBirth.dateOfBirth == dateOfBirth);
+        }
+
+        return await query.ToListAsync();
     }
 
-   public async Task<List<Models.Patient.Patient>> GetByGenderAsync(Gender gender) {
-        return await _dbSet.Where(p => p.gender == gender).ToListAsync();
-   }
-
-   public async Task<List<Models.Patient.Patient>> GetByDateOfBirthAsync(DateOnly dateOfBirth) {
-       return await _dbSet.Where(p => p.dateOfBirth.dateOfBirth == dateOfBirth).ToListAsync();
-   }
 
     public async Task<List<Models.Patient.Patient>> GetByUserAsync(TodoApi.DTOs.User.UserDTO user) {
         return await _dbSet.Where(p => p.user.Id.Equals(user.Id)).ToListAsync();
