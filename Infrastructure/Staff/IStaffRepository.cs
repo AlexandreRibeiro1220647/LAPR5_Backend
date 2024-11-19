@@ -7,10 +7,16 @@ namespace TodoApi.Infrastructure.Staff
     {
         Task<Models.Staff.Staff> GetByLicenseNumber(LicenseNumber licenseNumber);
         Task<bool> ExistsAsync(LicenseNumber staffId);
+        Task<Models.Staff.Staff> GetByPhoneAsync(string phone);
+                Task<List<Models.Staff.Staff>> SearchAsync(
+                    string? fullName = null,
+                    string? specialization = null,
+                    string? email = null,
+                    string? status = null,
+                    string? phone = null);
         Task<List<Models.Staff.Staff>> SearchByName(string name);
         Task<List<Models.Staff.Staff>> SearchBySpecialization(string specialization);
         Task<List<Models.Staff.Staff>> SearchByEmail(string email);
         Task<List<Models.Staff.Staff>> SearchByStatus(StaffStatus status);
-        Task<Models.Staff.Staff> GetByPhoneAsync(string phone);
     }
 }
