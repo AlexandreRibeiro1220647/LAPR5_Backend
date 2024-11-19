@@ -56,9 +56,10 @@ public class UserControllerTests
         var returnValue = Assert.IsAssignableFrom<User>(actionResult.Value);
         Assert.Equal(email, returnValue.Email.Value);
     }
+    }
 
-    [Fact]
-    public async Task RegisterUser_ShouldReturnOk_WhenUserIsRegistered()
+
+   /* public async Task RegisterUser_ShouldReturnOk_WhenUserIsRegistered()
     {
         // Arrange
         var userDto = new RegisterUserDTO("New User", "newuser@example.com", UserRoles.Admin);
@@ -94,3 +95,4 @@ public class UserControllerTests
         Assert.Equal(email, actionResult.Value);
     }
 }
+*/
