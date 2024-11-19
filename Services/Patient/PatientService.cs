@@ -64,7 +64,7 @@ public class PatientService : IPatientService {
             await _unitOfWork.CommitAsync();
 
             PatientDTO newPatientDto = new PatientDTO(patient.dateOfBirth.ToString(), patient.gender.ToString(), patient.Id.AsString(), 
-            patient.contactInformation.ToString(), patient.medicalConditions.medicalConditions, patient.emergencyContact.ToString(), patient.appointmentHistory.appointments, new TodoApi.DTOs.User.UserDTO(user.Id.ToString(), user.Name, user.Email.Value, user.Role.ToString()));
+            patient.contactInformation.ToString(), patient.medicalConditions.medicalConditions, patient.emergencyContact.ToString(), patient.appointmentHistory.appointments, new TodoApi.DTOs.User.UserDTO(user.Id.ToString(), user.Name, user.Email, user.Role.ToString()));
             return newPatientDto;
         }
         catch (Exception e) {

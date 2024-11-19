@@ -13,7 +13,7 @@ public class UserMapper : IUserMapper
         (
             entity.Id.AsString(), 
             entity.Name,
-            entity.Email.ToString(),
+            entity.Email,
             entity.Role.ToString()
         );   
     }
