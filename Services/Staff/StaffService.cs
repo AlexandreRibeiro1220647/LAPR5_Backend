@@ -152,60 +152,19 @@ namespace TodoApi.Services
                 throw;
             }
         }
-        public async Task<List<StaffDTO>> GetStaffBySpecialization(string specialization)
+        public async Task<List<StaffDTO>> SearchStaff(string? fullName, string? specialization, string? email, string? status, string? phone)
         {
             try
             {
-                var staffList = await _staffRepository.SearchBySpecialization(specialization);
+                var staffList = await _staffRepository.SearchAsync(fullName, specialization, email, status, phone);
                 return staffList.Select(staff => _mapper.ToDto(staff)).ToList();
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error searching staff by specialization");
+                _logger.LogError(e, "Error searching staff");
                 throw;
             }
         }
-        public async Task<List<StaffDTO>> GetStaffByEmail(string email)
-        {
-            try
-            {
-                var staffList = await _staffRepository.SearchByEmail(email);
-                return staffList.Select(staff => _mapper.ToDto(staff)).ToList();
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Error searching staff by email");
-                throw;
-            }
-        }
-
-        public async Task<List<StaffDTO>> GetStaffByName(string name)
-        {
-            try
-            {
-                var staffList = await _staffRepository.SearchByName(name);
-                return staffList.Select(staff => _mapper.ToDto(staff)).ToList();
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Error searching staff by name");
-                throw;
-            }
-        }
-       public async Task<List<StaffDTO>> GetStaffByStatus(StaffStatus status)
-       {
-           try
-           {
-               var staffStatusList = await _staffRepository.SearchByStatus(status);
-               return staffStatusList.Select(staff => _mapper.ToDto(staff)).ToList();
-           }
-           catch (Exception e)
-           {
-               _logger.LogError(e, "Error searching staff by status");
-               throw;
-           }
-       }
-
     }
 }
 
