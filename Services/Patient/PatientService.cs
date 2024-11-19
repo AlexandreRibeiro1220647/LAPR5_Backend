@@ -108,18 +108,17 @@ public class PatientService : IPatientService {
         return _mapper.ToDto(patient);
     }
 
-    public async Task<List<PatientDTO>> GetPatientsByContactInformationAsync(string contact) {
-        List<Patient> patients = await _patientRepository.GetByContactInformationAsync(contact);
-        return patients.Select(p => _mapper.ToDto(p)).ToList();
-    }
-
-    public async Task<List<PatientDTO>> GetPatientsByGenderAsync(Gender gender) {
-        List<Patient> patients = await _patientRepository.GetByGenderAsync(gender);
-        return patients.Select(p => _mapper.ToDto(p)).ToList();
-    }
-
-    public async Task<List<PatientDTO>> GetPatientsByDateOfBirthAsync(DateOnly dateOfBirth) {
-        List<Patient> patients = await _patientRepository.GetByDateOfBirthAsync(dateOfBirth);
-        return patients.Select(p => _mapper.ToDto(p)).ToList();
+    public async Task<List<PatientDTO>> SearchPatients(string? contact, Gender? gender, DateOnly? dateOfBirth)
+    {
+        try
+        {
+            var patients = await _patientRepository.SearchAsync(contact, gender, dateOfBirth);
+            return patients.Select(p => _mapper.ToDto(p)).ToList();
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error searching patients");
+            throw;
+        }
     }
 }
