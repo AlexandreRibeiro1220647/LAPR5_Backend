@@ -13,6 +13,7 @@ namespace TodoApi.DTOs
         public List<Slot> AvailabilitySlots { get; set; }
         public StaffStatus Status { get; set; }
 
+
         public CreateStaffDTO() { }
 
         public CreateStaffDTO(string fullName, string specialization, string email, string phone, List<Slot> availabilitySlots, StaffStatus status)
