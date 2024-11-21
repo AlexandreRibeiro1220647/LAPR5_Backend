@@ -10,7 +10,7 @@ namespace TodoApi.Mappers
     {
         public StaffMapper() { }
 
-        public Staff ToEntity(CreateStaffDTO createDto)
+        public Staff toEntity(CreateStaffDTO createDto, TodoApi.DTOs.User.UserDTO user)
         {
             List<Slot> availabilitySlots = new List<Slot>();
 
@@ -21,15 +21,15 @@ namespace TodoApi.Mappers
             }
 
             return new Staff(
-                new FullName(createDto.FullName),
                 new Specialization(createDto.Specialization),
-                new UserEmail(createDto.Email),
                 new Phone(createDto.Phone),
                 new AvailabilitySlots(availabilitySlots),
-                createDto.Status
+                createDto.Status,
+                user
             );
         }
-        public Staff ToEntity(StaffDTO dto)
+
+        public Staff ToEntity(StaffDTO dto,TodoApi.DTOs.User.UserDTO user)
         {
             List<Slot> availabilitySlots = new List<Slot>();
 
@@ -42,16 +42,15 @@ namespace TodoApi.Mappers
             var availabilitySlotsObj = new AvailabilitySlots(availabilitySlots);
 
             return new Staff(
-                new FullName(dto.FullName),
                 new Specialization(dto.Specialization),
-                new UserEmail(dto.Email),
                 new Phone(dto.Phone),
                 availabilitySlotsObj,
-                dto.Status
+                dto.Status,
+                user
             );
         }
 
-        public StaffDTO ToDto(Staff entity)
+        public StaffDTO ToDto(Staff entity,TodoApi.DTOs.User.UserDTO user)
         {
             List<Slot> availabilitySlotDTOs = new List<Slot>();
 
@@ -66,19 +65,13 @@ namespace TodoApi.Mappers
             }
 
             return new StaffDTO(
-                entity.FullName.fullName,
                 entity.Specialization.Area,
                 entity.Id.AsString(),
-                entity.Email.Value,
                 entity.Phone.phoneNumber,
                 availabilitySlotDTOs,
-                entity.Status
+                entity.Status,
+                user
             );
-        }
-
-        public Staff toEntity(CreateStaffDTO createDto)
-        {
-            throw new NotImplementedException();
         }
     }
 }
