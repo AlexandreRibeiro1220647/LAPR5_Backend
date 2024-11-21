@@ -35,7 +35,7 @@ namespace TodoApi.Services
         {
             try
             {
-                TodoApi.DTOs.User.UserDTO user = await _userService.CreateUser(new DTOs.User.RegisterUserDTO(dto.FullName, dto.Email, UserRoles.Staff)
+                TodoApi.DTOs.User.UserDTO user = await _userService.CreateUser(new DTOs.User.RegisterUserDTO(dto.FullName, dto.Email, dto.Role)
                 );
 
                 Staff mapped = _mapper.toEntity(dto, user);
