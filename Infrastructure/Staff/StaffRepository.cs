@@ -11,7 +11,7 @@ namespace TodoApi.Infrastructure.Staff
 
         public StaffRepository(IPOContext dbContext) : base(dbContext.Staffs)
         {
-            _context = dbContext.Staffs;
+            _context = dbContext;
         }
 
         public Task<Models.Staff.Staff> GetByLicenseNumber(LicenseNumber licenseNumber)
@@ -35,8 +35,8 @@ namespace TodoApi.Infrastructure.Staff
                 .ToListAsync();
         }
 
-        public async Task<List<Models.Patient.Patient>> GetByUserAsync(TodoApi.DTOs.User.UserDTO user) {
-                return await _context.Where(p => p.user.Id.Equals(user.Id)).ToListAsync();
+        public async Task<List<Models.Staff.Staff>> GetByUserAsync(TodoApi.DTOs.User.UserDTO user) {
+                return await _context.Staffs.Where(p => p.user.Id.Equals(user.Id)).ToListAsync();
         }
 
         public async Task<List<Models.Staff.Staff>> SearchAsync(

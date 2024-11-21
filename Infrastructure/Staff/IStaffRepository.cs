@@ -16,6 +16,6 @@ namespace TodoApi.Infrastructure.Staff
             string? phone = null);
         Task<List<Models.Staff.Staff>> SearchBySpecialization(string specialization);
         Task<List<Models.Staff.Staff>> SearchByStatus(StaffStatus status);
-        Task<List<Models.Patient.Patient>> GetByUserAsync(TodoApi.DTOs.User.UserDTO user);
+        Task<List<Models.Staff.Staff>> GetByUserAsync(TodoApi.DTOs.User.UserDTO user);
     }
 }

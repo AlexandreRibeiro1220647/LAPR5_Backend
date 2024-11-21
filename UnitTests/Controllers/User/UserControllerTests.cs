@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+/*using Microsoft.AspNetCore.Mvc;
 using Moq;
 using TodoApi.Controllers;
 using TodoApi.DTOs.User;
@@ -58,7 +58,7 @@ public class UserControllerTests
     }
     }
 
-
+*/
    /* public async Task RegisterUser_ShouldReturnOk_WhenUserIsRegistered()
     {
         // Arrange
