@@ -11,7 +11,7 @@ namespace TodoApi.Infrastructure.Staff
 
         public StaffRepository(IPOContext dbContext) : base(dbContext.Staffs)
         {
-            _context = dbContext;
+            _context = dbContext.Staffs;
         }
 
         public Task<Models.Staff.Staff> GetByLicenseNumber(LicenseNumber licenseNumber)
@@ -19,12 +19,7 @@ namespace TodoApi.Infrastructure.Staff
             throw new NotImplementedException();
         }
 
-        public async Task<List<Models.Staff.Staff>> SearchByName(string name)
-        {
-            return await _context.Staffs
-                .Where(s => s.FullName.fullName.Contains(name))
-                .ToListAsync();
-        }
+
 
         public async Task<List<Models.Staff.Staff>> SearchBySpecialization(string specialization)
         {
@@ -40,12 +35,8 @@ namespace TodoApi.Infrastructure.Staff
                 .ToListAsync();
         }
 
-        public async Task<List<Models.Staff.Staff>> SearchByEmail(string email)
-        {
-            return _context.Staffs
-                .AsEnumerable()
-                .Where(s => s.Email.Value.Contains(email))
-                .ToList();
+        public async Task<List<Models.Patient.Patient>> GetByUserAsync(TodoApi.DTOs.User.UserDTO user) {
+                return await _context.Where(p => p.user.Id.Equals(user.Id)).ToListAsync();
         }
 
         public async Task<List<Models.Staff.Staff>> SearchAsync(
@@ -59,7 +50,7 @@ namespace TodoApi.Infrastructure.Staff
 
             if (!string.IsNullOrEmpty(fullName))
             {
-                query = query.Where(s => s.FullName.fullName.Contains(fullName));
+                query = query.Where(s => s.user.Name.Contains(fullName));
             }
 
             if (!string.IsNullOrEmpty(specialization))
@@ -69,7 +60,7 @@ namespace TodoApi.Infrastructure.Staff
 
             if (!string.IsNullOrEmpty(email))
             {
-                query = query.Where(s => s.Email.Value.Contains(email));
+                query = query.Where(s => s.user.Email.Value.Contains(email));
             }
 
             if (!string.IsNullOrEmpty(status) && Enum.TryParse<StaffStatus>(status, true, out var statusEnum))
