@@ -29,7 +29,7 @@ namespace TodoApi.Mappers
             );
         }
 
-        public Staff ToEntity(StaffDTO dto,TodoApi.DTOs.User.UserDTO user)
+        public Staff ToEntity(StaffDTO dto)
         {
             List<Slot> availabilitySlots = new List<Slot>();
 
@@ -46,11 +46,11 @@ namespace TodoApi.Mappers
                 new Phone(dto.Phone),
                 availabilitySlotsObj,
                 dto.Status,
-                user
+                dto.User
             );
         }
 
-        public StaffDTO ToDto(Staff entity,TodoApi.DTOs.User.UserDTO user)
+        public StaffDTO ToDto(Staff entity)
         {
             List<Slot> availabilitySlotDTOs = new List<Slot>();
 
@@ -70,7 +70,7 @@ namespace TodoApi.Mappers
                 entity.Phone.phoneNumber,
                 availabilitySlotDTOs,
                 entity.Status,
-                user
+                entity.user
             );
         }
     }
