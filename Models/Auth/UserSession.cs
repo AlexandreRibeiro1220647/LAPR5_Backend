@@ -22,6 +22,10 @@ public class UserSession : Entity<UserSessionID>
             this.IsAuthenticated = true;
         }
 
+        public void logout() {
+            this.IsAuthenticated = false;
+        }
+
         public void updateToken(string id_token) {
             this.AccessToken = id_token;
         }

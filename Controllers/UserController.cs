@@ -1,10 +1,10 @@
-
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TodoApi.DTOs.User;
 using TodoApi.Models.User;
 using TodoApi.Services.Login;
 using TodoApi.Services.User;
+
 namespace TodoApi.Controllers
 {
     [Route("api/[controller]")]
@@ -28,6 +28,15 @@ namespace TodoApi.Controllers
 
             return Ok(new { message = "Login successful", sessionId = sessionId } );
         }
+
+        [HttpPost("logout/{sessionId}")]
+        public async Task<IActionResult> Logout(string sessionId)
+        {
+            await _loginService.Logout(sessionId);
+
+            return Ok(new { message = "Logout successful", sessionId = sessionId } );
+        }
+
 
         [HttpGet("get-token/{sessionId}")]
         public async Task<IActionResult> GetToken(string sessionId)
@@ -78,7 +87,7 @@ namespace TodoApi.Controllers
             }
         }
 
-        [Authorize(Policy = "AdminPolicy")]
+        //[Authorize(Policy = "AdminPolicy")]
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUser([FromBody] RegisterUserDTO model)
         {

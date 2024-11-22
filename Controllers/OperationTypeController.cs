@@ -16,7 +16,7 @@ public class OperationTypeController : ControllerBase
         _operationTypeService = operationTypeService;
     }
 
-    //[Authorize(Policy = "AdminPolicy")]
+    [Authorize(Policy = "AdminPolicy")]
     [HttpPost]
     public async Task<IActionResult> CreateOperationType([FromBody] CreateOperationTypeDTO createOperationTypeDto)
     {
@@ -37,7 +37,7 @@ public class OperationTypeController : ControllerBase
         }
     }
 
-    //[Authorize(Policy = "AdminPolicy")]
+    [Authorize(Policy = "AdminPolicy")]
     [HttpPut("update/{id}")]
     public async Task<IActionResult> UpdateOperationType(Guid id, [FromBody] UpdateOperationTypeDTO dto)
     {
@@ -52,7 +52,7 @@ public class OperationTypeController : ControllerBase
         }
     }
 
-    //[Authorize(Policy = "AdminPolicy")]
+    [Authorize(Policy = "AdminPolicy")]
     [HttpPut("delete/{id}")]
     public async Task<IActionResult> DeleteOperation(Guid id)
     {
@@ -68,7 +68,7 @@ public class OperationTypeController : ControllerBase
     }
 
 
-    //[Authorize(Policy = "AdminPolicy")]
+    [Authorize(Policy = "AdminPolicy")]
     [HttpGet]
     public async Task<IActionResult> GetOperationTypes()
     {
@@ -83,7 +83,7 @@ public class OperationTypeController : ControllerBase
         }
     }
 
-    //[Authorize(Policy = "AdminPolicy")]
+    [Authorize(Policy = "AdminPolicy")]
     [HttpGet("search")]
     public async Task<ActionResult<List<OperationTypeDTO>>> SearchOperationTypes([FromQuery] string? name, [FromQuery] string? specialization, [FromQuery] string? estimatedDuration, [FromQuery] string? status)
     {

@@ -18,4 +18,5 @@ public interface ILoginService
     Task<UserSessionDTO> CreateSessionAsync(UserSessionDTO model);
     Task<UserSessionDTO> MarkSessionAsAuthenticated(string sessionId, string id_token);
     Task<UserSession> GetSessionByIdAsync(string id);
+    Task<UserSessionDTO> Logout(string sessionId);
 }

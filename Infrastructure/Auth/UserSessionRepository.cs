@@ -24,4 +24,6 @@ public class UserSessionRepository : BaseRepository<UserSession, UserSessionID>,
     {
         return await _dbSet.FirstOrDefaultAsync(u => u.SessionId == sessionId);
     }
+
+
 }
