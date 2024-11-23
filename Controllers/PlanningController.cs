@@ -43,4 +43,18 @@ public class PlanningController : ControllerBase
             return BadRequest(e.Message);
         }
     }
+
+    [HttpGet("opRequestDoctor")]
+    public async Task<IActionResult> GetOperationRequestDoctors()
+    {
+        try
+        {
+            var operationTypes = await _planningservice.GetOperationRequestDoctors();
+            return Ok(operationTypes);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
 }

@@ -85,4 +85,20 @@ public async Task<List<OperationTypeDurationDTO>> GetOperationTypeDurations()
             throw;
         }
     }
+
+    public async Task<List<OperationRequestDoctorDTO>> GetOperationRequestDoctors()
+{
+    // Fetch all operation requests from the repository
+    List<Models.OperationRequest.OperationRequest> requests = await _operationRequestRepository.GetAllAsync();
+
+    // Map to OperationRequestDoctorDTO
+    return requests.Select(opR =>
+    {
+        return new OperationRequestDoctorDTO(
+            opR.Id.AsString(),
+            opR.DoctorId.AsString()  // Cleaning duration
+        );
+    }).ToList();
+}
+
 }
