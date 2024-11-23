@@ -49,12 +49,33 @@ namespace TodoApi.Migrations
                     Id = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     RequiredStaffBySpecialization = table.Column<List<string>>(type: "text[]", maxLength: 200, nullable: false),
-                    EstimatedDuration = table.Column<long>(type: "bigint", nullable: false),
+                    EstimatedDuration = table.Column<List<TimeSpan>>(type: "interval[]", nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_OperationTypes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Patients",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    dateOfBirth = table.Column<DateOnly>(type: "date", nullable: false),
+                    gender = table.Column<int>(type: "integer", nullable: false),
+                    contactInformation_contactInformation = table.Column<string>(type: "text", nullable: false),
+                    medicalConditions_medicalConditions = table.Column<List<string>>(type: "text[]", nullable: false),
+                    emergencyContact_emergencyContact = table.Column<string>(type: "text", nullable: false),
+                    appointmentHistory_appointments = table.Column<List<string>>(type: "text[]", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: true),
+                    UserName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    UserEmail = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    user_Role = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Patients", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -71,20 +92,6 @@ namespace TodoApi.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Staffs", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "UserDTO",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "text", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Email = table.Column<string>(type: "text", nullable: false),
-                    Role = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserDTO", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -115,29 +122,6 @@ namespace TodoApi.Migrations
                     table.PrimaryKey("PK_UserSessions", x => x.Id);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "Patients",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    dateOfBirth = table.Column<DateOnly>(type: "date", nullable: false),
-                    gender = table.Column<int>(type: "integer", nullable: false),
-                    contactInformation_contactInformation = table.Column<string>(type: "text", nullable: false),
-                    medicalConditions_medicalConditions = table.Column<List<string>>(type: "text[]", nullable: false),
-                    emergencyContact_emergencyContact = table.Column<string>(type: "text", nullable: false),
-                    appointmentHistory_appointments = table.Column<List<string>>(type: "text[]", nullable: false),
-                    userId = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Patients", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Patients_UserDTO_userId",
-                        column: x => x.userId,
-                        principalTable: "UserDTO",
-                        principalColumn: "Id");
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_OperationTypes_Name",
                 table: "OperationTypes",
@@ -153,11 +137,6 @@ namespace TodoApi.Migrations
                 name: "IX_Patients_gender",
                 table: "Patients",
                 column: "gender");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Patients_userId",
-                table: "Patients",
-                column: "userId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Staffs_Email",
@@ -189,9 +168,6 @@ namespace TodoApi.Migrations
 
             migrationBuilder.DropTable(
                 name: "UserSessions");
-
-            migrationBuilder.DropTable(
-                name: "UserDTO");
         }
     }
 }

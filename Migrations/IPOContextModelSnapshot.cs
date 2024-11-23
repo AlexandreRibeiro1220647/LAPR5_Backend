@@ -76,8 +76,9 @@ namespace TodoApi.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
-                    b.Property<long>("EstimatedDuration")
-                        .HasColumnType("bigint");
+                    b.Property<List<TimeSpan>>("EstimatedDuration")
+                        .IsRequired()
+                        .HasColumnType("interval[]");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
