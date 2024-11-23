@@ -15,10 +15,10 @@ public class OperationTypeService : IOperationTypeService
     
     private readonly IUnitOfWork _unitOfWork;
     private readonly IOperationTypeRepository _operationTypeRepository;
-    private readonly ILogger<IPatientService> _logger;
+    private readonly ILogger<IOperationTypeService> _logger;
     private OperationTypeMapper _mapper = new OperationTypeMapper();
 
-    public OperationTypeService(IUnitOfWork unitOfWork, IOperationTypeRepository operationTypeRepository, ILogger<IPatientService> logger)
+    public OperationTypeService(IUnitOfWork unitOfWork, IOperationTypeRepository operationTypeRepository, ILogger<IOperationTypeService> logger)
     {
         this._unitOfWork = unitOfWork;
         this._operationTypeRepository = operationTypeRepository;
@@ -77,9 +77,9 @@ public class OperationTypeService : IOperationTypeService
             existingOperationType.UpdateName(dto.Name);
         }
 
-        if (dto.EstimatedDuration.HasValue)
+        if (dto.EstimatedDuration != null)
         {
-            existingOperationType.UpdateEstimatedDuration(dto.EstimatedDuration.Value);
+            existingOperationType.UpdateEstimatedDuration(dto.EstimatedDuration);
         }
 
         if (dto.RequiredStaffBySpecialization != null)
