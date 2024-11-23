@@ -4,6 +4,7 @@ using TodoApi.Models.OperationType;
 using TodoApi.Models.Shared;
 using TodoApi.DTOs;
 using TodoApi.DTOs.OperationType;
+using TodoApi.Infrastructure;
 using TodoApi.Infrastructure.Staff;
 using TodoApi.Infrastructure.OperationType;
 using TodoApi.Infrastructure.OperationRequest;
@@ -29,14 +30,18 @@ public class PlanningService : IPlanningService
     private readonly IStaffRepository _staffRepository;
     private StaffMapper _mapperStaff = new StaffMapper();
 
+    private readonly IStaffScheduleRepository _staffScheduleRepository;
+    private StaffScheduleMapper _mapperStaffSchedule = new StaffScheduleMapper();
 
-    public PlanningService(IUnitOfWork unitOfWork, IOperationTypeRepository operationTypeRepository, ILogger<IPlanningService> logger, IOperationRequestRepository operationRepository, IStaffRepository staffRepository)
+
+    public PlanningService(IUnitOfWork unitOfWork, IOperationTypeRepository operationTypeRepository, ILogger<IPlanningService> logger, IOperationRequestRepository operationRepository, IStaffRepository staffRepository, IStaffScheduleRepository staffScheduleRepository)
     {
         this._unitOfWork = unitOfWork;
         this._operationTypeRepository = operationTypeRepository;
         this._logger = logger;
         this._operationRequestRepository = operationRepository;
         this._staffRepository = staffRepository;
+        this._staffScheduleRepository = staffScheduleRepository;
     }
     
     public async Task<List<OperationTypeDurationDTO>> GetOperationTypeDurations()
@@ -93,7 +98,7 @@ public class PlanningService : IPlanningService
         }
     }
 
-        public async Task<List<OperationRequestDoctorDTO>> GetOperationRequestDoctors()
+    public async Task<List<OperationRequestDoctorDTO>> GetOperationRequestDoctors()
     {
     // Fetch all operation requests from the repository
         List<Models.OperationRequest.OperationRequest> requests = await _operationRequestRepository.GetAllAsync();
@@ -148,4 +153,9 @@ public class PlanningService : IPlanningService
         }).ToList();
     }
 
+    public async Task<List<StaffScheduleDTO>> GetStaffSchedules()
+    {
+        List<StaffSchedule> staffSchedules = await _staffScheduleRepository.GetAllAsync();
+        return staffSchedules.Select(staffSchedule => _mapperStaffSchedule.ToDto(staffSchedule)).ToList();
+    }
 }

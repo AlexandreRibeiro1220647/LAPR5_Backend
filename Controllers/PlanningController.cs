@@ -71,4 +71,18 @@ public class PlanningController : ControllerBase
             return BadRequest(e.Message);
         }
     }
+
+    [HttpGet("staffSchedules")]
+    public async Task<IActionResult> GetStaffSchedules()
+    {
+        try
+        {
+            var schedules = await _planningservice.GetStaffSchedules();
+            return Ok(schedules);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
 }
