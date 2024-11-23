@@ -35,7 +35,7 @@ public class OperationTypeRepository : BaseRepository<Models.OperationType.Opera
 
         if (!string.IsNullOrEmpty(estimatedDuration))
         {
-            query = query.Where(op => op.EstimatedDuration.Equals(TimeSpan.Parse(estimatedDuration)));
+            query = query.Where(op => op.EstimatedDuration.Contains(TimeSpan.Parse(estimatedDuration)));
 
         }
 

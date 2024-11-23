@@ -4,11 +4,11 @@ namespace TodoApi.DTOs.OperationType
     {
         public string Name { get; set; }
         public List<string> RequiredStaffBySpecialization { get; set; }
-        public TimeSpan EstimatedDuration { get; set; }
+        public List<TimeSpan> EstimatedDuration { get; set; }
         public string OperationTypeId { get; set; }
         public bool IsActive { get; set; }
 
-        public OperationTypeDTO(string operationName, List<string> requiredStaffBySpecialization, TimeSpan estimatedDuration, string operationTypeId, bool isActive)
+        public OperationTypeDTO(string operationName, List<string> requiredStaffBySpecialization, List<TimeSpan> estimatedDuration, string operationTypeId, bool isActive)
         {
             Name = operationName;
             RequiredStaffBySpecialization = requiredStaffBySpecialization;

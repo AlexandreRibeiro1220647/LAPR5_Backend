@@ -17,12 +17,6 @@ public class OperationTypeConfiguration :  IEntityTypeConfiguration<Models.Opera
                 value => new OperationTypeID(value)
             );
 
-            // Value converter for TimeSpan
-            var timeSpanConverter = new ValueConverter<TimeSpan, long>(
-                timeSpan => timeSpan.Ticks,
-                ticks => TimeSpan.FromTicks(ticks)
-            );
-
             builder.Property(p => p.Id)
                 .HasConversion(operationTypeIdConverter);
 
@@ -38,7 +32,6 @@ public class OperationTypeConfiguration :  IEntityTypeConfiguration<Models.Opera
                 .HasMaxLength(200);
 
             builder.Property(p => p.EstimatedDuration)
-                .HasConversion(timeSpanConverter)
                 .IsRequired();
         
         }

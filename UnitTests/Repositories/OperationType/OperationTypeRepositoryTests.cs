@@ -23,7 +23,7 @@ public class OperationTypeRepositoryTests
     public async Task GetByNameAsync_ShouldReturnOperationType_WhenExists()
     {
         // Arrange
-        var operationType = new OperationType("Test Operation", new List<string>(), new TimeSpan(100));
+        var operationType = new OperationType("Test Operation", new List<string>(), new List<TimeSpan>());
         _dbContext.OperationTypes.Add(operationType);
         await _dbContext.SaveChangesAsync();
 

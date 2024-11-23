@@ -4,5 +4,5 @@ public class CreateOperationTypeDTO
 {
     public string Name { get; set; }
     public List<string> RequiredStaffBySpecialization { get; set; }
-    public TimeSpan EstimatedDuration { get; set; }
+    public List<TimeSpan> EstimatedDuration { get; set; }
 }

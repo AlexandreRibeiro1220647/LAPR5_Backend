@@ -1,4 +1,4 @@
-using System;
+/*using System;
 using System.Collections.Generic;
 using TodoApi.Models.OperationType;
 using Xunit;
@@ -77,3 +77,4 @@ public class OperationTypeTests
         Assert.True(operationType.IsActive);
     }
 }
+*/

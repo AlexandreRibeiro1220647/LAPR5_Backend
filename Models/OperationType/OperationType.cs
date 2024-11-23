@@ -6,12 +6,12 @@ public class OperationType : Entity<OperationTypeID>
     {
         public string Name { get; private set; }
         public List<string> RequiredStaffBySpecialization { get; private set; }
-        public TimeSpan EstimatedDuration { get; private set; }
+        public List<TimeSpan> EstimatedDuration { get; private set; }
         public bool IsActive { get; private set; } = true; 
 
         public OperationType() { }
 
-        public OperationType(string operationName, List<string> requiredStaffBySpecialization, TimeSpan estimatedDuration)
+        public OperationType(string operationName, List<string> requiredStaffBySpecialization, List<TimeSpan> estimatedDuration)
         {
             Id = new OperationTypeID(Guid.NewGuid());
             Name = operationName;
@@ -27,7 +27,7 @@ public class OperationType : Entity<OperationTypeID>
             this.RequiredStaffBySpecialization = requiredStaffBySpecialization;
         }
 
-        public void UpdateEstimatedDuration(TimeSpan estimatedDuration){
+        public void UpdateEstimatedDuration(List<TimeSpan> estimatedDuration){
             this.EstimatedDuration = estimatedDuration;
         }
 
