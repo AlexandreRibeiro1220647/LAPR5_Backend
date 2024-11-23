@@ -13,7 +13,7 @@ using TodoApi.Infrastructure;
 namespace TodoApi.Migrations
 {
     [DbContext(typeof(IPOContext))]
-    [Migration("20241122163920_InitialCreate")]
+    [Migration("20241123133648_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -151,19 +151,30 @@ namespace TodoApi.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Email")
-                        .IsUnique();
-
                     b.ToTable("Staffs");
+                });
+
+            modelBuilder.Entity("TodoApi.Models.StaffSchedule", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("DoctorId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("schedule")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StaffSchedules");
                 });
 
             modelBuilder.Entity("TodoApi.Models.User.User", b =>
@@ -192,39 +203,6 @@ namespace TodoApi.Migrations
 
             modelBuilder.Entity("TodoApi.Models.Patient.Patient", b =>
                 {
-                    b.OwnsOne("TodoApi.DTOs.User.UserDTO", "user", b1 =>
-                        {
-                            b1.Property<Guid>("PatientId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<string>("Email")
-                                .IsRequired()
-                                .HasMaxLength(200)
-                                .HasColumnType("character varying(200)")
-                                .HasColumnName("UserEmail");
-
-                            b1.Property<string>("Id")
-                                .HasColumnType("text")
-                                .HasColumnName("UserId");
-
-                            b1.Property<string>("Name")
-                                .IsRequired()
-                                .HasMaxLength(100)
-                                .HasColumnType("character varying(100)")
-                                .HasColumnName("UserName");
-
-                            b1.Property<string>("Role")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.HasKey("PatientId");
-
-                            b1.ToTable("Patients");
-
-                            b1.WithOwner()
-                                .HasForeignKey("PatientId");
-                        });
-
                     b.OwnsOne("TodoApi.Models.Patient.AppointmentHistory", "appointmentHistory", b1 =>
                         {
                             b1.Property<Guid>("PatientId")
@@ -293,6 +271,40 @@ namespace TodoApi.Migrations
                                 .HasForeignKey("PatientId");
                         });
 
+                    b.OwnsOne("TodoApi.DTOs.User.UserDTO", "user", b1 =>
+                        {
+                            b1.Property<Guid>("PatientId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Email")
+                                .IsRequired()
+                                .HasMaxLength(200)
+                                .HasColumnType("character varying(200)")
+                                .HasColumnName("UserEmail");
+
+                            b1.Property<string>("Id")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasColumnName("UserId");
+
+                            b1.Property<string>("Name")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("UserName");
+
+                            b1.Property<string>("Role")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.HasKey("PatientId");
+
+                            b1.ToTable("Patients");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PatientId");
+                        });
+
                     b.Navigation("appointmentHistory")
                         .IsRequired();
 
@@ -341,23 +353,6 @@ namespace TodoApi.Migrations
                                 .HasForeignKey("StaffId");
                         });
 
-                    b.OwnsOne("TodoApi.Models.Staff.FullName", "FullName", b1 =>
-                        {
-                            b1.Property<string>("StaffId")
-                                .HasColumnType("text");
-
-                            b1.Property<string>("fullName")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.HasKey("StaffId");
-
-                            b1.ToTable("Staffs");
-
-                            b1.WithOwner()
-                                .HasForeignKey("StaffId");
-                        });
-
                     b.OwnsOne("TodoApi.Models.Staff.Specialization", "Specialization", b1 =>
                         {
                             b1.Property<string>("StaffId")
@@ -375,16 +370,50 @@ namespace TodoApi.Migrations
                                 .HasForeignKey("StaffId");
                         });
 
-                    b.Navigation("AvailabilitySlots")
-                        .IsRequired();
+                    b.OwnsOne("TodoApi.DTOs.User.UserDTO", "user", b1 =>
+                        {
+                            b1.Property<string>("StaffId")
+                                .HasColumnType("text");
 
-                    b.Navigation("FullName")
+                            b1.Property<string>("Email")
+                                .IsRequired()
+                                .HasMaxLength(200)
+                                .HasColumnType("character varying(200)")
+                                .HasColumnName("UserEmail");
+
+                            b1.Property<string>("Id")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasColumnName("UserId");
+
+                            b1.Property<string>("Name")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("UserName");
+
+                            b1.Property<string>("Role")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.HasKey("StaffId");
+
+                            b1.ToTable("Staffs");
+
+                            b1.WithOwner()
+                                .HasForeignKey("StaffId");
+                        });
+
+                    b.Navigation("AvailabilitySlots")
                         .IsRequired();
 
                     b.Navigation("Phone")
                         .IsRequired();
 
                     b.Navigation("Specialization")
+                        .IsRequired();
+
+                    b.Navigation("user")
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

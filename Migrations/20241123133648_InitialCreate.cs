@@ -68,7 +68,7 @@ namespace TodoApi.Migrations
                     medicalConditions_medicalConditions = table.Column<List<string>>(type: "text[]", nullable: false),
                     emergencyContact_emergencyContact = table.Column<string>(type: "text", nullable: false),
                     appointmentHistory_appointments = table.Column<List<string>>(type: "text[]", nullable: false),
-                    UserId = table.Column<string>(type: "text", nullable: true),
+                    UserId = table.Column<string>(type: "text", nullable: false),
                     UserName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     UserEmail = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     user_Role = table.Column<string>(type: "text", nullable: false)
@@ -83,15 +83,30 @@ namespace TodoApi.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    FullName_fullName = table.Column<string>(type: "text", nullable: false),
                     Specialization_Area = table.Column<string>(type: "text", nullable: false),
-                    Email = table.Column<string>(type: "text", nullable: false),
                     Phone_phoneNumber = table.Column<string>(type: "text", nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false)
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    UserName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    UserEmail = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    user_Role = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Staffs", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "StaffSchedules",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    DoctorId = table.Column<string>(type: "text", nullable: false),
+                    schedule = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StaffSchedules", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -137,12 +152,6 @@ namespace TodoApi.Migrations
                 name: "IX_Patients_gender",
                 table: "Patients",
                 column: "gender");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Staffs_Email",
-                table: "Staffs",
-                column: "Email",
-                unique: true);
         }
 
         /// <inheritdoc />
@@ -162,6 +171,9 @@ namespace TodoApi.Migrations
 
             migrationBuilder.DropTable(
                 name: "Staffs");
+
+            migrationBuilder.DropTable(
+                name: "StaffSchedules");
 
             migrationBuilder.DropTable(
                 name: "Users");
