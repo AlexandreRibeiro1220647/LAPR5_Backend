@@ -16,6 +16,5 @@ namespace TodoApi.Models
             this.DoctorId = DoctorId;
             this.schedule = schedule;
         }
-
     }
 }
