@@ -1,11 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using TodoApi.Models.User;
 using TodoApi.Models.Patient;
+using TodoApi.Models.Auth;
+using TodoApi.Models;
 using TodoApi.Infrastructure.Staff;
 using TodoApi.Infrastructure.OperationRequest;
 using TodoApi.Infrastructure.OperationType;
 using TodoApi.Infrastructure.Patient;
-using TodoApi.Models.Auth;
+
 
 namespace TodoApi.Infrastructure;
 
@@ -30,6 +32,8 @@ public class IPOContext : DbContext
 
     public DbSet<UserSession> UserSessions { get; set; } 
 
+    public DbSet<StaffSchedule> StaffSchedules { get; set; } 
+
      protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new UserEntityTypeConfiguration());
@@ -39,6 +43,7 @@ public class IPOContext : DbContext
             modelBuilder.ApplyConfiguration(new PatientConfiguration());
             modelBuilder.ApplyConfiguration(new OperationRequestLogConfiguration());
             modelBuilder.ApplyConfiguration(new UserSessionConfiguration());
+            modelBuilder.ApplyConfiguration(new StaffScheduleConfiguration());
         }
     
 }
