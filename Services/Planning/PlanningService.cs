@@ -126,30 +126,30 @@ public class PlanningService : IPlanningService
 
         List<Staff> staffs = await _staffRepository.GetAllAsync();
 
+        var doctorStaffs = staffs.Where(staff => 
+            staff.user.Role.Equals("2", StringComparison.OrdinalIgnoreCase)
+        );
+
     // Map to DoctorOperationTypesDTO
-        return staffs.Select(staff =>
+        return doctorStaffs.Select(staff =>
         {
-            // Extract the estimated durations for anesthesia, surgery, and cleaning
-            var specialization = _mapperStaff.ToDto(staff).Specialization;
+                // Extract the estimated durations for anesthesia, surgery, and cleaning
+                var specialization = _mapperStaff.ToDto(staff).Specialization;
 
-            List<string> sOpTypes = new List<string>();
+                // Find operation types where the specialization is required
+                List<string> sOpTypes = typesDTO
+                    .Where(opT => opT.RequiredStaffBySpecialization.Any(item => item.Contains(specialization)))
+                    .Select(opT => opT.OperationTypeId)
+                    .Distinct() // Ensure no duplicates
+                    .ToList();
 
-            foreach (OperationTypeDTO opT in typesDTO)
-            {
-                foreach (var item in opT.RequiredStaffBySpecialization)
-                {
-                    if (item.Contains(specialization) && sOpTypes.Contains(opT.OperationTypeId)) {
-                        sOpTypes.Add(opT.OperationTypeId);
-                    }
-                }
-            }
-
-            return new DoctorOperationTypesDTO(
-                staff.Id.AsString(),
-                staff.user.Role,
-                specialization,
-                sOpTypes
-            );
+                return new DoctorOperationTypesDTO(
+                    staff.Id.AsString(),
+                    staff.user.Role,
+                    specialization,
+                    sOpTypes
+                );
+        
         }).ToList();
     }
 

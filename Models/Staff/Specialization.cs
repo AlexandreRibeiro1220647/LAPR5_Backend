@@ -8,7 +8,7 @@ namespace TodoApi.Models.Staff
 
         public Specialization(String area)
         {
-            var allowedSpecializations = new[] { "Dermatology","Neurology", "Cardiology","Orthopedics"  };
+            var allowedSpecializations = new[] { "Dermatology","Neurology", "Cardiology","Orthopedics", "Instrumenting", "Circulating", "Anaesthetist", "X-ray"  };
             if (!allowedSpecializations.Contains(area))
                 throw new ArgumentException("Invalid specialization provided.");
 
@@ -17,7 +17,7 @@ namespace TodoApi.Models.Staff
 
         public void ChangeSpecialization(String area)
         {
-            var allowedSpecializations = new[] { "Dermatology","Neurology", "Cardiology","Orthopedics" };
+            var allowedSpecializations = new[] { "Dermatology","Neurology", "Cardiology","Orthopedics", "Instrumenting", "Circulating", "Anaesthetist", "X-ray" };
             if (!allowedSpecializations.Contains(area))
                 throw new ArgumentException("Invalid specialization provided.");
 
