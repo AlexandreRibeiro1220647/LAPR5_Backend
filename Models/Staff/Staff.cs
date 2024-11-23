@@ -6,35 +6,33 @@ namespace TodoApi.Models.Staff
 {
     public class Staff : Entity<LicenseNumber>
     {
-        public FullName FullName { get; private set; }
         public Specialization Specialization { get; private set; }
-        public UserEmail Email { get; private set; }
         public Phone Phone { get; private set; }
         public AvailabilitySlots AvailabilitySlots { get; private set; }
         public StaffStatus Status { get; private set; }
+        public TodoApi.DTOs.User.UserDTO user {get; private set; }
 
         public Staff() { }
 
-        public Staff(FullName fullName, Specialization specialization, UserEmail email, Phone phone, AvailabilitySlots availabilitySlots, StaffStatus status)
+        public Staff(Specialization specialization, Phone phone, AvailabilitySlots availabilitySlots, StaffStatus status,TodoApi.DTOs.User.UserDTO user)
         {
-            this.FullName = fullName;
             this.Specialization = specialization;
             Id = new LicenseNumber(Guid.NewGuid().ToString());
-            this.Email = email;
             this.Phone = phone;
             this.AvailabilitySlots = availabilitySlots ?? new AvailabilitySlots();
             this.Status = StaffStatus.ACTIVE;
+            this.user = user;
+
         }
 
-        public Staff(FullName fullName, Specialization specialization, UserEmail email, Phone phone, StaffStatus status)
+        public Staff(Specialization specialization, Phone phone, StaffStatus status,TodoApi.DTOs.User.UserDTO user)
         {
-            this.FullName = fullName;
             this.Specialization = specialization;
             Id = new LicenseNumber(Guid.NewGuid().ToString());
-            this.Email = email;
             this.Phone = phone;
             this.AvailabilitySlots = new AvailabilitySlots(new List<Slot>());
             this.Status = StaffStatus.ACTIVE;
+            this.user = user;
         }
 
         public void SetAvailabilitySlots(AvailabilitySlots availabilitySlots)
@@ -49,7 +47,7 @@ namespace TodoApi.Models.Staff
 
         public void UpdateEmail(string email)
         {
-            this.Email = new UserEmail(email);
+            this.user.Email = new UserEmail(email);
         }
 
         public void UpdateSpecialization(string specialization)
@@ -59,7 +57,7 @@ namespace TodoApi.Models.Staff
 
         public void UpdateFullName(string fullName)
         {
-            this.FullName = new FullName(fullName);
+            this.user.Name = fullName;
         }
 
         public void AddAvailabilitySlot(DateTime startTime, DateTime endTime)

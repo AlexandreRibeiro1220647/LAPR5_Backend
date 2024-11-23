@@ -48,64 +48,25 @@ namespace TodoApi.Controllers
         }
 
         [Authorize(Policy = "AdminPolicy")]
-        [HttpGet("search/specialization/{specialization}")]
-        public async Task<ActionResult<List<object>>> SearchBySpecialization(string specialization)
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchStaff(
+            [FromQuery] string? fullName = null,
+            [FromQuery] string? specialization = null,
+            [FromQuery] string? email = null,
+            [FromQuery] string? status = null,
+            [FromQuery] string? phone = null)
         {
             try
             {
-                var staffspecialization = await _staffService.GetStaffBySpecialization(specialization);
-                return Ok(staffspecialization);
+                var results = await _staffService.SearchStaff(fullName, specialization, email, status, phone);
+                return Ok(results);
             }
             catch (Exception e)
             {
-                return BadRequest(e.Message);
-            }
-        }
-        
-        [Authorize(Policy = "AdminPolicy")]
-        [HttpGet("search/name/{name}")]
-        public async Task<ActionResult<List<StaffDTO>>> SearchByName(string name)
-        {
-            try
-            {
-                var staffname = await _staffService.GetStaffByName(name);
-                return Ok(staffname);
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
+                return StatusCode(500, $"Internal server error: {e.Message}");
             }
         }
 
-        [Authorize(Policy = "AdminPolicy")]
-        [HttpGet("search/email/{email}")]
-        public async Task<ActionResult<List<StaffDTO>>> SearchByEmail(string email)
-        {
-            try
-            {
-                var staffemail = await _staffService.GetStaffByEmail(email);
-                return Ok(staffemail);
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
-        }
-
-        [Authorize(Policy = "AdminPolicy")]
-        [HttpGet("search/status/{status}")]
-        public async Task<ActionResult<List<StaffDTO>>> SearchByStatus(StaffStatus status)
-        {
-            try
-            {
-                var staffStatusList = await _staffService.GetStaffByStatus(status);
-                return Ok(staffStatusList);
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
-        }
         [HttpPut("update/{id}")]
         [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> UpdateStaff(Guid id, [FromBody] UpdateStaffDTO dto)

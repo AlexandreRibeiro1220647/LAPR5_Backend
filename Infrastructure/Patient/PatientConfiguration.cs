@@ -36,7 +36,10 @@ namespace TodoApi.Infrastructure.Patient {
         {
         userBuilder.Property(u => u.Id).HasColumnName("UserId");
         userBuilder.Property(u => u.Name).HasColumnName("UserName").HasMaxLength(100);
-        userBuilder.Property(u => u.Email).HasColumnName("UserEmail").HasMaxLength(200);
+        userBuilder.Property(u => u.Email).HasColumnName("UserEmail").HasMaxLength(200).HasConversion(
+        email => email.Value, // Conversão de UserEmail para string
+        value => new UserEmail(value) // Conversão de string para UserEmail
+        );;
         });
         }
     }

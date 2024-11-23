@@ -6,6 +6,10 @@ using TodoApi.DTOs;
 using TodoApi.Mappers;
 using TodoApi.Infrastructure.Staff;
 using Microsoft.Extensions.Logging;
+using TodoApi.Services.User;
+using TodoApi.Models.User;
+using TodoApi.Infrastructure;
+using TodoApi.Services.User;
 
 namespace TodoApi.Services
 {
@@ -15,39 +19,31 @@ namespace TodoApi.Services
         private readonly IStaffRepository _staffRepository;
         private readonly ILogger<IStaffService> _logger;
         private StaffMapper _mapper = new StaffMapper();
+        private readonly IUserService _userService;
+        private readonly IUserRepository _userRepository;
 
-        public StaffService(IUnitOfWork unitOfWork, IStaffRepository staffRepository, ILogger<IStaffService> logger)
+        public StaffService(IUnitOfWork unitOfWork, IStaffRepository staffRepository, ILogger<IStaffService> logger, IUserService userService, IUserRepository userRepository)
         {
             _unitOfWork = unitOfWork;
             _staffRepository = staffRepository;
             _logger = logger;
+            _userService = userService;
+            _userRepository = userRepository;
         }
 
         public async Task<StaffDTO> CreateStaff(CreateStaffDTO dto)
         {
             try
             {
-                // Verifica se o email já existe
-                var existingEmails = await _staffRepository.SearchByEmail(dto.Email);
-                if (existingEmails.Any())
-                {
-                    throw new Exception("O email já está em uso.");
-                }
+                TodoApi.DTOs.User.UserDTO user = await _userService.CreateUser(new DTOs.User.RegisterUserDTO(dto.FullName, dto.Email, dto.Role)
+                );
 
-                // Verifica se o telefone já existe
-                var existingPhone = await _staffRepository.GetByPhoneAsync(dto.Phone);
-                if (existingPhone != null)
-                {
-                    throw new Exception("O número de telefone já está em uso.");
-                }
-
-                Staff staff = _mapper.ToEntity(dto);
-
-                await _staffRepository.AddAsync(staff);
-
+                Staff mapped = _mapper.toEntity(dto, user);
+                await _staffRepository.AddAsync(mapped);
+                StaffDTO mappedDto = _mapper.ToDto(mapped);
                 await _unitOfWork.CommitAsync();
+                return mappedDto;
 
-                return _mapper.ToDto(staff);
             }
             catch (Exception e)
             {
@@ -55,6 +51,7 @@ namespace TodoApi.Services
                 throw;
             }
         }
+
 
         public async Task<List<StaffDTO>> GetStaff()
         {
@@ -69,47 +66,57 @@ namespace TodoApi.Services
         {
             try
             {
+                // Obtém o staff existente
                 Staff existingStaff = await _staffRepository.GetByIdAsync(new LicenseNumber(id.ToString()));
+                TodoApi.Models.User.User user = await _userRepository.GetByIdAsync(new UserID(existingStaff.user.Id));
 
                 if (existingStaff == null)
                 {
                     throw new Exception("Staff member not found");
                 }
 
-                // Verifica se o email já existe para outro staff
-                var existingEmails = await _staffRepository.SearchByEmail(dto.Email);
-                if (existingEmails.Any(e => e.Id != existingStaff.Id))
+                // Obtém o usuário associado
+
+                // Verifica se o email já está em uso por outro staff
+                var existingStaffWithEmail = await _staffRepository.SearchAsync(email: dto.Email);
+                if (existingStaffWithEmail.Any(e => e.Id != existingStaff.Id))
                 {
                     throw new Exception("O email já está em uso.");
                 }
 
-                // Verifica se o telefone já existe para outro staff
-                var existingPhone = await _staffRepository.GetByPhoneAsync(dto.Phone);
-                if (existingPhone != null && existingPhone.Id != existingStaff.Id)
+                // Verifica se o telefone já está em uso por outro staff
+                var existingStaffWithPhone = await _staffRepository.SearchAsync(phone: dto.Phone);
+                if (existingStaffWithPhone.Any(e => e.Id != existingStaff.Id))
                 {
                     throw new Exception("O número de telefone já está em uso.");
                 }
 
-                existingStaff.UpdateFullName(dto.FullName);
+                // Atualiza os dados do staff
                 existingStaff.UpdatePhone(dto.Phone);
-                existingStaff.UpdateEmail(dto.Email);
                 existingStaff.UpdateSpecialization(new string(dto.Specialization));
                 existingStaff.UpdateStatus(dto.Status);
+
+                // Atualiza o usuário associado
+                user.UpdateFullName(dto.FullName);
+                user.UpdateEmail(dto.Email);
+
+                // Atualiza os horários de disponibilidade
                 var updatedSlots = dto.AvailabilitySlots.Select(slotDto =>
                     new Slot(slotDto.StartTime, slotDto.EndTime)
                 ).ToList();
                 existingStaff.UpdateAvailabilitySlots(new AvailabilitySlots(updatedSlots));
 
+                // Confirma as alterações
                 await _unitOfWork.CommitAsync();
 
+                // Mapeia para DTO
                 StaffDTO updatedStaffDto = new StaffDTO(
-                    existingStaff.FullName.fullName,
                     existingStaff.Specialization.Area,
                     existingStaff.Id.AsString(),
-                    existingStaff.Email.Value,
                     existingStaff.Phone.phoneNumber,
                     existingStaff.AvailabilitySlots.Slots,
-                    existingStaff.Status
+                    existingStaff.Status,
+                    new TodoApi.DTOs.User.UserDTO(user.Id.ToString(), user.Name, user.Email, user.Role.ToString())
                 );
 
                 return updatedStaffDto;
@@ -124,6 +131,8 @@ namespace TodoApi.Services
             try
             {
                 Staff existingStaff = await _staffRepository.GetByIdAsync(new LicenseNumber(id.ToString()));
+                TodoApi.Models.User.User user = await _userRepository.GetByIdAsync(new UserID(existingStaff.user.Id));
+
 
                 if (existingStaff == null)
                 {
@@ -135,13 +144,12 @@ namespace TodoApi.Services
                 await _unitOfWork.CommitAsync();
 
                 StaffDTO updatedStaffDto = new StaffDTO(
-                    existingStaff.FullName.fullName,
                     existingStaff.Specialization.Area,
                     existingStaff.Id.AsString(),
-                    existingStaff.Email.Value,
                     existingStaff.Phone.phoneNumber,
                     existingStaff.AvailabilitySlots.Slots,
-                    existingStaff.Status
+                    existingStaff.Status,
+                    new TodoApi.DTOs.User.UserDTO(user.Id.ToString(), user.Name, user.Email, user.Role.ToString())
                 );
 
                 return updatedStaffDto;
@@ -152,60 +160,19 @@ namespace TodoApi.Services
                 throw;
             }
         }
-        public async Task<List<StaffDTO>> GetStaffBySpecialization(string specialization)
+        public async Task<List<StaffDTO>> SearchStaff(string? fullName, string? specialization, string? email, string? status, string? phone)
         {
             try
             {
-                var staffList = await _staffRepository.SearchBySpecialization(specialization);
+                var staffList = await _staffRepository.SearchAsync(fullName, specialization, email, status, phone);
                 return staffList.Select(staff => _mapper.ToDto(staff)).ToList();
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error searching staff by specialization");
+                _logger.LogError(e, "Error searching staff");
                 throw;
             }
         }
-        public async Task<List<StaffDTO>> GetStaffByEmail(string email)
-        {
-            try
-            {
-                var staffList = await _staffRepository.SearchByEmail(email);
-                return staffList.Select(staff => _mapper.ToDto(staff)).ToList();
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Error searching staff by email");
-                throw;
-            }
-        }
-
-        public async Task<List<StaffDTO>> GetStaffByName(string name)
-        {
-            try
-            {
-                var staffList = await _staffRepository.SearchByName(name);
-                return staffList.Select(staff => _mapper.ToDto(staff)).ToList();
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Error searching staff by name");
-                throw;
-            }
-        }
-       public async Task<List<StaffDTO>> GetStaffByStatus(StaffStatus status)
-       {
-           try
-           {
-               var staffStatusList = await _staffRepository.SearchByStatus(status);
-               return staffStatusList.Select(staff => _mapper.ToDto(staff)).ToList();
-           }
-           catch (Exception e)
-           {
-               _logger.LogError(e, "Error searching staff by status");
-               throw;
-           }
-       }
-
     }
 }
 

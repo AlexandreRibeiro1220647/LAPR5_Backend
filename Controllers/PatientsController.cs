@@ -77,49 +77,21 @@ namespace TodoApi.Controllers
 
 
                 
-                [Authorize]
-                [HttpGet("id/{id}")]
-                public async Task<ActionResult<PatientDTO>> GetPatientById(Guid id) {
-                    try {
-                        var patient = await _patientService.GetPatientByIdAsync(id);
-                        return Ok(patient);
-                    } catch (Exception e) {
-                        return BadRequest(e.Message);
+        [Authorize(Policy = "AdminPolicy")]
+                [HttpGet("search")]
+                public async Task<IActionResult> SearchPatients(
+                    [FromQuery] string? contact = null,
+                    [FromQuery] Gender? gender = null,
+                    [FromQuery] DateOnly? dateOfBirth = null)
+                {
+                    try
+                    {
+                        var results = await _patientService.SearchPatients(contact, gender, dateOfBirth);
+                        return Ok(results);
                     }
-                }
-
-
-
-                [Authorize]
-                [HttpGet("contact/{contact}")]
-                public async Task<ActionResult<IEnumerable<PatientDTO>>> GetPatientsByContactInformation(string contact) {
-                    try {
-                        var patients = await _patientService.GetPatientsByContactInformationAsync(contact);
-                        return Ok(patients);
-                    } catch (Exception e) {
-                        return BadRequest(e.Message);
-                    }
-                }
-
-                [Authorize]
-                [HttpGet("gender/{gender}")]
-                public async Task<ActionResult<IEnumerable<PatientDTO>>> GetPatientsByGender(Gender gender) {
-                    try {
-                        var patients = await _patientService.GetPatientsByGenderAsync(gender);
-                        return Ok(patients);
-                    } catch (Exception e) {
-                        return BadRequest(e.Message);
-                    }
-                }
-
-                [Authorize]
-                [HttpGet("dob/{dateOfBirth}")]
-                public async Task<ActionResult<IEnumerable<PatientDTO>>> GetPatientsByDateOfBirth(DateOnly dateOfBirth) {
-                    try {
-                        var patients = await _patientService.GetPatientsByDateOfBirthAsync(dateOfBirth);
-                        return Ok(patients);
-                    } catch (Exception e) {
-                        return BadRequest(e.Message);
+                    catch (Exception e)
+                    {
+                        return StatusCode(500, $"Internal server error: {e.Message}");
                     }
                 }
 

@@ -1,9 +1,11 @@
 using TodoApi.Models.Staff;
 using TodoApi.DTOs;
 
-namespace TodoApi.Mappers
+namespace TodoApi.Mappers;
+
+public interface IStaffMapper
 {
-    public interface IStaffMapper : IMapper<Staff, StaffDTO, CreateStaffDTO>
-    {
-    }
+    Staff toEntity(CreateStaffDTO dto, TodoApi.DTOs.User.UserDTO user);
+    Staff ToEntity(StaffDTO dto);
+    StaffDTO ToDto(Staff entity);
 }

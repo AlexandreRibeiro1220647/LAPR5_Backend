@@ -23,21 +23,20 @@ public class StaffEntityTypeConfiguration : IEntityTypeConfiguration<Models.Staf
         builder.Property(s => s.Id)
             .HasConversion(licenseNumberConverter);
 
-        var userEmailConverter = new ValueConverter<UserEmail, string>(
-            ue => ue.Value,
-            s => new UserEmail(s)
-        );
-
-        builder.Property(s => s.Email)
-            .HasConversion(userEmailConverter);
-
         builder.OwnsOne(s => s.Specialization);
-        builder.OwnsOne(s => s.FullName);
 
         builder.OwnsOne(s => s.AvailabilitySlots, availabilityBuilder =>
         {
         });
 
-        builder.HasIndex(s => s.Email).IsUnique();
+        builder.OwnsOne(p => p.user, userBuilder =>
+        {
+        userBuilder.Property(u => u.Id).HasColumnName("UserId");
+        userBuilder.Property(u => u.Name).HasColumnName("UserName").HasMaxLength(100);
+        userBuilder.Property(u => u.Email).HasColumnName("UserEmail").HasMaxLength(200).HasConversion(
+        email => email.Value, // Conversão de UserEmail para string
+        value => new UserEmail(value) // Conversão de string para UserEmail
+        );;
+        });
     }
 }
