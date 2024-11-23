@@ -1,7 +1,10 @@
+using TodoApi.Models;
+using TodoApi.Models.Staff;
 using TodoApi.Models.OperationType;
 using TodoApi.Models.Shared;
 using TodoApi.DTOs;
 using TodoApi.DTOs.OperationType;
+using TodoApi.Infrastructure.Staff;
 using TodoApi.Infrastructure.OperationType;
 using TodoApi.Infrastructure.OperationRequest;
 using TodoApi.Mappers;
@@ -23,40 +26,44 @@ public class PlanningService : IPlanningService
     private readonly IOperationRequestRepository _operationRequestRepository;
     private OperationRequestMapper _mapperOpRequest = new OperationRequestMapper();
 
+    private readonly IStaffRepository _staffRepository;
+    private StaffMapper _mapperStaff = new StaffMapper();
 
-    public PlanningService(IUnitOfWork unitOfWork, IOperationTypeRepository operationTypeRepository, ILogger<IPlanningService> logger, IOperationRequestRepository operationRepository)
+
+    public PlanningService(IUnitOfWork unitOfWork, IOperationTypeRepository operationTypeRepository, ILogger<IPlanningService> logger, IOperationRequestRepository operationRepository, IStaffRepository staffRepository)
     {
         this._unitOfWork = unitOfWork;
         this._operationTypeRepository = operationTypeRepository;
         this._logger = logger;
         this._operationRequestRepository = operationRepository;
+        this._staffRepository = staffRepository;
     }
     
-public async Task<List<OperationTypeDurationDTO>> GetOperationTypeDurations()
-{
-    // Fetch all operation types from the repository
-    List<Models.OperationType.OperationType> operationTypes = await _operationTypeRepository.GetAllAsync();
+    public async Task<List<OperationTypeDurationDTO>> GetOperationTypeDurations()
+    {
+        // Fetch all operation types from the repository
+        List<Models.OperationType.OperationType> operationTypes = await _operationTypeRepository.GetAllAsync();
 
     // Map to OperationTypeDurationDTO
-    return operationTypes.Select(operationType =>
-    {
-        // Extract the estimated durations for anesthesia, surgery, and cleaning
-        var durations = _mapperOpType.ToDto(operationType).EstimatedDuration;
+        return operationTypes.Select(operationType =>
+        {
+            // Extract the estimated durations for anesthesia, surgery, and cleaning
+            var durations = _mapperOpType.ToDto(operationType).EstimatedDuration;
 
         // Ensure there are at least three durations for the mapping
-        if (durations.Count < 3)
-        {
-            throw new InvalidOperationException($"OperationType {operationType.Id} does not have sufficient duration data. - {durations[0]} , {durations[1]}");
-        }
+            if (durations.Count < 3)
+            {
+                throw new InvalidOperationException($"OperationType {operationType.Id} does not have sufficient duration data. - {durations[0]} , {durations[1]}");
+            }
 
-        return new OperationTypeDurationDTO(
-            operationType.Id.AsString(),
-            durations[0],  // Anesthesia duration
-            durations[1],  // Surgery duration
-            durations[2]   // Cleaning duration
-        );
-    }).ToList();
-}
+            return new OperationTypeDurationDTO(
+                operationType.Id.AsString(),
+                durations[0],  // Anesthesia duration
+                durations[1],  // Surgery duration
+                durations[2]   // Cleaning duration
+            );
+        }).ToList();
+    }
 
     
     public async Task<List<OperationRequestTypeDTO>> GetOperationRequestTypes()
@@ -86,19 +93,59 @@ public async Task<List<OperationTypeDurationDTO>> GetOperationTypeDurations()
         }
     }
 
-    public async Task<List<OperationRequestDoctorDTO>> GetOperationRequestDoctors()
-{
+        public async Task<List<OperationRequestDoctorDTO>> GetOperationRequestDoctors()
+    {
     // Fetch all operation requests from the repository
-    List<Models.OperationRequest.OperationRequest> requests = await _operationRequestRepository.GetAllAsync();
+        List<Models.OperationRequest.OperationRequest> requests = await _operationRequestRepository.GetAllAsync();
 
     // Map to OperationRequestDoctorDTO
-    return requests.Select(opR =>
+        return requests.Select(opR =>
+        {
+            return new OperationRequestDoctorDTO(
+                opR.Id.AsString(),
+                opR.DoctorId.AsString()  // Cleaning duration
+            );
+        }).ToList();
+    }
+
+    public async Task<List<DoctorOperationTypesDTO>> GetDoctorOperationTypes()
     {
-        return new OperationRequestDoctorDTO(
-            opR.Id.AsString(),
-            opR.DoctorId.AsString()  // Cleaning duration
-        );
-    }).ToList();
-}
+        // Fetch all operation types from the repository
+        List<Models.OperationType.OperationType> operationTypes = await _operationTypeRepository.GetAllAsync();
+
+        List<OperationTypeDTO> typesDTO = new List<OperationTypeDTO>();
+        foreach (Models.OperationType.OperationType type in operationTypes)
+        {
+            typesDTO.Add(_mapperOpType.ToDto(type));
+        }
+
+        List<Staff> staffs = await _staffRepository.GetAllAsync();
+
+    // Map to DoctorOperationTypesDTO
+        return staffs.Select(staff =>
+        {
+            // Extract the estimated durations for anesthesia, surgery, and cleaning
+            var specialization = _mapperStaff.ToDto(staff).Specialization;
+
+            List<string> sOpTypes = new List<string>();
+
+            foreach (OperationTypeDTO opT in typesDTO)
+            {
+                foreach (var item in opT.RequiredStaffBySpecialization)
+                {
+                    if (item.Contains(specialization) && sOpTypes.Contains(opT.OperationTypeId)) {
+                        sOpTypes.Add(opT.OperationTypeId);
+                    }
+                }
+            }
+
+            return new DoctorOperationTypesDTO(
+                staff.Id.AsString(),
+                staff.user.Role,
+                specialization,
+                sOpTypes
+            );
+        }).ToList();
+    }
 
 }
