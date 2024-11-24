@@ -64,7 +64,7 @@ namespace TodoApi.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Policy = "BackOfficeUserPolicy")]        
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PatientDTO>>> GetAllPatients() {
             try {

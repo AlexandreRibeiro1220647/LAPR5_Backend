@@ -7,7 +7,7 @@ namespace TodoApi.Infrastructure.OperationRequest;
 
 public interface IOperationRequestRepository : IRepository<Models.OperationRequest.OperationRequest, OperationRequestID>{
     Task<bool> ExistsAsync(MedicalRecordNumber patientId, OperationTypeID operationTypeID);
-    Task<List<Models.OperationRequest.OperationRequest>> SearchAsync(string? patientName, string? patientId, string? operationTypeId, string? priority, string? deadline);
+    Task<List<Models.OperationRequest.OperationRequest>> SearchAsync(string? patientName, string? patientId, string? operationTypeName, string? priority, string? deadline);
 
 }
 

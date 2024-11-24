@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TodoApi.Infrastructure;
+using TodoApi.Infrastructure.OperationType;
 using TodoApi.Infrastructure.Patient;
 using TodoApi.Infrastructure.Shared;
 using TodoApi.Models;
@@ -16,10 +17,13 @@ public class OperationRequestRepository : BaseRepository<Models.OperationRequest
 
     private readonly IPatientRepository _patientRepository;
 
-    public OperationRequestRepository(IPOContext context, IPatientRepository patientRepository) : base(context.OperationRequests)
+    private readonly IOperationTypeRepository _operationTypeRepository;
+
+    public OperationRequestRepository(IPOContext context, IPatientRepository patientRepository, IOperationTypeRepository operationTypeRepository) : base(context.OperationRequests)
     {
         _dbSet = context.Set<Models.OperationRequest.OperationRequest>();
         _patientRepository=patientRepository;
+        _operationTypeRepository = operationTypeRepository;
     }
 
     public async Task<bool> ExistsAsync(MedicalRecordNumber patientId, OperationTypeID operationTypeID)
@@ -27,7 +31,7 @@ public class OperationRequestRepository : BaseRepository<Models.OperationRequest
     return await _dbSet.AnyAsync(req => req.PacientId == patientId && req.OperationTypeID == operationTypeID);
 }   
 
-public async Task<List<Models.OperationRequest.OperationRequest>> SearchAsync(string? patientName, string? patientId, string? operationTypeId, string? priority, string? deadline)
+public async Task<List<Models.OperationRequest.OperationRequest>> SearchAsync(string? patientName, string? patientId, string? operationTypeName, string? priority, string? deadline)
 {
 
     IQueryable<Models.OperationRequest.OperationRequest> query = _dbSet;
@@ -48,11 +52,21 @@ public async Task<List<Models.OperationRequest.OperationRequest>> SearchAsync(st
         }
     }       
 
-    if (!string.IsNullOrEmpty(operationTypeId))
+    if (!string.IsNullOrEmpty(operationTypeName))
     {
+        
+        var operationsType = await _operationTypeRepository.GetByNameAsync(operationTypeName);;
+        
+        if (operationsType != null)
+    {
+        var operationTypeIdParsed = new OperationTypeID(operationsType.Id.ToString());
 
-        var operationTypeIdParsed = new OperationTypeID(operationTypeId);
         query = query.Where(op => op.OperationTypeID.Equals(operationTypeIdParsed));
+    }
+    else
+    {
+            return new List<Models.OperationRequest.OperationRequest>();
+    }
     }
 
     if (!string.IsNullOrEmpty(priority))

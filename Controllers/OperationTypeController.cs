@@ -68,7 +68,7 @@ public class OperationTypeController : ControllerBase
     }
 
 
-    [Authorize(Policy = "AdminPolicy")]
+    [Authorize(Policy = "BackOfficeUserPolicy")]
     [HttpGet]
     public async Task<IActionResult> GetOperationTypes()
     {

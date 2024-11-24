@@ -60,11 +60,11 @@ public class OperationRequestService : IOperationRequestService
         //if (operationTypeId >= 1 && operationTypeId <= 10)
         //{
             var doctor = await _staffRepository.GetByIdAsync(doctorId);
-            if (!doctor.Specialization.Area.Equals("Orthopedics"))
-            {
-                throw new Exception("The doctor must have a specialization in Orthopedics for this operation type.");
-            }
-       // }
+         //   if (!doctor.Specialization.Area.Equals("Orthopedics"))
+           // {
+            //    throw new Exception("The doctor must have a specialization in Orthopedics for this operation type.");
+           // }
+       // }*/
         // Verifica se o paciente existe
         bool patientExists = await _patientRepository.ExistsAsync(new MedicalRecordNumber(dto.pacientid));
         if (!patientExists)

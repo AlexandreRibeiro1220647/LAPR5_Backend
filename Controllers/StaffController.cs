@@ -32,7 +32,7 @@ namespace TodoApi.Controllers
             }
         }
 
-        [Authorize(Policy = "AdminPolicy")]
+        [Authorize(Policy = "BackOfficeUserPolicy")]        
         [HttpGet]
         public async Task<IActionResult> GetStaff()
         {
