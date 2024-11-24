@@ -15,7 +15,7 @@ public class OperationRequestController : ControllerBase {
         this.operationRequestService = operationRequestService;
     }
 
-    //[Authorize(Policy = "Doctor")]
+    [Authorize(Policy = "DoctorPolicy")]
     [HttpPost("create")]
     public async Task<IActionResult> CreateOperation([FromBody] CreateOperationRequestDTO dto)
     {
@@ -30,7 +30,7 @@ public class OperationRequestController : ControllerBase {
         }
     }
 
-    //[Authorize(Policy = "Doctor")]
+    [Authorize(Policy = "DoctorPolicy")]
     [HttpDelete]
     public async Task<IActionResult> DeleteOperation([FromQuery] Guid operationId)
     {
@@ -45,7 +45,7 @@ public class OperationRequestController : ControllerBase {
         }
     }
 
-    //[Authorize(Policy = "Doctor")]
+    [Authorize(Policy = "DoctorPolicy")]
     [HttpPut("update/{id}")]
     public async Task<IActionResult> UpdateOperationRequest(Guid id, [FromBody] UpdateOperationRequestDTO dto)
     {
@@ -60,7 +60,7 @@ public class OperationRequestController : ControllerBase {
             }
         }
 
-    //[Authorize(Policy = "Doctor")]    
+    [Authorize(Policy = "DoctorPolicy")]    
     [HttpGet]
     public async Task<IActionResult> GetOperations()
     {
@@ -75,7 +75,7 @@ public class OperationRequestController : ControllerBase {
         }
     }
 
-   // [Authorize(Policy = "Doctor")]
+    [Authorize(Policy = "DoctorPolicy")]
     [HttpGet("search")]
     public async Task<IActionResult> SearchOperationRequests([FromQuery] string? patientName, [FromQuery] string? patientId, [FromQuery] string? operationType, [FromQuery] string? priority, [FromQuery] string? deadline)
     {
