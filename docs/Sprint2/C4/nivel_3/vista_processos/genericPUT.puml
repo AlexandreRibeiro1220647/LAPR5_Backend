@@ -1,0 +1,62 @@
+@startuml
+autonumber
+skinparam packageStyle rect
+
+title Update object
+
+participant ui as ui
+participant AspnetRouter as router
+participant ObjectController as ctrl
+participant ObjectService as service
+participant ObjectDTO as dto
+participant ObjectMapper as mapper
+participant ObjectRepository as repo
+participant Object as domain
+
+-> ui : Update object's information
+activate ui
+ui -> router: PUT /object/{id} {new data}
+activate router
+router -> ctrl: updateObject(id, objectDTO)
+activate ctrl
+ctrl -> service: update(id, objectDTO)
+activate service
+
+service -> repo: findById(id)
+activate repo
+repo --> service: returns object with {id}
+deactivate repo
+
+alt resource found
+    service -> mapper: mapToDomain(objectDTO)
+    activate mapper
+    mapper --> domain** : <<update>>
+    mapper --> service : returns updated domain
+    deactivate mapper
+    service -> repo: save(updated domain)
+    activate repo
+    repo --> service : returns updated domain
+    deactivate repo
+    service -> mapper: mapToDTO(updated domain)
+    activate mapper
+    mapper --> service : returns updated objectDTO
+    deactivate mapper
+    service --> ctrl : returns updated objectDTO
+
+    ctrl --> router : returns updated objectDTO
+
+    ui <-- router  : returns success message
+
+    <-- ui : Presents success message
+else resource not found
+    service --> ctrl : returns error (object not found)
+    deactivate service
+    ctrl --> router : returns message: bad request (400)
+    deactivate ctrl
+    ui <--  router: returns message: bad request (400)
+    deactivate router
+    <-- ui : Presents error message (400)
+    deactivate ui
+end alt
+
+@enduml
