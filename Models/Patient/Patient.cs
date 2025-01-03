@@ -52,8 +52,4 @@ public class Patient : Entity<MedicalRecordNumber> {
     public void UpdateEmail(string email) {
         this.user.Email = new UserEmail(email);
     }
-
-    public void UpdateMedicalConditions(string medicalConditions) {
-        this.medicalConditions = new MedicalConditions(medicalConditions.Split(',').ToList());
-    }
 }
