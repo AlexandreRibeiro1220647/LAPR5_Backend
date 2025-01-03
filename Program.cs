@@ -155,6 +155,14 @@ builder.Services.AddScoped<IOperationRequestLogRepository, OperationRequestLogRe
 builder.Services.AddScoped<IUserSessionRepository, UserSessionRepository>();
 builder.Services.AddScoped<IStaffScheduleRepository, StaffScheduleRepository>();
 builder.Services.AddScoped<IPlanningService, PlanningService>();
+builder.Services.AddScoped<IRoomTypeService, RoomTypeService>();
+builder.Services.AddScoped<IRoomTypeRepository, RoomTypeRepository>();
+builder.Services.AddScoped<ISurgeryRoomService, SurgeryRoomService>();
+builder.Services.AddScoped<ISurgeryRoomRepository, SurgeryRoomRepository>();
+builder.Services.AddScoped<IAppointmentSurgeryService, AppointmentSurgeryService>();
+builder.Services.AddScoped<IAppointmentSurgeryRepository, AppointmentSurgeryRepository>();
+
+
 
 
 // Register UserService with HttpClient

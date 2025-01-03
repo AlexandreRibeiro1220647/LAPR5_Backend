@@ -34,6 +34,12 @@ public class IPOContext : DbContext
 
     public DbSet<StaffSchedule> StaffSchedules { get; set; } 
 
+    public DbSet<RoomType> RoomTypes {get; set; }
+
+    public DbSet<SurgeryRoom> SurgeryRooms {get ; set; }
+
+    public DbSet<AppointmentSurgery> AppointmentSurgeries {get ; set ; }
+
      protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new UserEntityTypeConfiguration());
@@ -44,6 +50,9 @@ public class IPOContext : DbContext
             modelBuilder.ApplyConfiguration(new OperationRequestLogConfiguration());
             modelBuilder.ApplyConfiguration(new UserSessionConfiguration());
             modelBuilder.ApplyConfiguration(new StaffScheduleConfiguration());
+            modelBuilder.ApplyConfiguration(new RoomTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new SurgeryRoomConfiguration());
+            modelBuilder.ApplyConfiguration(new AppointmentSurgeryConfiguration());
         }
     
 }
