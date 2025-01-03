@@ -57,14 +57,13 @@ public class PatientService : IPatientService {
             patient.UpdateFullName(dto.FullName);
             patient.UpdateContactInformation(dto.ContactInformation);
             patient.UpdateEmail(dto.Email);
-            patient.UpdateMedicalConditions(dto.MedicalConditions);
             patient.UpdateEmergencyContact(dto.EmergencyContact);
             user.UpdateFullName(dto.FullName);
             user.UpdateEmail(dto.Email);
             await _unitOfWork.CommitAsync();
 
             PatientDTO newPatientDto = new PatientDTO(patient.dateOfBirth.ToString(), patient.gender.ToString(), patient.Id.AsString(), 
-            patient.contactInformation.ToString(), patient.medicalConditions.medicalConditions, patient.emergencyContact.ToString(), patient.appointmentHistory.appointments, new TodoApi.DTOs.User.UserDTO(user.Id.ToString(), user.Name, user.Email, user.Role.ToString()));
+            patient.contactInformation.ToString(), patient.medicalRecord, patient.emergencyContact.ToString(), patient.appointmentHistory.appointments, new TodoApi.DTOs.User.UserDTO(user.Id.ToString(), user.Name, user.Email, user.Role.ToString()));
             return newPatientDto;
         }
         catch (Exception e) {

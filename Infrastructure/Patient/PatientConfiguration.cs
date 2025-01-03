@@ -22,7 +22,7 @@ namespace TodoApi.Infrastructure.Patient {
                 .HasConversion(new ValueConverter<Phone, string>(p => p.phoneNumber, s => new Phone(s)));
 
             });
-            builder.OwnsOne(p => p.medicalConditions);
+            builder.OwnsOne(p => p.medicalRecord);
             builder.OwnsOne(p => p.emergencyContact);
             builder.OwnsOne(p => p.emergencyContact, eContactInfoBuilder =>
             {
