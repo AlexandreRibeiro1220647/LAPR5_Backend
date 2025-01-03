@@ -60,7 +60,7 @@ public class OperationRequestController : ControllerBase {
             }
         }
 
-    [Authorize(Policy = "DoctorPolicy")]    
+    [Authorize(Policy = "BackOfficeUserPolicy")]    
     [HttpGet]
     public async Task<IActionResult> GetOperations()
     {
