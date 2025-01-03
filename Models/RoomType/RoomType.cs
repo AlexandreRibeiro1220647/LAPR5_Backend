@@ -1,49 +1,31 @@
-/*using TodoApi.Models.OperationType;
+using TodoApi.Models.OperationType;
 using TodoApi.Models.Patient;
 using TodoApi.Models.Shared;
 using TodoApi.Models.Staff;
 
-namespace TodoApi.Models.OperationRequest;
 public class RoomType : Entity<RoomTypeId>       {
     
     public RoomDesignation RoomDesignation { get; set; } 
 
-    public LicenseNumber DoctorId { get; set; } 
-    public OperationTypeID OperationTypeID { get; set; }
-    
-    public Deadline Deadline {get ; private set;}
-    public Priority Priority { get; private set; }
+    public RoomDescription RoomDescription { get; set; } 
 
  
-     OperationRequest(){
+    RoomType(){
     }
-    public OperationRequest(MedicalRecordNumber patientId, LicenseNumber doctorId, OperationTypeID operationTypeId, Deadline deadline, Priority priority)
+    public RoomType(RoomDesignation roomDesignation, RoomDescription roomDescription)
     {
-        Id = new OperationRequestID(Guid.NewGuid().ToString());
-        PacientId = patientId;
-        DoctorId = doctorId;
-        OperationTypeID = operationTypeId;
-        Deadline = deadline;
-        Priority = priority;
+        Id = new RoomTypeId(Guid.NewGuid().ToString());
+        RoomDesignation = roomDesignation;
+        RoomDescription = roomDescription;
     }
 
-    public OperationRequest(MedicalRecordNumber patientId, LicenseNumber doctorId, OperationTypeID operationTypeId, Deadline deadline, Priority priority, OperationRequestID id)
+   public RoomType(RoomDesignation roomDesignation, RoomDescription roomDescription, RoomTypeId id)
     {
         Id = id;
-        PacientId = patientId;
-        DoctorId = doctorId;
-        OperationTypeID = operationTypeId;
-        Deadline = deadline;
-        Priority = priority;
+        RoomDesignation = roomDesignation;
+        RoomDescription = roomDescription;
     }
 
+    
 
-    public void UpdateDeadline(DateOnly deadline){
-        this.Deadline = new Deadline(deadline);
-    }
-
-    public void UpdatePriority(Priority newPriority){
-        this.Priority = newPriority;
-    }
 }
-*/
