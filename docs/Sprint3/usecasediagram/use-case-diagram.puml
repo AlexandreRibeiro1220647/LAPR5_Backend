@@ -1,0 +1,31 @@
+@startuml
+
+left to right direction
+
+actor SoftwareArchitect as SA
+actor Admin as A
+actor Doctor as D
+
+SA --> (Adopt a decentralized architecture of the backoffice module, so that it is composed of the existing SPA frontend, .Net backend, and a new Node.js module for managing Patient Medical Records, Allergies, and Medical Conditions)
+
+A --> (Add new Allergy, so that Doctors can use it to update the Patient Medical Record)
+D --> (Search for Allergies, so that I can use it to update the Patient Medical Record)
+
+A --> (Add new Medical Condition, so that Doctors can use it to update the Patient Medical Record)
+D --> (Search for Medical Conditions, so that I can use it to update the Patient Medical Record)
+
+D --> (Update the Patient Medical Record, namely respecting Medical Conditions and Allergies)
+D --> (Search for entries in the Patient Medical Record, namely respecting Medical Conditions and Allergies)
+
+D --> (Create a Surgery Appointment, so that the Patient doesn’t need to wait for the automatically generated planning)
+D --> (Update a Surgery Appointment, so that I can override the automatically generated planning)
+
+A --> (Add new Types of rooms, so that I can reflect on the available medical procedures in the system)
+
+A --> (Add new Specializations, so that I can update or correct information about the staff and operation type procedure)
+A --> (List/search Specializations, so that I can see the details, and edit or remove Specializations)
+A --> (Edit Specializations, so that I can update or correct information about the staff and operation type procedure)
+
+D --> (Include access to the Patient Medical Record during the patient profile visualization and management, so that I manage it in that context)
+
+@enduml
