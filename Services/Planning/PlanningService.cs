@@ -17,7 +17,6 @@ namespace TodoApi.Services;
 
 public class PlanningService : IPlanningService
 {
-    
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<IPlanningService> _logger;
 
@@ -33,7 +32,6 @@ public class PlanningService : IPlanningService
     private readonly IStaffScheduleRepository _staffScheduleRepository;
     private StaffScheduleMapper _mapperStaffSchedule = new StaffScheduleMapper();
 
-
     public PlanningService(IUnitOfWork unitOfWork, IOperationTypeRepository operationTypeRepository, ILogger<IPlanningService> logger, IOperationRequestRepository operationRepository, IStaffRepository staffRepository, IStaffScheduleRepository staffScheduleRepository)
     {
         this._unitOfWork = unitOfWork;
@@ -43,19 +41,15 @@ public class PlanningService : IPlanningService
         this._staffRepository = staffRepository;
         this._staffScheduleRepository = staffScheduleRepository;
     }
-    
+
     public async Task<List<OperationTypeDurationDTO>> GetOperationTypeDurations()
     {
-        // Fetch all operation types from the repository
         List<Models.OperationType.OperationType> operationTypes = await _operationTypeRepository.GetAllAsync();
 
-    // Map to OperationTypeDurationDTO
         return operationTypes.Select(operationType =>
         {
-            // Extract the estimated durations for anesthesia, surgery, and cleaning
             var durations = _mapperOpType.ToDto(operationType).EstimatedDuration;
 
-        // Ensure there are at least three durations for the mapping
             if (durations.Count < 3)
             {
                 throw new InvalidOperationException($"OperationType {operationType.Id} does not have sufficient duration data. - {durations[0]} , {durations[1]}");
@@ -63,20 +57,20 @@ public class PlanningService : IPlanningService
 
             return new OperationTypeDurationDTO(
                 operationType.Id.AsString(),
-                durations[0],  // Anesthesia duration
-                durations[1],  // Surgery duration
-                durations[2]   // Cleaning duration
+                durations[0],
+                durations[1],
+                durations[2]
             );
         }).ToList();
     }
 
-    
     public async Task<List<OperationRequestTypeDTO>> GetOperationRequestTypes()
     {
         try
         {
             List<Models.OperationRequest.OperationRequest> requests = await _operationRequestRepository.GetAllAsync();
             List<OperationRequestDTO> requestsDTO = new List<OperationRequestDTO>();
+
             foreach (Models.OperationRequest.OperationRequest operation in requests)
             {
                 requestsDTO.Add(_mapperOpRequest.ToDto(operation));
@@ -100,22 +94,19 @@ public class PlanningService : IPlanningService
 
     public async Task<List<OperationRequestDoctorDTO>> GetOperationRequestDoctors()
     {
-    // Fetch all operation requests from the repository
         List<Models.OperationRequest.OperationRequest> requests = await _operationRequestRepository.GetAllAsync();
 
-    // Map to OperationRequestDoctorDTO
         return requests.Select(opR =>
         {
             return new OperationRequestDoctorDTO(
                 opR.Id.AsString(),
-                opR.DoctorId.AsString()  // Cleaning duration
+                opR.DoctorId.AsString()
             );
         }).ToList();
     }
 
     public async Task<List<DoctorOperationTypesDTO>> GetDoctorOperationTypes()
     {
-        // Fetch all operation types from the repository
         List<Models.OperationType.OperationType> operationTypes = await _operationTypeRepository.GetAllAsync();
 
         List<OperationTypeDTO> typesDTO = new List<OperationTypeDTO>();
@@ -126,30 +117,26 @@ public class PlanningService : IPlanningService
 
         List<Staff> staffs = await _staffRepository.GetAllAsync();
 
-        var doctorStaffs = staffs.Where(staff => 
+        var doctorStaffs = staffs.Where(staff =>
             staff.user.Role.Equals("2", StringComparison.OrdinalIgnoreCase)
         );
 
-    // Map to DoctorOperationTypesDTO
         return doctorStaffs.Select(staff =>
         {
-                // Extract the estimated durations for anesthesia, surgery, and cleaning
-                var specialization = _mapperStaff.ToDto(staff).Specialization;
+            var specializationId = _mapperStaff.ToDto(staff).SpecializationId;
 
-                // Find operation types where the specialization is required
-                List<string> sOpTypes = typesDTO
-                    .Where(opT => opT.RequiredStaffBySpecialization.Any(item => item.Contains(specialization)))
-                    .Select(opT => opT.OperationTypeId)
-                    .Distinct() // Ensure no duplicates
-                    .ToList();
+            List<string> sOpTypes = typesDTO
+                .Where(opT => opT.RequiredStaffBySpecialization.Any(item => item.Contains(specializationId)))
+                .Select(opT => opT.OperationTypeId)
+                .Distinct()
+                .ToList();
 
-                return new DoctorOperationTypesDTO(
-                    staff.Id.AsString(),
-                    staff.user.Role,
-                    specialization,
-                    sOpTypes
-                );
-        
+            return new DoctorOperationTypesDTO(
+                staff.Id.AsString(),
+                staff.user.Role,
+                specializationId,
+                sOpTypes
+            );
         }).ToList();
     }
 
