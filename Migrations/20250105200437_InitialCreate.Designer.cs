@@ -13,7 +13,7 @@ using TodoApi.Infrastructure;
 namespace TodoApi.Migrations
 {
     [DbContext(typeof(IPOContext))]
-    [Migration("20241123133648_InitialCreate")]
+    [Migration("20250105200437_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -25,6 +25,85 @@ namespace TodoApi.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("AppointmentSurgery", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("AppointmentSurgeryDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("AppointmentSurgeryName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("AppointmentSurgeryStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("interval");
+
+                    b.Property<string>("OperationRequestID")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RoomId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("interval");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AppointmentSurgeries", (string)null);
+                });
+
+            modelBuilder.Entity("RoomType", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RoomDescription")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RoomDesignation")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RoomTypes", (string)null);
+                });
+
+            modelBuilder.Entity("SurgeryRoom", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Capacity")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MaintenanceSlots")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("RoomName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("RoomStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("RoomTypeId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SurgeryRooms", (string)null);
+                });
 
             modelBuilder.Entity("TodoApi.Models.Auth.UserSession", b =>
                 {
@@ -146,9 +225,37 @@ namespace TodoApi.Migrations
                     b.ToTable("OperationRequestLogs", (string)null);
                 });
 
+            modelBuilder.Entity("TodoApi.Models.Specialization.Specialization", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SpecializationCode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SpecializationDescription")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SpecializationDesignation")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SpecializationCode")
+                        .IsUnique();
+
+                    b.ToTable("Specializations");
+                });
+
             modelBuilder.Entity("TodoApi.Models.Staff.Staff", b =>
                 {
                     b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SpecializationId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("Status")
@@ -254,14 +361,10 @@ namespace TodoApi.Migrations
                                 .HasForeignKey("PatientId");
                         });
 
-                    b.OwnsOne("TodoApi.Models.Patient.MedicalConditions", "medicalConditions", b1 =>
+                    b.OwnsOne("TodoApi.Models.Patient.MedicalRecord", "medicalRecord", b1 =>
                         {
                             b1.Property<Guid>("PatientId")
                                 .HasColumnType("uuid");
-
-                            b1.Property<List<string>>("medicalConditions")
-                                .IsRequired()
-                                .HasColumnType("text[]");
 
                             b1.HasKey("PatientId");
 
@@ -269,6 +372,73 @@ namespace TodoApi.Migrations
 
                             b1.WithOwner()
                                 .HasForeignKey("PatientId");
+
+                            b1.OwnsMany("TodoApi.Models.Patient.Allergy", "Allergies", b2 =>
+                                {
+                                    b2.Property<Guid>("Id")
+                                        .HasColumnType("uuid");
+
+                                    b2.Property<string>("Code")
+                                        .IsRequired()
+                                        .HasColumnType("text");
+
+                                    b2.Property<string>("Description")
+                                        .HasColumnType("text");
+
+                                    b2.Property<string>("Designation")
+                                        .IsRequired()
+                                        .HasColumnType("text");
+
+                                    b2.Property<Guid?>("PatientId")
+                                        .HasColumnType("uuid");
+
+                                    b2.HasKey("Id");
+
+                                    b2.HasIndex("PatientId");
+
+                                    b2.ToTable("Allergy");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("PatientId");
+                                });
+
+                            b1.OwnsMany("TodoApi.Models.Patient.MedicalCondition", "MedicalConditions", b2 =>
+                                {
+                                    b2.Property<Guid>("Id")
+                                        .HasColumnType("uuid");
+
+                                    b2.Property<string>("Code")
+                                        .IsRequired()
+                                        .HasColumnType("text");
+
+                                    b2.Property<string>("CommonSymptoms")
+                                        .IsRequired()
+                                        .HasColumnType("text");
+
+                                    b2.Property<string>("Description")
+                                        .IsRequired()
+                                        .HasColumnType("text");
+
+                                    b2.Property<string>("Designation")
+                                        .IsRequired()
+                                        .HasColumnType("text");
+
+                                    b2.Property<Guid?>("PatientId")
+                                        .HasColumnType("uuid");
+
+                                    b2.HasKey("Id");
+
+                                    b2.HasIndex("PatientId");
+
+                                    b2.ToTable("MedicalCondition");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("PatientId");
+                                });
+
+                            b1.Navigation("Allergies");
+
+                            b1.Navigation("MedicalConditions");
                         });
 
                     b.OwnsOne("TodoApi.DTOs.User.UserDTO", "user", b1 =>
@@ -314,7 +484,7 @@ namespace TodoApi.Migrations
                     b.Navigation("emergencyContact")
                         .IsRequired();
 
-                    b.Navigation("medicalConditions")
+                    b.Navigation("medicalRecord")
                         .IsRequired();
 
                     b.Navigation("user")
@@ -342,23 +512,6 @@ namespace TodoApi.Migrations
                                 .HasColumnType("text");
 
                             b1.Property<string>("phoneNumber")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.HasKey("StaffId");
-
-                            b1.ToTable("Staffs");
-
-                            b1.WithOwner()
-                                .HasForeignKey("StaffId");
-                        });
-
-                    b.OwnsOne("TodoApi.Models.Staff.Specialization", "Specialization", b1 =>
-                        {
-                            b1.Property<string>("StaffId")
-                                .HasColumnType("text");
-
-                            b1.Property<string>("Area")
                                 .IsRequired()
                                 .HasColumnType("text");
 
@@ -408,9 +561,6 @@ namespace TodoApi.Migrations
                         .IsRequired();
 
                     b.Navigation("Phone")
-                        .IsRequired();
-
-                    b.Navigation("Specialization")
                         .IsRequired();
 
                     b.Navigation("user")
