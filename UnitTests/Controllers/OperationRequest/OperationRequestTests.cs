@@ -29,7 +29,7 @@ public class OperationRequestControllerTests
         var result = await _controller.CreateOperation(createDto);
 
         // Assert
-        var actionResult = Assert.IsType<OkObjectResult>(result);
+        var actionResult = Assert.IsType<CreatedAtActionResult>(result);
         Assert.Equal(operationDto, actionResult.Value);
     }
 
