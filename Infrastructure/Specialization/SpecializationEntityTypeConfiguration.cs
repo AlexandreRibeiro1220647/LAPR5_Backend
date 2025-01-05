@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TodoApi.Models.Specialization;
-using TodoApi.Models;
-using TodoApi.Models.Shared;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+
 
 namespace TodoApi.Infrastructure.Specialization;
 
@@ -11,6 +11,14 @@ internal class SpecializationEntityTypeConfiguration : IEntityTypeConfiguration<
     public void Configure(EntityTypeBuilder<Models.Specialization.Specialization> builder)
     {
         builder.HasKey(b => b.Id);
+
+        var specializationIdConverter = new ValueConverter<SpecializationId, string>(
+            id => id.AsString(),
+            value => new SpecializationId(value)
+        );
+
+        builder.Property(p => p.Id)
+            .HasConversion(specializationIdConverter);
 
         builder.Property(b => b.SpecializationDesignation)
                .HasConversion(
