@@ -1,0 +1,36 @@
+@startuml Process View - Level 1
+
+autonumber
+skinparam packageStyle rect
+
+title Update Request
+
+participant "System" as S <<system (C4)>>
+
+-> S:PUT request
+
+activate S
+
+alt success
+
+  <-- S: object updated successfully (200)
+
+else invalid input
+
+  <-- S: bad request (400)
+
+else unauthorized
+
+  <-- S: unauthorized (401)
+
+else object not found
+
+  <-- S: object not found (404)
+
+else unavailable server
+
+  <-- S: service unavailable (503)
+
+end
+
+@enduml

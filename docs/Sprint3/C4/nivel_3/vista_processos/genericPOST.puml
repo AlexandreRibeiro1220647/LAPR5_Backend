@@ -1,0 +1,58 @@
+@startuml
+autonumber
+skinparam packageStyle rect
+
+title Create objects
+
+participant ui as ui
+participant AspnetRouter as router
+participant ObjectController as ctrl
+participant ObjectService as service
+participant ObjectDTO as dto
+participant ObjectMapper as mapper
+participant ObjectRepository as repo
+participant Object as domain
+database DB
+
+-> ui : Create object
+activate ui
+ui -> router: POST /object {object data}
+activate router
+router -> ctrl: registerObject(objectDTO)
+activate ctrl
+ctrl -> service: register(objectDTO)
+activate service
+service -> mapper: mapToDomain(objectDTO)
+activate mapper
+mapper --> domain** : <<create>>
+mapper --> service : returns domain
+deactivate mapper
+service -> service: validate(domain)
+service -> repo: save(domain)
+
+activate repo
+
+repo -> DB: insert object
+repo <-- DB: returns success response
+repo --> service : returns domain
+deactivate repo
+service -> mapper: mapToDTO(domain)
+activate mapper
+mapper --> service : returns objectDTO
+deactivate mapper
+service --> ctrl : returns objectDTO
+
+deactivate service
+ctrl --> router : returns objectDTO
+
+deactivate ctrl
+
+ui <-- router  : returns success message
+
+deactivate router
+
+<-- ui : Presents success/error message
+
+deactivate ui
+
+@enduml
