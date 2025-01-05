@@ -1,12 +1,13 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using TodoApi.Models.Patient;
 using TodoApi.Models.Shared;
+using TodoApi.Models.Specialization;
 
 namespace TodoApi.Models.Staff
 {
     public class Staff : Entity<LicenseNumber>
     {
-        public Specialization Specialization { get; private set; }
+        public SpecializationId SpecializationId { get; private set; }
         public Phone Phone { get; private set; }
         public AvailabilitySlots AvailabilitySlots { get; private set; }
         public StaffStatus Status { get; private set; }
@@ -14,9 +15,9 @@ namespace TodoApi.Models.Staff
 
         public Staff() { }
 
-        public Staff(Specialization specialization, Phone phone, AvailabilitySlots availabilitySlots, StaffStatus status,TodoApi.DTOs.User.UserDTO user)
+        public Staff(SpecializationId specializationId, Phone phone, AvailabilitySlots availabilitySlots, StaffStatus status,TodoApi.DTOs.User.UserDTO user)
         {
-            this.Specialization = specialization;
+            this.SpecializationId = specializationId;
             Id = new LicenseNumber(Guid.NewGuid().ToString());
             this.Phone = phone;
             this.AvailabilitySlots = availabilitySlots ?? new AvailabilitySlots();
@@ -25,9 +26,9 @@ namespace TodoApi.Models.Staff
 
         }
 
-        public Staff(Specialization specialization, Phone phone, StaffStatus status,TodoApi.DTOs.User.UserDTO user)
+        public Staff(SpecializationId specializationId, Phone phone, StaffStatus status,TodoApi.DTOs.User.UserDTO user)
         {
-            this.Specialization = specialization;
+            this.SpecializationId = specializationId;
             Id = new LicenseNumber(Guid.NewGuid().ToString());
             this.Phone = phone;
             this.AvailabilitySlots = new AvailabilitySlots(new List<Slot>());
@@ -50,10 +51,14 @@ namespace TodoApi.Models.Staff
             this.user.Email = new UserEmail(email);
         }
 
-        public void UpdateSpecialization(string specialization)
+        public void UpdateSpecialization(SpecializationId newSpecializationId)
         {
-            this.Specialization = new Specialization(specialization);
+            if (this.Status != StaffStatus.ACTIVE)
+                throw new InvalidOperationException("Cannot modify an inactive staff member.");
+
+            this.SpecializationId = newSpecializationId ?? throw new ArgumentNullException(nameof(newSpecializationId));
         }
+
 
         public void UpdateFullName(string fullName)
         {
