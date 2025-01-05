@@ -6,7 +6,7 @@ namespace TodoApi.DTOs
 {
     public class CreateStaffDTO
     {
-        public string Specialization { get; set; }
+        public string SpecializationId { get; set; }
         public string FullName { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
@@ -17,10 +17,10 @@ namespace TodoApi.DTOs
 
         public CreateStaffDTO() { }
 
-        public CreateStaffDTO(string fullName, string specialization, string email, string phone, List<Slot> availabilitySlots, StaffStatus status, UserRoles role)
+        public CreateStaffDTO(string fullName, string specializationId, string email, string phone, List<Slot> availabilitySlots, StaffStatus status, UserRoles role)
         {
             this.FullName = fullName;
-            this.Specialization = specialization;
+            this.SpecializationId = specializationId;
             this.Email = email;
             this.Phone = phone;
             this.AvailabilitySlots = availabilitySlots;

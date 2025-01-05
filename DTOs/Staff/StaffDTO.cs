@@ -4,7 +4,7 @@ namespace TodoApi.DTOs
 {
     public class StaffDTO
     {
-        public string Specialization { get; set; }
+        public string SpecializationId { get; set; }
         public string LicenseNumber { get; set; }
         public string Phone { get; set; }
         public List<Slot> AvailabilitySlots { get; set; }
@@ -13,9 +13,9 @@ namespace TodoApi.DTOs
 
         public StaffDTO() { }
 
-        public StaffDTO(string specialization, string licenseNumber, string phone, List<Slot> availabilitySlots, StaffStatus status,TodoApi.DTOs.User.UserDTO user)
+        public StaffDTO(string specializationId, string licenseNumber, string phone, List<Slot> availabilitySlots, StaffStatus status,TodoApi.DTOs.User.UserDTO user)
         {
-            this.Specialization = specialization;
+            this.SpecializationId = specializationId;
             this.LicenseNumber = licenseNumber;
             this.Phone = phone;
             this.AvailabilitySlots = availabilitySlots;

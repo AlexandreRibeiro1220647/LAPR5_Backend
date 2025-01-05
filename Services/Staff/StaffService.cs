@@ -10,6 +10,7 @@ using TodoApi.Services.User;
 using TodoApi.Models.User;
 using TodoApi.Infrastructure;
 using TodoApi.Services.User;
+using TodoApi.Models.Specialization;
 
 namespace TodoApi.Services
 {
@@ -93,7 +94,7 @@ namespace TodoApi.Services
 
                 // Atualiza os dados do staff
                 existingStaff.UpdatePhone(dto.Phone);
-                existingStaff.UpdateSpecialization(new string(dto.Specialization));
+                existingStaff.UpdateSpecialization(new SpecializationId(dto.SpecializationId));
                 existingStaff.UpdateStatus(dto.Status);
 
                 // Atualiza o usuário associado
@@ -111,7 +112,7 @@ namespace TodoApi.Services
 
                 // Mapeia para DTO
                 StaffDTO updatedStaffDto = new StaffDTO(
-                    existingStaff.Specialization.Area,
+                    existingStaff.SpecializationId.AsString(),
                     existingStaff.Id.AsString(),
                     existingStaff.Phone.phoneNumber,
                     existingStaff.AvailabilitySlots.Slots,
@@ -144,7 +145,7 @@ namespace TodoApi.Services
                 await _unitOfWork.CommitAsync();
 
                 StaffDTO updatedStaffDto = new StaffDTO(
-                    existingStaff.Specialization.Area,
+                    existingStaff.SpecializationId.AsString(),
                     existingStaff.Id.AsString(),
                     existingStaff.Phone.phoneNumber,
                     existingStaff.AvailabilitySlots.Slots,

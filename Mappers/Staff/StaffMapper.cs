@@ -3,6 +3,7 @@ using TodoApi.DTOs;
 using System.Collections.Generic;
 using TodoApi.Models;
 using TodoApi.Models.Shared;
+using TodoApi.Models.Specialization;
 
 namespace TodoApi.Mappers
 {
@@ -21,7 +22,7 @@ namespace TodoApi.Mappers
             }
 
             return new Staff(
-                new Specialization(createDto.Specialization),
+                new SpecializationId(createDto.SpecializationId),
                 new Phone(createDto.Phone),
                 new AvailabilitySlots(availabilitySlots),
                 createDto.Status,
@@ -42,7 +43,7 @@ namespace TodoApi.Mappers
             var availabilitySlotsObj = new AvailabilitySlots(availabilitySlots);
 
             return new Staff(
-                new Specialization(dto.Specialization),
+                new SpecializationId(dto.SpecializationId),
                 new Phone(dto.Phone),
                 availabilitySlotsObj,
                 dto.Status,
@@ -65,7 +66,7 @@ namespace TodoApi.Mappers
             }
 
             return new StaffDTO(
-                entity.Specialization.Area,
+                entity.SpecializationId.AsString(),
                 entity.Id.AsString(),
                 entity.Phone.phoneNumber,
                 availabilitySlotDTOs,

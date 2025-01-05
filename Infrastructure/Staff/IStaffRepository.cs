@@ -1,5 +1,7 @@
 using TodoApi.Models.Shared;
 using TodoApi.Models.Staff;
+using TodoApi.DTOs.Staff;
+
 
 namespace TodoApi.Infrastructure.Staff
 {
@@ -14,7 +16,7 @@ namespace TodoApi.Infrastructure.Staff
             string? email = null,
             string? status = null,
             string? phone = null);
-        Task<List<Models.Staff.Staff>> SearchBySpecialization(string specialization);
+        Task<List<Models.Staff.Staff>> SearchBySpecialization(StaffSearchDto searchDto);
         Task<List<Models.Staff.Staff>> SearchByStatus(StaffStatus status);
         Task<List<Models.Staff.Staff>> GetByUserAsync(TodoApi.DTOs.User.UserDTO user);
     }

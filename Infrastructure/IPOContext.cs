@@ -7,6 +7,8 @@ using TodoApi.Infrastructure.Staff;
 using TodoApi.Infrastructure.OperationRequest;
 using TodoApi.Infrastructure.OperationType;
 using TodoApi.Infrastructure.Patient;
+using TodoApi.Infrastructure.Specialization;
+using TodoApi.Models.Specialization;
 
 
 namespace TodoApi.Infrastructure;
@@ -32,7 +34,9 @@ public class IPOContext : DbContext
 
     public DbSet<UserSession> UserSessions { get; set; } 
 
-    public DbSet<StaffSchedule> StaffSchedules { get; set; } 
+    public DbSet<StaffSchedule> StaffSchedules { get; set; }
+
+    public DbSet<Models.Specialization.Specialization> Specializations { get; set; }
 
     public DbSet<RoomType> RoomTypes {get; set; }
 
@@ -51,6 +55,7 @@ public class IPOContext : DbContext
             modelBuilder.ApplyConfiguration(new UserSessionConfiguration());
             modelBuilder.ApplyConfiguration(new StaffScheduleConfiguration());
             modelBuilder.ApplyConfiguration(new RoomTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new SpecializationEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new SurgeryRoomConfiguration());
             modelBuilder.ApplyConfiguration(new AppointmentSurgeryConfiguration());
         }

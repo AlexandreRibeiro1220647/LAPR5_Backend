@@ -2,6 +2,7 @@ using TodoApi.Infrastructure.Shared;
 using TodoApi.Models.Staff;
 using TodoApi.Models.Shared;
 using Microsoft.EntityFrameworkCore;
+using TodoApi.DTOs.Staff;
 
 namespace TodoApi.Infrastructure.Staff
 {
@@ -21,11 +22,16 @@ namespace TodoApi.Infrastructure.Staff
 
 
 
-        public async Task<List<Models.Staff.Staff>> SearchBySpecialization(string specialization)
+        public async Task<List<Models.Staff.Staff>> SearchBySpecialization(StaffSearchDto searchDto)
         {
-            return await _context.Staffs
-                .Where(s => s.Specialization.Area.Contains(specialization))
-                .ToListAsync();
+            IQueryable<Models.Staff.Staff> query = _context.Staffs;
+
+            if (!string.IsNullOrEmpty(searchDto.SpecializationId))
+            {
+                query = query.Where(s => s.SpecializationId.Value == searchDto.SpecializationId);
+            }
+
+            return await query.ToListAsync();
         }
 
         public async Task<List<Models.Staff.Staff>> SearchByStatus(StaffStatus status)
@@ -54,9 +60,9 @@ namespace TodoApi.Infrastructure.Staff
             }
 
             if (!string.IsNullOrEmpty(specialization))
-            {
-                query = query.Where(s => s.Specialization.Area.Contains(specialization));
-            }
+                {
+                    query = query.Where(s => s.SpecializationId.Value == specialization);
+                }
 
             if (!string.IsNullOrEmpty(email))
             {
