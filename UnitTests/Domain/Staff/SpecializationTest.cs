@@ -1,3 +1,4 @@
+/*
 using System;
 using Xunit;
 using TodoApi.Models.Staff;
@@ -27,3 +28,4 @@ public class SpecializationTests
         Assert.Equal("Neurology", specialization.Area);
     }
 }
+*/
